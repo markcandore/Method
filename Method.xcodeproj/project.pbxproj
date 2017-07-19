@@ -20,6 +20,9 @@
 		5FA2623B1F1FFE2600A1B7F8 /* CreateUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA2623A1F1FFE2600A1B7F8 /* CreateUsernameViewController.swift */; };
 		5FA262411F20038700A1B7F8 /* Storyboard+Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262401F20038700A1B7F8 /* Storyboard+Utility.swift */; };
 		5FA262431F20039300A1B7F8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262421F20039300A1B7F8 /* Constants.swift */; };
+		5FA262451F20118B00A1B7F8 /* RecordingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */; };
+		5FA2624B1F2017DD00A1B7F8 /* RecordsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA2624A1F2017DD00A1B7F8 /* RecordsListViewController.swift */; };
+		5FA2624D1F20187B00A1B7F8 /* RecordedAudioTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA2624C1F20187B00A1B7F8 /* RecordedAudioTableCellView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +41,9 @@
 		5FA2623A1F1FFE2600A1B7F8 /* CreateUsernameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CreateUsernameViewController.swift; path = Controllers/CreateUsernameViewController.swift; sourceTree = "<group>"; };
 		5FA262401F20038700A1B7F8 /* Storyboard+Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Storyboard+Utility.swift"; path = "Extensions/Storyboard+Utility.swift"; sourceTree = "<group>"; };
 		5FA262421F20039300A1B7F8 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Supporting/Constants.swift; sourceTree = "<group>"; };
+		5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingViewController.swift; path = Controllers/RecordingViewController.swift; sourceTree = "<group>"; };
+		5FA2624A1F2017DD00A1B7F8 /* RecordsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordsListViewController.swift; path = Controllers/RecordsListViewController.swift; sourceTree = "<group>"; };
+		5FA2624C1F20187B00A1B7F8 /* RecordedAudioTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordedAudioTableCellView.swift; path = Views/RecordedAudioTableCellView.swift; sourceTree = "<group>"; };
 		8CCBD35002A1CBF5D14C6731 /* Pods_Method.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Method.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F646C45D56F6E717222CC5AF /* Pods-Method.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Method.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Method/Pods-Method.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -121,6 +127,8 @@
 			children = (
 				5FA2623A1F1FFE2600A1B7F8 /* CreateUsernameViewController.swift */,
 				5FA2622A1F1FF63F00A1B7F8 /* LoginViewController.swift */,
+				5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */,
+				5FA2624A1F2017DD00A1B7F8 /* RecordsListViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -138,6 +146,7 @@
 		5FA2621E1F1FF2E900A1B7F8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5FA2624C1F20187B00A1B7F8 /* RecordedAudioTableCellView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -303,9 +312,12 @@
 				5FA262371F1FFDE100A1B7F8 /* User.swift in Sources */,
 				5FA2622B1F1FF63F00A1B7F8 /* LoginViewController.swift in Sources */,
 				5FA2623B1F1FFE2600A1B7F8 /* CreateUsernameViewController.swift in Sources */,
+				5FA262451F20118B00A1B7F8 /* RecordingViewController.swift in Sources */,
 				5FA262431F20039300A1B7F8 /* Constants.swift in Sources */,
 				5F6BBE751F1FD2C400A157E2 /* AppDelegate.swift in Sources */,
 				5FA262411F20038700A1B7F8 /* Storyboard+Utility.swift in Sources */,
+				5FA2624D1F20187B00A1B7F8 /* RecordedAudioTableCellView.swift in Sources */,
+				5FA2624B1F2017DD00A1B7F8 /* RecordsListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

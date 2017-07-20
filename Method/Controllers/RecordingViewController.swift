@@ -18,6 +18,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate {
     let request = SFSpeechAudioBufferRecognitionRequest()
     var recognitionTask: SFSpeechRecognitionTask?
     
+    var isRecording: Bool = false
     
     @IBOutlet weak var transcriptTextView: UITextView!
 
@@ -34,6 +35,13 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate {
     }
     
     @IBAction func recordButtonTapped(_ sender: UIButton) {
+        if isRecording == false{
+            recordAndRecognizeSpeech()
+            isRecording = true
+        } else {
+            audioEngine.stop()
+            isRecording = false
+        }
         
         
     }
@@ -41,6 +49,37 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate {
     @IBAction func listButtonTapped(_ sender: UIButton) {
     }
     
-    
+    func recordAndRecognizeSpeech()-> Void{
+        guard let node = audioEngine.inputNode else { return }
+        let recordingFormat = node.outputFormat(forBus: 0)
+        node.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+            self.request.append(buffer)
+        
+        }
+        
+        audioEngine.prepare()
+        do {
+            try audioEngine.start()
+        }   catch {
+            return print(error)
+        }
+        
+        guard let myRecognizer = SFSpeechRecognizer() else {
+            return
+        }
+        
+        if !myRecognizer.isAvailable {
+            return
+        }
+        
+        recognitionTask = speechRecognizer?.recognitionTask(with: request, resultHandler: {result, error in
+            if let result = result {
+                let bestString = result.bestTranscription.formattedString
+                self.transcriptTextView.text = bestString
+            } else if let error = error {
+                print(error)
+            }
+        })
+    }
     
 }

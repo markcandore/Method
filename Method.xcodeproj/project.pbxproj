@@ -23,6 +23,8 @@
 		5FA262451F20118B00A1B7F8 /* RecordingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */; };
 		5FA2624B1F2017DD00A1B7F8 /* RecordsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA2624A1F2017DD00A1B7F8 /* RecordsListViewController.swift */; };
 		5FA2624D1F20187B00A1B7F8 /* RecordedAudioTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA2624C1F20187B00A1B7F8 /* RecordedAudioTableCellView.swift */; };
+		5FB96DD71F21682F00A071A9 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB96DD61F21682F00A071A9 /* Recording.swift */; };
+		5FB96DD91F2168E000A071A9 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB96DD81F2168E000A071A9 /* StorageService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +46,8 @@
 		5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingViewController.swift; path = Controllers/RecordingViewController.swift; sourceTree = "<group>"; };
 		5FA2624A1F2017DD00A1B7F8 /* RecordsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordsListViewController.swift; path = Controllers/RecordsListViewController.swift; sourceTree = "<group>"; };
 		5FA2624C1F20187B00A1B7F8 /* RecordedAudioTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordedAudioTableCellView.swift; path = Views/RecordedAudioTableCellView.swift; sourceTree = "<group>"; };
+		5FB96DD61F21682F00A071A9 /* Recording.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recording.swift; sourceTree = "<group>"; };
+		5FB96DD81F2168E000A071A9 /* StorageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		8CCBD35002A1CBF5D14C6731 /* Pods_Method.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Method.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F646C45D56F6E717222CC5AF /* Pods-Method.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Method.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Method/Pods-Method.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -155,6 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				5FA262361F1FFDE100A1B7F8 /* User.swift */,
+				5FB96DD61F21682F00A071A9 /* Recording.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -163,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				5FA262381F1FFE0600A1B7F8 /* UserService.swift */,
+				5FB96DD81F2168E000A071A9 /* StorageService.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -308,6 +314,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FB96DD71F21682F00A071A9 /* Recording.swift in Sources */,
+				5FB96DD91F2168E000A071A9 /* StorageService.swift in Sources */,
 				5FA262391F1FFE0600A1B7F8 /* UserService.swift in Sources */,
 				5FA262371F1FFDE100A1B7F8 /* User.swift in Sources */,
 				5FA2622B1F1FF63F00A1B7F8 /* LoginViewController.swift in Sources */,

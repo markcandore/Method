@@ -7,21 +7,21 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>1069555142791-b55kknnc4qk7tqqoccvm6ctckmukj9s8.apps.googleusercontent.com</string>
+	<string>412531948134-ssuockndph6i6u7nh9bfm5f9f4punfn4.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1069555142791-b55kknnc4qk7tqqoccvm6ctckmukj9s8</string>
+	<string>com.googleusercontent.apps.412531948134-ssuockndph6i6u7nh9bfm5f9f4punfn4</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCHIdF9tHkq16O0VOiV_pdoOdtDGvNYSYw</string>
+	<string>AIzaSyBBAjiYJo9l6go3p6CKxrM3i0fgFj__rWM</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1069555142791</string>
+	<string>412531948134</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.markwang.makestagram2</string>
+	<string>com.markwang.Method</string>
 	<key>PROJECT_ID</key>
-	<string>makestagram-1ecab</string>
+	<string>method-be7e0</string>
 	<key>STORAGE_BUCKET</key>
-	<string>makestagram-1ecab.appspot.com</string>
+	<string>method-be7e0.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true/>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -33,8 +33,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1069555142791:ios:2102e5f8f3939c46</string>
+	<string>1:412531948134:ios:b237da784885c345</string>
 	<key>DATABASE_URL</key>
-	<string>https://makestagram-1ecab.firebaseio.com</string>
+	<string>https://method-be7e0.firebaseio.com</string>
 </dict>
 </plist>

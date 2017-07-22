@@ -253,7 +253,11 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     @IBAction func listButtonTapped(_ sender: UIButton) {
-        
+        //let initialViewController = UIStoryboard.initialViewController(for: .main)
+        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+        let listPage = storyboard.instantiateViewController(withIdentifier: "recordsListViewController") as? RecordsListViewController
+        //listPage?.event = Event(message: message)
+        self.present(listPage!, animated: true, completion: nil)
     }
     
 }

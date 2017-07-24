@@ -17,12 +17,18 @@ class Recording{
     var creationDate: Date
     var creator: User
     
+    var fileData: Data?
+    
     init(fileUrlString: String){
         self.fileUrlString = fileUrlString
         self.creationDate = Date()
         self.creator = User.current
     }
     
-    
+    init(data: Data){
+        self.fileData = data
+        self.creationDate = Date()
+        self.creator = User.current
+    }
     
 }

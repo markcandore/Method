@@ -15,17 +15,6 @@ class MediaPlayerViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // 1
-        /*
-        if let note = note {
-            // 2
-            noteTitleTextField.text = note.title
-            noteContentTextView.text = note.content
-        } else {
-            // 3
-            noteTitleTextField.text = ""
-            noteContentTextView.text = ""
-        }
- */
+        
     }
 }

@@ -31,13 +31,5 @@ struct StorageService {
     }
  */
     
-    static func record() -> URL{
-        //Storage.storage().reference().child("images/posts/\(uid)/\(timestamp).jpg")
-       
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentsDirectory = paths[0]
-        return documentsDirectory
-        
-      //  guard let recordingData = Recording
-    }
+    
 }

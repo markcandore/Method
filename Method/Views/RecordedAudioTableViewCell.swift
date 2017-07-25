@@ -13,5 +13,7 @@ import UIKit
 class RecordedAudioTableViewCell: UITableViewCell{
     
     
+    @IBOutlet weak var audioNameLabel: UILabel!
     
+    @IBOutlet weak var audioDateLabel: UILabel!
 }

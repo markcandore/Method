@@ -8,13 +8,33 @@
 
 import Foundation
 import UIKit
+import AVFoundation
+import FirebaseStorage
 
 class MediaPlayerViewController: UIViewController {
+    
+ 
+    var record: Recording?
+    var audioPlayer: AVAudioPlayer?
+    
+    @IBOutlet weak var nameLabel: UILabel!
+    
+    
+    @IBOutlet weak var dateLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        if let record = record{
+            self.nameLabel.text = record.title
+            self.dateLabel.text = record.getDateString()
+        }
     }
+    
+    @IBAction func backButton(_ sender: UIButton) {
+        dismiss(animated: true, completion: nil)
+    }
+    
 }

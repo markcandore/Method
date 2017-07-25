@@ -8,17 +8,18 @@
 
 import Foundation
 import FirebaseStorage
+import UIKit
 
 struct StorageService {
-    /*
-    static func uploadImage(_ image: UIImage, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
+    
+    static func uploadAudio(_ audioData: Data?, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
         // 1
-        guard let imageData = UIImageJPEGRepresentation(image, 0.1) else {
+        guard let audio = audioData else{
             return completion(nil)
         }
         
         // 2
-        reference.putData(imageData, metadata: nil, completion: { (metadata, error) in
+        reference.putData(audio, metadata: nil, completion: { (metadata, error) in
             // 3
             if let error = error {
                 assertionFailure(error.localizedDescription)
@@ -29,7 +30,5 @@ struct StorageService {
             completion(metadata?.downloadURL())
         })
     }
- */
-    
-    
+
 }

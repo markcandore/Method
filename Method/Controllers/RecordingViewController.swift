@@ -10,6 +10,7 @@ import UIKit
 import Speech
 import AVFoundation
 import FirebaseStorage
+import FirebaseDatabase
 
 class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate {
 
@@ -25,6 +26,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     private var recordingSession: AVAudioSession!
     private var audioRecorder: AVAudioRecorder!
     var soundFileURL:URL!
+    var currentFilename: String!
+    var currentRecording: Recording!
     
     // Timer
     var seconds = 60
@@ -163,8 +166,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             self.recognitionRequest?.append(buffer)
         }
      
-        //let format = DateFormatter()
-        //format.dateFormat="yyyy-MM-dd-HH-mm-ss"
+        let format = DateFormatter()
+        format.dateFormat="yyyy-MM-dd-HH-mm-ss"
         //let currentFileName = "recording-\(format.string(from: Date())).m4a"
         let currentFileName = "1.m4a"
         soundFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(currentFileName)
@@ -179,7 +182,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         audioRecorder = try AVAudioRecorder(url: soundFileURL, settings: recordSettings)
         audioRecorder.delegate = self
-        
         
         audioEngine.prepare()
         
@@ -198,20 +200,21 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     func savingAlert(){
-        let alert = UIAlertController(title: "Saving?", message: "Do you want to save this", preferredStyle: UIAlertControllerStyle.alert)
+        let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
         
         alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
             
-            let audioFile = FileManager.default.contents(atPath: NSTemporaryDirectory().appending("1.m4a"))
-            let uid = User.current.uid
-            let timestamp = ISO8601DateFormatter().string(from: Date())
+            let audioFile = FileManager.default.contents(atPath: NSTemporaryDirectory().appending(self.currentFilename))
             
-            let ref = Storage.storage().reference().child("recordings/\(uid)/\(timestamp).m4a")
-            ref.putData(audioFile!)
+            if let Data = audioFile{
+                RecordService.create(for: Data)
+            } else {
+                print("data does not exist")
+            }
             
             self.removeFile()
-            
             self.audioRecorder = nil
+            
             
         }))
         
@@ -244,7 +247,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             recognitionRequest?.endAudio()
             recordButton.isEnabled = false
             recordButton.setTitle("Stopping", for: .disabled)
- 
+            
+            //self.seconds = 60
+            //self.timerLabel.text = "\(self.seconds)s"
             self.savingAlert()
             
         } else {
@@ -256,10 +261,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     @IBAction func listButtonTapped(_ sender: UIButton) {
-        //let initialViewController = UIStoryboard.initialViewController(for: .main)
+        
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         let listPage = storyboard.instantiateViewController(withIdentifier: "recordsListViewController") as? RecordsListViewController
-        //listPage?.event = Event(message: message)
         self.present(listPage!, animated: true, completion: nil)
     }
     

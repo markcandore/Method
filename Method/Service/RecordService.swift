@@ -12,8 +12,8 @@ import FirebaseDatabase
 
 struct RecordService {
     
-    static func create(for data: Data) {
-        let audioRef = StorageReference.newAudioReference()
+    static func create(data: Data, title: String) {
+        let audioRef = StorageReference.newRecordingReference()
         StorageService.uploadAudio(data, at: audioRef) { (downloadURL) in
             guard let downloadURL = downloadURL else {
                 return
@@ -21,19 +21,23 @@ struct RecordService {
             
             let urlString = downloadURL.absoluteString
             //let aspectHeight = image.aspectHeight
-            create(forURLString: urlString)
+            create(forURLString: urlString, forTitle: title)
         }
     }
     
-    private static func create(forURLString urlString: String) {
+    private static func create(forURLString urlString: String, forTitle title: String) {
         
         let currentUser = User.current
-        let recording = Recording(fileUrlString: urlString)
+        //let recording = Recording(fileUrlString: urlString)
+        let recording = Recording(fileUrlString: urlString, title: title)
+        let dict = recording.dictValue
         
         let rootRef = Database.database().reference()
-        let newRecordingRef = rootRef.child("recordings").child(currentUser.uid).childByAutoId()
+        let recordingRef = rootRef.child("recordings").child(currentUser.uid).childByAutoId()
         //let newPostRef = DatabaseReference.toLocation(.newPost(currentUID: currentUser.uid))
-        let newPostKey = newRecordingRef.key
+        
+        recordingRef.updateChildValues(dict)
+        //let newPostKey = newRecordingRef.key
         
         /*
         UserService.followers(for: currentUser) { (followerUIDs) in
@@ -52,4 +56,6 @@ struct RecordService {
         }
          */
     }
+    
+    //private static show
 }

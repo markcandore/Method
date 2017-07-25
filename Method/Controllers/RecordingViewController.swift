@@ -209,12 +209,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             let path = NSTemporaryDirectory().appending(self.currentFilename)
             //let audioFile = FileManager.default.contents(atPath: path)
             
-            guard let audioFile = FileManager.default.contents(atPath: path) else{
+            guard let data = FileManager.default.contents(atPath: path) else{
                 return
             }
-            
-            RecordService.create(for: audioFile)
-            
+            RecordService.create(data: data, title: self.currentFilename)
             /*
             let uid = User.current.uid
             let timestamp = ISO8601DateFormatter().string(from: Date())

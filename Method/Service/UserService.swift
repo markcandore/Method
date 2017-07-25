@@ -11,6 +11,20 @@ import FirebaseAuth.FIRUser
 import FirebaseDatabase
 
 struct UserService {
+    static func posts(for user: User, completion: @escaping ([Recording]) -> Void) {
+        let ref = Database.database().reference().child("recordings").child(user.uid)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let snapshot = snapshot.children.allObjects as? [DataSnapshot] else {
+                return completion([])
+            }
+            
+            let recordings = snapshot.flatMap(Recording.init)
+            //let recordings = snapshot.reversed().flatMap(Recording.init)
+            completion(recordings)
+        })
+    }
+    
     static func show(forUID uid: String, completion: @escaping (User?) -> Void) {
         let ref = Database.database().reference().child("users").child(uid)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in

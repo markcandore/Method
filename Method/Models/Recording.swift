@@ -12,8 +12,8 @@ import AVFoundation
 
 class Recording{
     var key: String?
-    var title: String?
-    var fileUrlString: String?
+    var title: String
+    var fileUrlString: String
     var creationDate: Date
     var creator: User
     
@@ -24,7 +24,8 @@ class Recording{
         return dateFormatter
     }()
     
-    init(fileUrlString: String){
+    init(fileUrlString: String, title: String){
+        self.title = title
         self.fileUrlString = fileUrlString
         self.creationDate = Date()
         self.creator = User.current
@@ -32,19 +33,32 @@ class Recording{
     
     init?(snapshot: DataSnapshot) {
         guard let dict = snapshot.value as? [String : Any],
-            let audioURL = dict["image_url"] as? String,
+            let audioURL = dict["audio_url"] as? String,
             let audioTitle = dict["title"] as? String,
+            let createdAgo = dict["created_at"] as? TimeInterval,
             let userDict = dict["creator"] as? [String : Any],
             let uid = userDict["uid"] as? String,
             let username = userDict["username"] as? String
+        
             else { return nil }
         
         self.key = snapshot.key
         self.title = audioTitle
         self.fileUrlString = audioURL
-        self.creationDate = Date()
+        self.creationDate = Date(timeIntervalSince1970: createdAgo)
         self.creator = User(uid: uid, username: username)
         
+    }
+    
+    var dictValue: [String : Any] {
+        let createdAgo = creationDate.timeIntervalSince1970
+        let userDict = ["uid" : creator.uid,
+                        "username" : creator.username]
+        
+        return ["audio_url" : fileUrlString,
+                "title" : title,
+                "created_at" : createdAgo,
+                "creator" : userDict]
     }
     
     func getDateString() -> String{

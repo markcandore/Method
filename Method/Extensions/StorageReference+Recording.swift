@@ -12,7 +12,7 @@ import FirebaseStorage
 extension StorageReference {
     static let dateFormatter = ISO8601DateFormatter()
     
-    static func newAudioReference() -> StorageReference {
+    static func newRecordingReference() -> StorageReference {
         let uid = User.current.uid
         let timestamp = dateFormatter.string(from: Date())
         

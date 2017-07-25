@@ -20,11 +20,22 @@ class RecordsListViewController: UIViewController {
         super.viewDidLoad()
         self.tableView.dataSource = self
         
-        self.reloadList()
+        //configureTableView()
+
+        reloadList()
         
+        /*
         let record1 = Recording(fileUrlString: "dfjkldf")
         record1.title = "Blah"
         recordings.append(record1)
+ */
+    }
+    
+    func configureTableView() {
+        // remove separators for empty cells
+        tableView.tableFooterView = UIView()
+        // remove separators from cells
+        tableView.separatorStyle = .none
     }
     
     override func didReceiveMemoryWarning(){
@@ -32,7 +43,10 @@ class RecordsListViewController: UIViewController {
     }
     
     func reloadList(){
-        //get posts here
+        UserService.posts(for: User.current) { (recordings) in
+            self.recordings = recordings
+            self.tableView.reloadData()
+        }
     }
     @IBAction func recordButtonTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Main", bundle: .main)

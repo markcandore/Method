@@ -124,6 +124,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         if let recognitionTask = recognitionTask {
             recognitionTask.cancel()
             self.recognitionTask = nil
+            self.audioRecorder = nil
         }
         
         let audioSession = AVAudioSession.sharedInstance()
@@ -168,10 +169,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
      
         let format = DateFormatter()
         format.dateFormat="yyyy-MM-dd-HH-mm-ss"
-        //let currentFileName = "recording-\(format.string(from: Date())).m4a"
-        let currentFileName = "1.m4a"
-        soundFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(currentFileName)
-        
+        currentFilename = "recording-\(format.string(from: Date())).m4a"
+        soundFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(currentFilename)
+
         let recordSettings:[String : Any] = [
             AVFormatIDKey:             kAudioFormatAppleLossless,
             AVEncoderAudioQualityKey: AVAudioQuality.max.rawValue,
@@ -192,7 +192,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     func removeFile(){
         do{
-            try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending("1.m4a"))
+            try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending(self.currentFilename))
 
         } catch{
             print(error)
@@ -200,21 +200,32 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     func savingAlert(){
-        let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
+        
+        
+    let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
         
         alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
+        
+            let path = NSTemporaryDirectory().appending(self.currentFilename)
+            //let audioFile = FileManager.default.contents(atPath: path)
             
-            let audioFile = FileManager.default.contents(atPath: NSTemporaryDirectory().appending(self.currentFilename))
-            
-            if let Data = audioFile{
-                RecordService.create(for: Data)
-            } else {
-                print("data does not exist")
+            guard let audioFile = FileManager.default.contents(atPath: path) else{
+                return
             }
             
-            self.removeFile()
-            self.audioRecorder = nil
+            RecordService.create(for: audioFile)
             
+            /*
+            let uid = User.current.uid
+            let timestamp = ISO8601DateFormatter().string(from: Date())
+            let ref = Storage.storage().reference().child("recordings/\(uid)/\(timestamp).m4a")
+           
+            ref.putData(audioFile!)
+            print("works")
+            */
+
+            self.removeFile()
+            //self.audioRecorder = nil
             
         }))
         
@@ -223,6 +234,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }))
         
         self.present(alert, animated: true, completion: nil)
+ 
     }
     // MARK: SFSpeechRecognizerDelegate
     
@@ -248,8 +260,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             recordButton.isEnabled = false
             recordButton.setTitle("Stopping", for: .disabled)
             
-            //self.seconds = 60
-            //self.timerLabel.text = "\(self.seconds)s"
+            self.seconds = 60
+            self.timerLabel.text = "\(self.seconds)s"
             self.savingAlert()
             
         } else {

@@ -11,7 +11,7 @@ import FirebaseStorage
 import UIKit
 
 struct StorageService {
-    
+ 
     static func uploadAudio(_ audioData: Data?, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
         guard let audio = audioData else{
             return completion(nil)
@@ -26,5 +26,6 @@ struct StorageService {
             completion(metadata?.downloadURL())
         })
     }
+ 
 
 }

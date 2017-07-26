@@ -13,6 +13,7 @@ import AVFoundation
 class Recording{
     var key: String?
     var title: String
+    var transcript: String
     var fileUrlString: String
     var creationDate: Date
     var creator: User
@@ -24,8 +25,9 @@ class Recording{
         return dateFormatter
     }()
     
-    init(fileUrlString: String, title: String){
+    init(fileUrlString: String, title: String, transcript: String){
         self.title = title
+        self.transcript = transcript
         self.fileUrlString = fileUrlString
         self.creationDate = Date()
         self.creator = User.current
@@ -35,6 +37,7 @@ class Recording{
         guard let dict = snapshot.value as? [String : Any],
             let audioURL = dict["audio_url"] as? String,
             let audioTitle = dict["title"] as? String,
+            let transcriptText = dict["transcript"] as? String,
             let createdAgo = dict["created_at"] as? TimeInterval,
             let userDict = dict["creator"] as? [String : Any],
             let uid = userDict["uid"] as? String,
@@ -44,6 +47,7 @@ class Recording{
         
         self.key = snapshot.key
         self.title = audioTitle
+        self.transcript = transcriptText
         self.fileUrlString = audioURL
         self.creationDate = Date(timeIntervalSince1970: createdAgo)
         self.creator = User(uid: uid, username: username)
@@ -57,6 +61,7 @@ class Recording{
         
         return ["audio_url" : fileUrlString,
                 "title" : title,
+                "transcript" : transcript,
                 "created_at" : createdAgo,
                 "creator" : userDict]
     }

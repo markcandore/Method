@@ -16,6 +16,7 @@ extension StorageReference {
         let uid = User.current.uid
         let timestamp = dateFormatter.string(from: Date())
         
+       // let recordingID = Storage.storage().reference().child("recordings").child("\(uid)".child("\")
         return Storage.storage().reference().child("recordings/\(uid)/\(timestamp).m4a")
     }
 }

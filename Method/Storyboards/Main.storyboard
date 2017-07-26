@@ -208,6 +208,7 @@
                     <connections>
                         <outlet property="dateLabel" destination="RXq-mN-ocq" id="ykv-ly-ifj"/>
                         <outlet property="nameLabel" destination="j7v-lE-oPI" id="NK5-Br-UeP"/>
+                        <outlet property="transcriptTextView" destination="3ra-y2-y0u" id="qm9-k1-XaM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="toP-Fd-6cR" userLabel="First Responder" sceneMemberID="firstResponder"/>

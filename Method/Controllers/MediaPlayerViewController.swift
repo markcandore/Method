@@ -21,6 +21,8 @@ class MediaPlayerViewController: UIViewController {
     
     @IBOutlet weak var dateLabel: UILabel!
     
+    @IBOutlet weak var transcriptTextView: UITextView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -29,6 +31,7 @@ class MediaPlayerViewController: UIViewController {
         if let record = record{
             self.nameLabel.text = record.title
             self.dateLabel.text = record.getDateString()
+            self.transcriptTextView.text = record.transcript
         }
     }
     

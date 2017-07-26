@@ -209,19 +209,16 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             let path = NSTemporaryDirectory().appending(self.currentFilename)
             //let audioFile = FileManager.default.contents(atPath: path)
             
-            guard let data = FileManager.default.contents(atPath: path) else{
+            guard let audioData = FileManager.default.contents(atPath: path) else{
                 return
             }
-            RecordService.create(data: data, title: self.currentFilename)
-            /*
-            let uid = User.current.uid
-            let timestamp = ISO8601DateFormatter().string(from: Date())
-            let ref = Storage.storage().reference().child("recordings/\(uid)/\(timestamp).m4a")
+            
+            
+            let transcriptText = self.transcriptTextView.text
+            
+            //RecordService.create(audioData: audioData, title: self.currentFilename)
+            RecordService.create(audioData: audioData, transcriptText: transcriptText!, title: self.currentFilename)
            
-            ref.putData(audioFile!)
-            print("works")
-            */
-
             self.removeFile()
             //self.audioRecorder = nil
             

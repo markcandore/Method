@@ -11,25 +11,37 @@ import FirebaseStorage
 import FirebaseDatabase
 
 struct RecordService {
-    
-    static func create(data: Data, title: String) {
+    /*
+    static func create(audioData: Data,title: String) {
         let audioRef = StorageReference.newRecordingReference()
-        StorageService.uploadAudio(data, at: audioRef) { (downloadURL) in
+        StorageService.uploadAudio(audioData, at: audioRef) { (downloadURL) in
             guard let downloadURL = downloadURL else {
                 return
             }
             
             let urlString = downloadURL.absoluteString
-            //let aspectHeight = image.aspectHeight
             create(forURLString: urlString, forTitle: title)
         }
     }
+    */
+    static func create(audioData: Data, transcriptText: String,title: String) {
+        let audioRef = StorageReference.newRecordingReference()
+        StorageService.uploadAudio(audioData, at: audioRef) { (downloadURL) in
+            guard let downloadURL = downloadURL else {
+                return
+            }
+            
+            let urlString = downloadURL.absoluteString
+            create(forURLString: urlString, forTranscript: transcriptText, forTitle: title)
+        }
+    }
+
     
-    private static func create(forURLString urlString: String, forTitle title: String) {
+    private static func create(forURLString urlString: String, forTranscript transcriptText: String, forTitle title: String) {
         
         let currentUser = User.current
-        //let recording = Recording(fileUrlString: urlString)
-        let recording = Recording(fileUrlString: urlString, title: title)
+        
+        let recording = Recording(fileUrlString: urlString, title: title, transcript: transcriptText)
         let dict = recording.dictValue
         
         let rootRef = Database.database().reference()

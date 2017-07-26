@@ -34,6 +34,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     var timer = Timer()
     var isTimerRunning = false
     
+    var recordingTime = 0.0
+    
     //UI elements
     @IBOutlet weak var transcriptTextView: UITextView!
 
@@ -186,6 +188,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         audioEngine.prepare()
         
         audioRecorder.record()
+        recordingTime = audioRecorder.currentTime
         try audioEngine.start()
         transcriptTextView.text = "(Go ahead, I'm listening)"
     }
@@ -216,11 +219,11 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             
             let transcriptText = self.transcriptTextView.text
             
-            //RecordService.create(audioData: audioData, title: self.currentFilename)
-            RecordService.create(audioData: audioData, transcriptText: transcriptText!, title: self.currentFilename)
+            
+            RecordService.create(audioData: audioData, transcriptText: transcriptText!, title: self.currentFilename, time: self.recordingTime)
            
             self.removeFile()
-            //self.audioRecorder = nil
+            
             
         }))
         

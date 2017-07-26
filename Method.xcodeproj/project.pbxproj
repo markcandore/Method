@@ -14,6 +14,7 @@
 		5F0101931F26B6AA00C45F9C /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F0101921F26B6AA00C45F9C /* Recording.swift */; };
 		5F0101951F26B6C000C45F9C /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F0101941F26B6C000C45F9C /* StorageService.swift */; };
 		5F0101971F26C1F200C45F9C /* StorageReference+Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F0101961F26C1F200C45F9C /* StorageReference+Recording.swift */; };
+		5F42EEC21F2914D300519C2F /* Scoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F42EEC11F2914D300519C2F /* Scoring.swift */; };
 		5F6BBE751F1FD2C400A157E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6BBE741F1FD2C400A157E2 /* AppDelegate.swift */; };
 		5F6BBE7C1F1FD2C400A157E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F6BBE7B1F1FD2C400A157E2 /* Assets.xcassets */; };
 		5FA262181F1FF1F000A1B7F8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5FA262161F1FF1F000A1B7F8 /* GoogleService-Info.plist */; };
@@ -38,6 +39,7 @@
 		5F0101921F26B6AA00C45F9C /* Recording.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Recording.swift; path = Models/Recording.swift; sourceTree = "<group>"; };
 		5F0101941F26B6C000C45F9C /* StorageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StorageService.swift; path = Service/StorageService.swift; sourceTree = "<group>"; };
 		5F0101961F26C1F200C45F9C /* StorageReference+Recording.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "StorageReference+Recording.swift"; path = "Extensions/StorageReference+Recording.swift"; sourceTree = "<group>"; };
+		5F42EEC11F2914D300519C2F /* Scoring.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scoring.swift; sourceTree = "<group>"; };
 		5F6BBE711F1FD2C400A157E2 /* Method.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Method.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F6BBE741F1FD2C400A157E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F6BBE7B1F1FD2C400A157E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				5F6BBE741F1FD2C400A157E2 /* AppDelegate.swift */,
+				5F42EEC11F2914D300519C2F /* Scoring.swift */,
 				5F6BBE7B1F1FD2C400A157E2 /* Assets.xcassets */,
 				5FA2621E1F1FF2E900A1B7F8 /* Views */,
 				5FA2621C1F1FF2CB00A1B7F8 /* View Controllers */,
@@ -336,6 +339,7 @@
 				5F6BBE751F1FD2C400A157E2 /* AppDelegate.swift in Sources */,
 				5FA262411F20038700A1B7F8 /* Storyboard+Utility.swift in Sources */,
 				5FA2624B1F2017DD00A1B7F8 /* RecordsListViewController.swift in Sources */,
+				5F42EEC21F2914D300519C2F /* Scoring.swift in Sources */,
 				5F0101971F26C1F200C45F9C /* StorageReference+Recording.swift in Sources */,
 				5F0101951F26B6C000C45F9C /* StorageService.swift in Sources */,
 			);

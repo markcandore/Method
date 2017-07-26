@@ -17,6 +17,8 @@ class RecordedAudioTableViewCell: UITableViewCell{
     
     @IBOutlet weak var audioDateLabel: UILabel!
     
+    @IBOutlet weak var scoreLabel: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }

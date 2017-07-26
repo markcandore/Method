@@ -24,7 +24,7 @@ struct RecordService {
         }
     }
     */
-    static func create(audioData: Data, transcriptText: String,title: String) {
+    static func create(audioData: Data, transcriptText: String,title: String, time: TimeInterval) {
         let audioRef = StorageReference.newRecordingReference()
         StorageService.uploadAudio(audioData, at: audioRef) { (downloadURL) in
             guard let downloadURL = downloadURL else {
@@ -32,16 +32,16 @@ struct RecordService {
             }
             
             let urlString = downloadURL.absoluteString
-            create(forURLString: urlString, forTranscript: transcriptText, forTitle: title)
+            create(forURLString: urlString, forTranscript: transcriptText, forTitle: title, forTime: time)
         }
     }
 
     
-    private static func create(forURLString urlString: String, forTranscript transcriptText: String, forTitle title: String) {
+    private static func create(forURLString urlString: String, forTranscript transcriptText: String, forTitle title: String, forTime time: TimeInterval) {
         
         let currentUser = User.current
         
-        let recording = Recording(fileUrlString: urlString, title: title, transcript: transcriptText)
+        let recording = Recording(fileUrlString: urlString, title: title, transcript: transcriptText, time: time)
         let dict = recording.dictValue
         
         let rootRef = Database.database().reference()

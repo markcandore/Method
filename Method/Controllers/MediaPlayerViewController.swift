@@ -13,15 +13,16 @@ import FirebaseStorage
 
 class MediaPlayerViewController: UIViewController {
     
- 
+    var volume = 1.0
     var record: Recording?
-    var audioPlayer: AVAudioPlayer?
+    var audioPlayer: AVAudioPlayer!
     
     @IBOutlet weak var nameLabel: UILabel!
     
     @IBOutlet weak var dateLabel: UILabel!
     
     @IBOutlet weak var transcriptTextView: UITextView!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,9 +35,60 @@ class MediaPlayerViewController: UIViewController {
             self.transcriptTextView.text = record.transcript
         }
     }
-    
-    @IBAction func backButton(_ sender: UIButton) {
-        dismiss(animated: true, completion: nil)
+  
+    func removeFile(){
+        do{
+            try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending("media.m41"))
+            
+        } catch{
+            print(error)
+        }
     }
+    
+    func play(){
+
+        let fileURL = record?.fileUrlString
+        let reference = Storage.storage().reference(forURL: fileURL!)
+        
+        let localURL = FileManager.default.temporaryDirectory.appendingPathComponent("media.m4a")
+        
+        // Download to the local filesystem
+        let downloadTask = reference.write(toFile: localURL) { url, error in
+            if let error = error {
+                assertionFailure(error.localizedDescription)
+                return
+            } else {
+                return
+            }
+        }
+        
+        downloadTask.observe(.success) { snapshot in
+            // Download completed successfully
+            do{
+                self.audioPlayer = try AVAudioPlayer(contentsOf: localURL)
+                self.audioPlayer.delegate = self as? AVAudioPlayerDelegate
+                self.audioPlayer.prepareToPlay()
+                self.audioPlayer.volume = Float(self.volume)
+                self.audioPlayer.play()
+            } catch{
+                self.audioPlayer = nil
+                print(error.localizedDescription)
+            }
+        }
+        
+        removeFile()
+    }
+    
+    @IBAction func backButtonTapped(_ sender: UIButton) {
+        dismiss(animated: true, completion: nil)
+
+    }
+    
+    
+    @IBAction func playButtonTapped(_ sender: UIButton) {
+        play()
+    }
+    
+    
     
 }

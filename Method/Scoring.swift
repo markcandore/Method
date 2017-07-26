@@ -29,7 +29,7 @@ class Scoring {
         
         return (diction, structure)
     }
-    
+    /*
     class func automatedReadabilityIndexForString(_ string: String) -> NSDecimalNumber {
         let readability = Scoring()
         let totalWords = Float(readability.wordsInString(string as NSString))
@@ -238,6 +238,6 @@ class Scoring {
         
         return count
     }
-    
+    */
 }
 

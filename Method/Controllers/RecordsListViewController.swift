@@ -49,9 +49,10 @@ class RecordsListViewController: UIViewController {
         }
     }
     @IBAction func recordButtonTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        let recordPage = storyboard.instantiateViewController(withIdentifier: "recordingViewController") as? RecordingViewController
-        self.present(recordPage!, animated: true, completion: nil)
+//        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+//        let recordPage = storyboard.instantiateViewController(withIdentifier: "recordingViewController") as? RecordingViewController
+        dismiss(animated: true, completion: nil)
+        //self.present(recordPage!, animated: true, completion: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

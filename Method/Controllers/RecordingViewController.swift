@@ -35,10 +35,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     // Timer
     var seconds = 60
-    var timer = Timer()
+    var countdownTimer = Timer()
     var isTimerRunning = false
     
-    var timer2 = Timer()
+    var countingTimer = Timer()
     var recordingTime = 0.0
     
     //UI elements
@@ -48,7 +48,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     @IBOutlet weak var listButton: UIButton!
     
-    @IBOutlet weak var timerLabel: UILabel!
+    @IBOutlet weak var countdownTimerLabel: UILabel!
     
     @IBOutlet weak var videoView: UIView!
     
@@ -65,8 +65,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         //testing
         //self.view.backgroundColor = UIColor.darkGray
         // Disable the record buttons until authorization has been granted.
+        
         recordButton.isEnabled = false
-        self.timerLabel.text = "\(seconds)s"
+        self.countdownTimerLabel.text = "\(seconds)s"
+        self.countingTimerLabel.text = "\(recordingTime)s"
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -113,30 +115,22 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         //view.addSubview(recordButton)
     }
     
-    func runTimer(){
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(RecordingViewController.updateTimer)), userInfo: nil, repeats: true)
+    //Countdown Timer
+    func runCountdownTimer(){
+        countdownTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(RecordingViewController.updateCountdownTimer)), userInfo: nil, repeats: true)
     }
     
-    //second timer
-    func runTimer2(){
-        timer2 = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: (#selector(RecordingViewController.updateTimer2)), userInfo: nil, repeats: true)
-    }
-    
-    func updateTimer(){
+    func updateCountdownTimer(){
         if seconds > 0 {
             seconds -= 1
-            timerLabel.text = "\(seconds)s"
-            
-            /*
-            recordingTime = audioRecorder.currentTime
-            countingTimerLabel.text = "\(recordingTime)s"
-            */
+            countdownTimerLabel.text = "\(seconds)s"
+
         } else{
             print("stopping")
             
-            timer.invalidate()
+            countdownTimer.invalidate()
             seconds = 60
-            timerLabel.text = "\(seconds)s"
+            countdownTimerLabel.text = "\(seconds)s"
             recordingTime = 0.0
             countingTimerLabel.text = "\(recordingTime)s"
             audioEngine.stop()
@@ -148,10 +142,16 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
     }
     
-    func updateTimer2(){
+    //Counting Timer
+    func runCountingTimer(){
+        countingTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: (#selector(RecordingViewController.updateCountingTimer)), userInfo: nil, repeats: true)
+    }
+    
+    func updateCountingTimer(){
         recordingTime = audioRecorder.currentTime
         countingTimerLabel.text = "\(recordingTime)s"
     }
+    
     private func startRecording() throws {
         
         // Cancel the previous task if it's running.
@@ -224,17 +224,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         transcriptTextView.text = "(Go ahead, I'm listening)"
     }
     
-    func removeFile(){
-        do{
-            try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending(self.currentFilename))
-
-        } catch{
-            print(error)
-        }
-    }
-    
     func savingAlert(){
-        
         
         let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
         
@@ -264,6 +254,17 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         self.present(alert, animated: true, completion: nil)
         listButton.isEnabled = true
     }
+    
+    
+    func removeFile(){
+        do{
+            try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending(self.currentFilename))
+            
+        } catch{
+            print(error)
+        }
+    }
+    
     // MARK: SFSpeechRecognizerDelegate
     
     public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
@@ -282,8 +283,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     @IBAction func recordButtonTapped(_ sender: UIButton) {
         
         if audioEngine.isRunning {
-            timer.invalidate()
-            timer2.invalidate()
+            countdownTimer.invalidate()
+            countingTimer.invalidate()
             audioEngine.stop()
             audioRecorder.stop()
             recognitionRequest?.endAudio()
@@ -291,15 +292,15 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             recordButton.setTitle("Stopping", for: .disabled)
             
             self.seconds = 60
-            self.timerLabel.text = "\(self.seconds)s"
+            self.countdownTimerLabel.text = "\(self.seconds)s"
             recordingTime = 0.0
             countingTimerLabel.text = "\(recordingTime)s"
             self.savingAlert()
         } else {
             try! startRecording()
             listButton.isEnabled = false
-            runTimer()
-            runTimer2()
+            runCountdownTimer()
+            runCountingTimer()
             recordButton.setTitle("Stop recording", for: [])
         }
         

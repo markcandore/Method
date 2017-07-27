@@ -38,7 +38,7 @@ class MediaPlayerViewController: UIViewController {
   
     func removeFile(){
         do{
-            try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending("media.m41"))
+            try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending("media.m4a"))
             
         } catch{
             print(error)
@@ -46,7 +46,7 @@ class MediaPlayerViewController: UIViewController {
     }
     
     func play(){
-
+        print("play tapped")
         let fileURL = record?.fileUrlString
         let reference = Storage.storage().reference(forURL: fileURL!)
         
@@ -64,12 +64,14 @@ class MediaPlayerViewController: UIViewController {
         
         downloadTask.observe(.success) { snapshot in
             // Download completed successfully
+            print("download success")
             do{
                 self.audioPlayer = try AVAudioPlayer(contentsOf: localURL)
                 self.audioPlayer.delegate = self as? AVAudioPlayerDelegate
                 self.audioPlayer.prepareToPlay()
                 self.audioPlayer.volume = Float(self.volume)
                 self.audioPlayer.play()
+                print("play success")
             } catch{
                 self.audioPlayer = nil
                 print(error.localizedDescription)

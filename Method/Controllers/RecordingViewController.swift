@@ -327,9 +327,22 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     // Get Device
     fileprivate class func deviceWithMediaType(_ mediaType: String, preferringPosition position: AVCaptureDevicePosition) -> AVCaptureDevice? {
-        if let devices = AVCaptureDevice.devices(withMediaType: mediaType) as? [AVCaptureDevice] {
-            return devices.filter({ $0.position == position }).first
+//        if let devices = AVCaptureDevice.devices(withMediaType: mediaType) as? [AVCaptureDevice] {
+//            return devices.filter({ $0.position == position }).first
+//        }
+//        return nil
+        
+        if let deviceDescoverySession = AVCaptureDeviceDiscoverySession.init(deviceTypes: [AVCaptureDeviceType.builtInWideAngleCamera],
+                                                                             mediaType: AVMediaTypeVideo,
+                                                                             position: AVCaptureDevicePosition.unspecified) {
+            
+            for device in deviceDescoverySession.devices {
+                if device.position == position {
+                    return device
+                }
+            }
         }
+        
         return nil
     }
     

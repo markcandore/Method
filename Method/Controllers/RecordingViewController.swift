@@ -17,13 +17,13 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     // MARK: Properties
     
     // Timer
-    var seconds = 60
+    var countdownTime = 60
     var countdownTimer = Timer()
     var isTimerRunning = false
     
     var countingTimer = Timer()
     var recordingTime = 0.0
-    
+    var finalTime = 0.0
     //Speech Recognition
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))!
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
@@ -77,19 +77,11 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     override func viewDidLoad() {
         super.viewDidLoad()
 
-   
-//        view = PreviewView(frame: view.frame, videoGravity: videoGravity)
-//        previewLayer = view as! PreviewView!
-//        previewLayer.session = videoSession
         previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
         previewLayer.session = videoSession
 
         self.view.insertSubview(previewLayer, at: 0)
-        //self.view.addSubview(previewLayer)
-        //self.view.insertSubview(previewLayer, aboveSubview: self.view)
-        //self.view.insertSubview(previewLayer, aboveSubview: self.view.superview)
-        
-        
+
         // Test authorization status for Camera and Micophone
         
         switch AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo){
@@ -118,7 +110,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         // Disable the record buttons until authorization has been granted.
         recordButton.isEnabled = false
-        self.countdownTimerLabel.text = "\(seconds)s"
+        self.countdownTimerLabel.text = "\(countdownTime)s"
         self.countingTimerLabel.text = "\(recordingTime)s"
     }
 
@@ -261,6 +253,13 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
         videoSession.beginConfiguration()
         
+        configureVideoPreset()
+        addVideoInput()
+        configureVideoOutput()
+        
+        videoSession.commitConfiguration()
+    }
+    fileprivate func configureVideoPreset(){
         if camera == .front {
             videoSession.sessionPreset = videoInputPresetFromVideoQuality(quality: .high)
         } else {
@@ -270,7 +269,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 videoSession.sessionPreset = videoInputPresetFromVideoQuality(quality: .high)
             }
         }
-        
+    }
+    
+    fileprivate func addVideoInput(){
         switch camera{
         case .front:
             videoDevice = RecordingViewController.deviceWithMediaType(AVMediaTypeVideo, preferringPosition: .front)
@@ -321,8 +322,19 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             setupResult = .configurationFailed
             return
         }
+    }
+    fileprivate func configureVideoOutput() {
+        let movieFileOutput = AVCaptureMovieFileOutput()
         
-        videoSession.commitConfiguration()
+        if self.videoSession.canAddOutput(movieFileOutput) {
+            self.videoSession.addOutput(movieFileOutput)
+            if let connection = movieFileOutput.connection(withMediaType: AVMediaTypeVideo) {
+                if connection.isVideoStabilizationSupported {
+                    connection.preferredVideoStabilizationMode = .auto
+                }
+            }
+            self.videoFileOutput = movieFileOutput
+        }
     }
     
     // Get Device
@@ -380,24 +392,27 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     func updateCountdownTimer(){
-        if seconds > 0 {
-            seconds -= 1
-            countdownTimerLabel.text = "\(seconds)s"
+        if countdownTime > 0 {
+            countdownTime -= 1
+            countdownTimerLabel.text = "\(countdownTime)s"
 
         } else{
             print("stopping")
-            
+            let time = recordingTime
             countdownTimer.invalidate()
-            seconds = 60
-            countdownTimerLabel.text = "\(seconds)s"
-            recordingTime = 0.0
-            countingTimerLabel.text = "\(recordingTime)s"
+            countingTimer.invalidate()
+            
             audioEngine.stop()
             audioRecorder.stop()
             recognitionRequest?.endAudio()
             recordButton.isEnabled = false
             recordButton.setTitle("Stopping", for: .disabled)
-            self.savingAlert()
+            self.savingAlert(time: time)
+            
+            countdownTime = 60
+            countdownTimerLabel.text = "\(countdownTime)s"
+            recordingTime = 0.0
+            countingTimerLabel.text = "\(recordingTime)s"
         }
     }
     
@@ -483,7 +498,12 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         //transcriptTextView.text = "(Go ahead, I'm listening)"
     }
     
-    func savingAlert(){
+    func startVideoRecording(){
+        
+    }
+    
+    
+    func savingAlert(time: TimeInterval){
         
         let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
         
@@ -495,11 +515,11 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 return
             }
             
-            
             let transcriptText = self.transcriptTextView.text
+         
             
             
-            RecordService.create(audioData: audioData, transcriptText: transcriptText!, title: self.currentFilename, time: self.recordingTime)
+            RecordService.create(audioData: audioData, transcriptText: transcriptText!, title: self.currentFilename, time: time)
            
             self.removeFile()
             
@@ -542,6 +562,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     @IBAction func recordButtonTapped(_ sender: UIButton) {
         
         if audioEngine.isRunning {
+            //print("\(recordingTime)")
+            let time = recordingTime
             countdownTimer.invalidate()
             countingTimer.invalidate()
             audioEngine.stop()
@@ -550,11 +572,13 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             recordButton.isEnabled = false
             recordButton.setTitle("Stopping", for: .disabled)
             
-            self.seconds = 60
-            self.countdownTimerLabel.text = "\(self.seconds)s"
+            self.savingAlert(time: time)
+            
+            countdownTime = 60
+            countdownTimerLabel.text = "\(countdownTime)s"
             recordingTime = 0.0
             countingTimerLabel.text = "\(recordingTime)s"
-            self.savingAlert()
+         
         } else {
             try! startRecording()
             listButton.isEnabled = false

@@ -11,19 +11,7 @@ import FirebaseStorage
 import FirebaseDatabase
 
 struct RecordService {
-    /*
-    static func create(audioData: Data,title: String) {
-        let audioRef = StorageReference.newRecordingReference()
-        StorageService.uploadAudio(audioData, at: audioRef) { (downloadURL) in
-            guard let downloadURL = downloadURL else {
-                return
-            }
-            
-            let urlString = downloadURL.absoluteString
-            create(forURLString: urlString, forTitle: title)
-        }
-    }
-    */
+
     static func create(audioData: Data, transcriptText: String,title: String, time: TimeInterval) {
         let audioRef = StorageReference.newRecordingReference()
         StorageService.uploadAudio(audioData, at: audioRef) { (downloadURL) in

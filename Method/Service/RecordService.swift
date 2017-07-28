@@ -12,24 +12,38 @@ import FirebaseDatabase
 
 struct RecordService {
 
-    static func create(audioData: Data, transcriptText: String,title: String, time: TimeInterval) {
-        let audioRef = StorageReference.newRecordingReference()
+
+    static func create(audioData: Data, videoData: Data, transcriptText: String,title: String, time: TimeInterval) {
+        var audioURL: String = ""
+        var videoURL: String = ""
+        let audioRef = StorageReference.newAudioReference()
         StorageService.uploadAudio(audioData, at: audioRef) { (downloadURL) in
             guard let downloadURL = downloadURL else {
                 return
             }
             
-            let urlString = downloadURL.absoluteString
-            create(forURLString: urlString, forTranscript: transcriptText, forTitle: title, forTime: time)
+            audioURL = downloadURL.absoluteString
         }
+        
+        let videoRef = StorageReference.newVideoReference()
+        StorageService.uploadVideo(videoData, at: videoRef) { (downloadURL) in
+            guard let downloadURL = downloadURL else {
+                return
+            }
+            
+            videoURL = downloadURL.absoluteString
+        }
+        
+        create(forAudioURL: audioURL, forVideoURL: videoURL, forTranscript: transcriptText, forTitle: title, forTime: time)
     }
 
-    
-    private static func create(forURLString urlString: String, forTranscript transcriptText: String, forTitle title: String, forTime time: TimeInterval) {
+
+
+    private static func create(forAudioURL audioURL: String, forVideoURL videoURL: String, forTranscript transcriptText: String, forTitle title: String, forTime time: TimeInterval) {
         
         let currentUser = User.current
         
-        let recording = Recording(fileUrlString: urlString, title: title, transcript: transcriptText, time: time)
+        let recording = Recording(audioURL: audioURL, videoURL: videoURL, title: title, transcript: transcriptText, time: time)
         let dict = recording.dictValue
         
         let rootRef = Database.database().reference()

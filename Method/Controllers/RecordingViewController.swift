@@ -12,7 +12,7 @@ import AVFoundation
 import FirebaseStorage
 import FirebaseDatabase
 
-class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate {
+class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate{
 
     // MARK: Properties
     
@@ -61,16 +61,19 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     var isVideoRecording = false
     var isSessionRunning = false
     var lowLightBoost = true
+    var shouldUseDeviceOrientation = false
     
     fileprivate let sessionQueue = DispatchQueue(label: "session queue", attributes: [])
     
     fileprivate var setupResult = SessionSetupResult.success
-
+    fileprivate var backgroundRecordingID: UIBackgroundTaskIdentifier? = nil
     fileprivate var videoDeviceInput : AVCaptureDeviceInput!
-    fileprivate var videoFileOutput : AVCaptureMovieFileOutput?
+    fileprivate var movieFileOutput : AVCaptureMovieFileOutput?
     fileprivate var videoDevice : AVCaptureDevice?
     fileprivate var previewLayer: PreviewView!
+    fileprivate var deviceOrientation : UIDeviceOrientation?
     
+    var outputFilePath: String!
     
     // MARK: RecordingViewController
     
@@ -164,6 +167,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         super.viewDidAppear(animated)
         
         //Video
+        
+        if shouldUseDeviceOrientation {
+            subscribeToDeviceOrientationChangeNotifications()
+        }
         sessionQueue.async {
             switch self.setupResult {
             case .success:
@@ -171,10 +178,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.videoSession.startRunning()
                 self.isSessionRunning = self.videoSession.isRunning
                 
-//                // Preview layer video orientation can be set only after the connection is created
-//                DispatchQueue.main.async {
-//                    self.previewLayer.videoPreviewLayer.connection?.videoOrientation = self.getPreviewLayerOrientation()
-//                }
+                // Preview layer video orientation can be set only after the connection is created
+                DispatchQueue.main.async {
+                    self.previewLayer.videoPreviewLayer.connection?.videoOrientation = self.getPreviewLayerOrientation()
+                }
                 
             case .notAuthorized:
                 //print("do app settings later")
@@ -333,7 +340,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                     connection.preferredVideoStabilizationMode = .auto
                 }
             }
-            self.videoFileOutput = movieFileOutput
+            self.movieFileOutput = movieFileOutput
         }
     }
     
@@ -378,6 +385,51 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
     }
     
+    fileprivate func subscribeToDeviceOrientationChangeNotifications() {
+        self.deviceOrientation = UIDevice.current.orientation
+        NotificationCenter.default.addObserver(self, selector: #selector(deviceDidRotate), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+    }
+    
+    @objc fileprivate func deviceDidRotate() {
+        if !UIDevice.current.orientation.isFlat {
+            self.deviceOrientation = UIDevice.current.orientation
+        }
+    }
+    
+    fileprivate func unsubscribeFromDeviceOrientationChangeNotifications() {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+        self.deviceOrientation = nil
+    }
+    
+    fileprivate func getPreviewLayerOrientation() -> AVCaptureVideoOrientation {
+        // Depends on layout orientation, not device orientation
+        switch UIApplication.shared.statusBarOrientation {
+        case .portrait, .unknown:
+            return AVCaptureVideoOrientation.portrait
+        case .landscapeLeft:
+            return AVCaptureVideoOrientation.landscapeLeft
+        case .landscapeRight:
+            return AVCaptureVideoOrientation.landscapeRight
+        case .portraitUpsideDown:
+            return AVCaptureVideoOrientation.portraitUpsideDown
+        }
+    }
+    
+    fileprivate func getVideoOrientation() -> AVCaptureVideoOrientation {
+        guard shouldUseDeviceOrientation, let deviceOrientation = self.deviceOrientation else { return previewLayer!.videoPreviewLayer.connection.videoOrientation }
+        
+        switch deviceOrientation {
+        case .landscapeLeft:
+            return .landscapeRight
+        case .landscapeRight:
+            return .landscapeLeft
+        case .portraitUpsideDown:
+            return .portraitUpsideDown
+        default:
+            return .portrait
+        }
+    }
+    
     func loadRecordingUI() {
         //recordButton = UIButton(frame: CGRect(x: 64, y: 64, width: 128, height: 64))
         //recordButton.setTitle("Tap to Record", for: .normal)
@@ -407,7 +459,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             recognitionRequest?.endAudio()
             recordButton.isEnabled = false
             recordButton.setTitle("Stopping", for: .disabled)
-            self.savingAlert(time: time)
+            
+            stopVideoRecording()
+            savingAlert(time: time)
             
             countdownTime = 60
             countdownTimerLabel.text = "\(countdownTime)s"
@@ -426,7 +480,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         countingTimerLabel.text = "\(recordingTime)s"
     }
     
-    private func startRecording() throws {
+    private func startAudioRecording() throws {
         
         // Cancel the previous task if it's running.
         if let recognitionTask = recognitionTask {
@@ -495,39 +549,74 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         audioRecorder.record()
         try audioEngine.start()
+        
         //transcriptTextView.text = "(Go ahead, I'm listening)"
     }
     
     func startVideoRecording(){
+        guard let movieFileOutput = self.movieFileOutput else{
+            return
+        }
         
+        sessionQueue.async {[unowned self] in
+            if !movieFileOutput.isRecording{
+                if UIDevice.current.isMultitaskingSupported {
+                    self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+                }
+                
+                let movieFileOutputConnection = self.movieFileOutput?.connection(withMediaType: AVMediaTypeVideo)
+                
+                if self.camera == .front {
+                    movieFileOutputConnection?.isVideoMirrored = true
+                }
+                
+                movieFileOutputConnection?.videoOrientation = self.getVideoOrientation()
+                
+                // Start recording to a temporary file.
+                let outputFileName = UUID().uuidString
+                self.outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
+                movieFileOutput.startRecording(toOutputFileURL: URL(fileURLWithPath: self.outputFilePath!), recordingDelegate: self)
+               
+                self.isVideoRecording = true
+            } else{
+                movieFileOutput.stopRecording()
+            }
+        }
     }
     
-    
+    func stopVideoRecording(){
+        if self.movieFileOutput?.isRecording == true{
+            self.isVideoRecording = false
+            movieFileOutput!.stopRecording()
+        }
+    }
     func savingAlert(time: TimeInterval){
         
         let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
         
         alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
         
-            let path = NSTemporaryDirectory().appending(self.currentFilename)
-    
-            guard let audioData = FileManager.default.contents(atPath: path) else{
+            let audioPath = NSTemporaryDirectory().appending(self.currentFilename)
+            guard let audioData = FileManager.default.contents(atPath: audioPath) else{
+                return
+            }
+            
+            let videoPath = self.outputFilePath
+            guard let videoData = FileManager.default.contents(atPath: videoPath!) else{
                 return
             }
             
             let transcriptText = self.transcriptTextView.text
-         
             
-            
-            RecordService.create(audioData: audioData, transcriptText: transcriptText!, title: self.currentFilename, time: time)
+            RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, time: time)
            
-            self.removeFile()
+            self.removeFiles()
             
             
         }))
         
         alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.cancel, handler: { action in
-            self.removeFile()
+            self.removeFiles()
         }))
         
         self.present(alert, animated: true, completion: nil)
@@ -535,10 +624,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     
-    func removeFile(){
+    func removeFiles(){
         do{
             try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending(self.currentFilename))
-            
+            try FileManager.default.removeItem(atPath: self.outputFilePath)
         } catch{
             print(error)
         }
@@ -572,7 +661,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             recordButton.isEnabled = false
             recordButton.setTitle("Stopping", for: .disabled)
             
-            self.savingAlert(time: time)
+            stopVideoRecording()
+            savingAlert(time: time)
             
             countdownTime = 60
             countdownTimerLabel.text = "\(countdownTime)s"
@@ -580,7 +670,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             countingTimerLabel.text = "\(recordingTime)s"
          
         } else {
-            try! startRecording()
+            try! startAudioRecording()
+            try! startVideoRecording()
             listButton.isEnabled = false
             runCountdownTimer()
             runCountingTimer()
@@ -596,5 +687,40 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         self.present(listPage!, animated: true, completion: nil)
     }
     
+}
+
+extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
+    
+    /*!
+     @method captureOutput:didFinishRecordingToOutputFileAtURL:fromConnections:error:
+     @abstract
+     Informs the delegate when all pending data has been written to an output file.
+     
+     @param captureOutput
+     The capture file output that has finished writing the file.
+     @param fileURL
+     The file URL of the file that has been written.
+     @param connections
+     An array of AVCaptureConnection objects attached to the file output that provided the data that was written to the file.
+     @param error
+     An error describing what caused the file to stop recording, or nil if there was no error.
+     
+     @discussion
+     This method is called when the file output has finished writing all data to a file whose recording was stopped, either because startRecordingToOutputFileURL:recordingDelegate: or stopRecording were called, or because an error, described by the error parameter, occurred (if no error occurred, the error parameter will be nil). This method will always be called for each recording request, even if no data is successfully written to the file.
+     
+     Clients should not assume that this method will be called on a specific thread.
+     
+     Delegates are required to implement this method.
+     */
+    
+    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+        if let currentBackgroundRecordingID = backgroundRecordingID {
+            backgroundRecordingID = UIBackgroundTaskInvalid
+            
+            if currentBackgroundRecordingID != UIBackgroundTaskInvalid {
+                UIApplication.shared.endBackgroundTask(currentBackgroundRecordingID)
+            }
+        }
+    }
 }
 

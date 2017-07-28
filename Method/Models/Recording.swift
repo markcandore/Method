@@ -14,7 +14,8 @@ class Recording{
     var key: String?
     var title: String
     var transcript: String
-    var fileUrlString: String
+    var audioURL: String
+    var videoURL: String
     var creationDate: Date
     var creator: User
     var time: TimeInterval
@@ -26,11 +27,12 @@ class Recording{
         return dateFormatter
     }()
     
-    init(fileUrlString: String, title: String, transcript: String, time: TimeInterval){
+    init(audioURL: String, videoURL: String, title: String, transcript: String, time: TimeInterval){
         self.title = title
         self.transcript = transcript
         self.time = time
-        self.fileUrlString = fileUrlString
+        self.audioURL = audioURL
+        self.videoURL = videoURL
         self.creationDate = Date()
         self.creator = User.current
     }
@@ -38,6 +40,7 @@ class Recording{
     init?(snapshot: DataSnapshot) {
         guard let dict = snapshot.value as? [String : Any],
             let audioURL = dict["audio_url"] as? String,
+            let videoURL = dict["video_url"] as? String,
             let audioTitle = dict["title"] as? String,
             let transcriptText = dict["transcript"] as? String,
             let createdAgo = dict["created_at"] as? TimeInterval,
@@ -51,7 +54,8 @@ class Recording{
         self.key = snapshot.key
         self.title = audioTitle
         self.transcript = transcriptText
-        self.fileUrlString = audioURL
+        self.audioURL = audioURL
+        self.videoURL = videoURL
         self.creationDate = Date(timeIntervalSince1970: createdAgo)
         self.time = time
         self.creator = User(uid: uid, username: username)
@@ -63,7 +67,8 @@ class Recording{
         let userDict = ["uid" : creator.uid,
                         "username" : creator.username]
         
-        return ["audio_url" : fileUrlString,
+        return ["audio_url" : audioURL,
+                "video_url" : videoURL,
                 "title" : title,
                 "transcript" : transcript,
                 "created_at" : createdAgo,

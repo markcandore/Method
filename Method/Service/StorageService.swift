@@ -26,6 +26,21 @@ struct StorageService {
             completion(metadata?.downloadURL())
         })
     }
+    
+    static func uploadVideo(_ videoData: Data?, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
+        guard let video = videoData else{
+            return completion(nil)
+        }
+        
+        reference.putData(video, metadata: nil, completion: { (metadata, error) in
+            if let error = error {
+                assertionFailure(error.localizedDescription)
+                return completion(nil)
+            }
+            
+            completion(metadata?.downloadURL())
+        })
+    }
  
 
 }

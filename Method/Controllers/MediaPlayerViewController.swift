@@ -47,7 +47,7 @@ class MediaPlayerViewController: UIViewController {
     
     func play(){
         print("play tapped")
-        let fileURL = record?.fileUrlString
+        let fileURL = record?.audioURL
         let reference = Storage.storage().reference(forURL: fileURL!)
         
         let localURL = FileManager.default.temporaryDirectory.appendingPathComponent("media.m4a")

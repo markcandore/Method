@@ -14,24 +14,26 @@ struct RecordService {
 
 
     static func create(audioData: Data, videoData: Data, transcriptText: String,title: String, time: TimeInterval) {
+        
         var audioURL: String = ""
-        var videoURL: String = ""
         let audioRef = StorageReference.newAudioReference()
         StorageService.uploadAudio(audioData, at: audioRef) { (downloadURL) in
             guard let downloadURL = downloadURL else {
                 return
             }
-            
+            print(downloadURL.absoluteString)
             audioURL = downloadURL.absoluteString
         }
         
+        var videoURL: String = ""
         let videoRef = StorageReference.newVideoReference()
         StorageService.uploadVideo(videoData, at: videoRef) { (downloadURL) in
             guard let downloadURL = downloadURL else {
                 return
             }
-            
+            print(downloadURL.absoluteString)
             videoURL = downloadURL.absoluteString
+            print(videoURL + " does work")
         }
         
         create(forAudioURL: audioURL, forVideoURL: videoURL, forTranscript: transcriptText, forTitle: title, forTime: time)

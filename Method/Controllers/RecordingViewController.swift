@@ -73,7 +73,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     fileprivate var previewLayer: PreviewView!
     fileprivate var deviceOrientation : UIDeviceOrientation?
     
-    var outputFilePath: String!
+    var videoOutputFilePath: String!
+    var audioOutputFilePath: String!
     
     // MARK: RecordingViewController
     
@@ -528,12 +529,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
             self.recognitionRequest?.append(buffer)
         }
-     
-        let format = DateFormatter()
-        format.dateFormat="yyyy-MM-dd-HH-mm-ss"
-        currentFilename = "recording-\(format.string(from: Date())).m4a"
-        soundFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(currentFilename)
 
+        let outputFileName = UUID().uuidString
+        self.audioOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("m4a")!)
+        
         let recordSettings:[String : Any] = [
             AVFormatIDKey:             kAudioFormatAppleLossless,
             AVEncoderAudioQualityKey: AVAudioQuality.max.rawValue,
@@ -542,7 +541,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             AVSampleRateKey :          44100.0
         ]
         
-        audioRecorder = try AVAudioRecorder(url: soundFileURL, settings: recordSettings)
+        audioRecorder = try AVAudioRecorder(url: URL(fileURLWithPath: self.audioOutputFilePath!), settings: recordSettings)
         audioRecorder.delegate = self
         
         audioEngine.prepare()
@@ -574,8 +573,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 
                 // Start recording to a temporary file.
                 let outputFileName = UUID().uuidString
-                self.outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
-                movieFileOutput.startRecording(toOutputFileURL: URL(fileURLWithPath: self.outputFilePath!), recordingDelegate: self)
+                self.videoOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
+                movieFileOutput.startRecording(toOutputFileURL: URL(fileURLWithPath: self.videoOutputFilePath!), recordingDelegate: self)
                
                 self.isVideoRecording = true
             } else{
@@ -594,24 +593,31 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
         
+        alert.addTextField { (textField : UITextField!) -> Void in
+            textField.placeholder = "Enter recording title"
+        }
+        
         alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
         
-            let audioPath = NSTemporaryDirectory().appending(self.currentFilename)
-            guard let audioData = FileManager.default.contents(atPath: audioPath) else{
+            let audioPath = self.audioOutputFilePath
+            guard let audioData = FileManager.default.contents(atPath: audioPath!) else{
                 return
             }
             
-            let videoPath = self.outputFilePath
+            let videoPath = self.videoOutputFilePath
             guard let videoData = FileManager.default.contents(atPath: videoPath!) else{
                 return
             }
             
             let transcriptText = self.transcriptTextView.text
             
+            let format = DateFormatter()
+            format.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+            self.currentFilename = "Recording-\(format.string(from: Date()))"
+         
             RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, time: time)
            
             self.removeFiles()
-            
             
         }))
         
@@ -626,8 +632,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     func removeFiles(){
         do{
-            try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending(self.currentFilename))
-            try FileManager.default.removeItem(atPath: self.outputFilePath)
+            try FileManager.default.removeItem(atPath: self.audioOutputFilePath)
+            try FileManager.default.removeItem(atPath: self.videoOutputFilePath)
         } catch{
             print(error)
         }
@@ -671,7 +677,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
          
         } else {
             try! startAudioRecording()
-            try! startVideoRecording()
+            startVideoRecording()
+            
             listButton.isEnabled = false
             runCountdownTimer()
             runCountingTimer()

@@ -18,6 +18,7 @@
 		5F42EECC1F2A639C00519C2F /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F42EECB1F2A639C00519C2F /* PreviewView.swift */; };
 		5F42EECE1F2A64A000519C2F /* CameraVideoEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F42EECD1F2A64A000519C2F /* CameraVideoEnums.swift */; };
 		5F42EED01F2BF47200519C2F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F42EECF1F2BF47200519C2F /* ProfileViewController.swift */; };
+		5F42EED81F2FBFFD00519C2F /* RecordingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F42EED71F2FBFFD00519C2F /* RecordingTableViewCell.swift */; };
 		5F6BBE751F1FD2C400A157E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6BBE741F1FD2C400A157E2 /* AppDelegate.swift */; };
 		5F6BBE7C1F1FD2C400A157E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F6BBE7B1F1FD2C400A157E2 /* Assets.xcassets */; };
 		5FA262181F1FF1F000A1B7F8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5FA262161F1FF1F000A1B7F8 /* GoogleService-Info.plist */; };
@@ -46,6 +47,7 @@
 		5F42EECB1F2A639C00519C2F /* PreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PreviewView.swift; path = Views/PreviewView.swift; sourceTree = "<group>"; };
 		5F42EECD1F2A64A000519C2F /* CameraVideoEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraVideoEnums.swift; path = Supporting/CameraVideoEnums.swift; sourceTree = "<group>"; };
 		5F42EECF1F2BF47200519C2F /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfileViewController.swift; path = Controllers/ProfileViewController.swift; sourceTree = "<group>"; };
+		5F42EED71F2FBFFD00519C2F /* RecordingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingTableViewCell.swift; path = Views/RecordingTableViewCell.swift; sourceTree = "<group>"; };
 		5F6BBE711F1FD2C400A157E2 /* Method.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Method.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F6BBE741F1FD2C400A157E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F6BBE7B1F1FD2C400A157E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 			children = (
 				5F0101881F22C87B00C45F9C /* RecordedAudioTableViewCell.swift */,
 				5F42EECB1F2A639C00519C2F /* PreviewView.swift */,
+				5F42EED71F2FBFFD00519C2F /* RecordingTableViewCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -346,6 +349,7 @@
 				5FA262451F20118B00A1B7F8 /* RecordingViewController.swift in Sources */,
 				5F42EED01F2BF47200519C2F /* ProfileViewController.swift in Sources */,
 				5FA262431F20039300A1B7F8 /* Constants.swift in Sources */,
+				5F42EED81F2FBFFD00519C2F /* RecordingTableViewCell.swift in Sources */,
 				5F0101911F26B68900C45F9C /* RecordService.swift in Sources */,
 				5F6BBE751F1FD2C400A157E2 /* AppDelegate.swift in Sources */,
 				5FA262411F20038700A1B7F8 /* Storyboard+Utility.swift in Sources */,

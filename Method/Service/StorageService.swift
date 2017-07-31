@@ -41,6 +41,14 @@ struct StorageService {
             completion(metadata?.downloadURL())
         })
     }
+    
+    static func deleteFiles(audioURL: String, videoURL: String){
+        let audioRef = Storage.storage().reference(forURL: audioURL)
+        let videoRef = Storage.storage().reference(forURL: videoURL)
+
+        audioRef.delete()
+        videoRef.delete()
+    }
  
 
 }

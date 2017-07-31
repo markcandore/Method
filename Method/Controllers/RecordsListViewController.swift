@@ -20,7 +20,7 @@ class RecordsListViewController: UIViewController {
         super.viewDidLoad()
         self.tableView.dataSource = self
         
-        //configureTableView()
+        configureTableView()
 
         reloadList()
         

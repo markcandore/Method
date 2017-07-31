@@ -57,59 +57,23 @@ struct RecordService {
         
         let rootRef = Database.database().reference()
         let recordingRef = rootRef.child("recordings").child(currentUser.uid).childByAutoId()
-        //let newPostRef = DatabaseReference.toLocation(.newPost(currentUID: currentUser.uid))
-        
         recordingRef.updateChildValues(dict)
-        //let newPostKey = newRecordingRef.key
-        
-        /*
-        UserService.followers(for: currentUser) { (followerUIDs) in
-            let timelinePostDict = ["poster_uid" : currentUser.uid]
-            
-            var updatedData: [String: Any] = ["timeline/\(currentUser.uid)/\(newPostKey)" : timelinePostDict]
-            
-            for uid in followerUIDs {
-                updatedData["timeline/\(uid)/\(newPostKey)"] = timelinePostDict
-            }
-            
-            let postDict = post.dictValue
-            updatedData["posts/\(currentUser.uid)/\(newPostKey)"] = postDict
-            
-            rootRef.updateChildValues(updatedData)
-        }
-         */
     }
     
-    private static func delete(record: Recording) {
+    static func delete(record: Recording) {
         
         let currentUser = User.current
         
-        let recording = record
         let recordKey = record.key
         
-        let rootRef = Database.database().reference()
-        let recordingRef = rootRef.child("recordings").child(currentUser.uid).childByAutoId()
-        //let newPostRef = DatabaseReference.toLocation(.newPost(currentUID: currentUser.uid))
+        let databaseRef = Database.database().reference().child("recordings").child(currentUser.uid).child(recordKey!)
         
-        recordingRef
-        //let newPostKey = newRecordingRef.key
+        databaseRef.setValue(NSNull.self)
         
-        /*
-         UserService.followers(for: currentUser) { (followerUIDs) in
-         let timelinePostDict = ["poster_uid" : currentUser.uid]
-         
-         var updatedData: [String: Any] = ["timeline/\(currentUser.uid)/\(newPostKey)" : timelinePostDict]
-         
-         for uid in followerUIDs {
-         updatedData["timeline/\(uid)/\(newPostKey)"] = timelinePostDict
-         }
-         
-         let postDict = post.dictValue
-         updatedData["posts/\(currentUser.uid)/\(newPostKey)"] = postDict
-         
-         rootRef.updateChildValues(updatedData)
-         }
-         */
+        let audioURL = record.audioURL
+        let videoURL = record.videoURL
+        
+        StorageService.deleteFiles(audioURL: audioURL, videoURL: videoURL)
     }
     
     

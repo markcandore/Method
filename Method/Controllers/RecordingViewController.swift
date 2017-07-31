@@ -40,7 +40,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     var currentRecording: Recording!
     
     //UI Elements
-
+    @IBOutlet weak var listTableView: UITableView!
     @IBOutlet weak var transcriptTextView: UITextView!
     @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var listButton: UIButton!
@@ -77,11 +77,21 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     var videoOutputFilePath: String!
     var audioOutputFilePath: String!
+    var recordings = [Recording]()
+    
+    var isListShown = false;
     
     // MARK: RecordingViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //TableView
+        self.listTableView.dataSource = self
+        configureTableView()
+        reloadList()
+   
+        //Video Preview Layer
         previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
         previewLayer.session = videoSession
 
@@ -241,6 +251,21 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         super.didReceiveMemoryWarning()
     }
     
+    func configureTableView() {
+        // remove separators for empty cells
+        listTableView.tableFooterView = UIView()
+        // remove separators from cells
+        listTableView.separatorStyle = .none
+        
+        listTableView.isHidden = true
+    }
+    
+    func reloadList(){
+        UserService.posts(for: User.current) { (recordings) in
+            self.recordings = recordings
+            self.listTableView.reloadData()
+        }
+    }
     /// Handle Denied App Privacy Settings
     
     fileprivate func promptToAppSettings() {
@@ -631,6 +656,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             format.dateFormat = "yyyy-MM-dd-HH-mm-ss"
             self.currentFilename = "Recording-\(format.string(from: Date()))"
          
+            if alert.textFields?[0].text != "" {
+                self.currentFilename = alert.textFields?[0].text
+            }
             RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, time: time)
            
             self.removeFiles()
@@ -672,6 +700,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     @IBAction func recordButtonTapped(_ sender: UIButton) {
         
+        listTableView.isHidden = true
+        
         if audioEngine.isRunning {
             //print("\(recordingTime)")
             let time = recordingTime
@@ -705,9 +735,14 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     @IBAction func listButtonTapped(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        let listPage = storyboard.instantiateViewController(withIdentifier: "recordsListViewController") as? RecordsListViewController
-        self.present(listPage!, animated: true, completion: nil)
+        if isListShown == false {
+            reloadList()
+            listTableView.isHidden = false
+            isListShown = true
+        } else{
+            listTableView.isHidden = true
+            isListShown = false
+        }
     }
     
     @IBAction func profileButtonTapped(_ sender: UIButton) {
@@ -716,6 +751,62 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         let profilePage = storyboard.instantiateViewController(withIdentifier: "profileViewController") as? ProfileViewController
         self.present(profilePage!, animated: true, completion: nil)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let identifier = segue.identifier {
+            if identifier == "showMedia" {
+                print("Table view cell tapped")
+                
+                // 1
+                let indexPath = listTableView.indexPathForSelectedRow!
+                // 2
+                let record = recordings[indexPath.row]
+                // 3
+                let mediaPlayerViewController = segue.destination
+                    as! MediaPlayerViewController
+                
+                mediaPlayerViewController.record = record
+            }
+        }
+    }
+    
+    @IBAction func unwind(segue:UIStoryboardSegue) { }
+    
+    func deleteClicked(record: Recording){
+        RecordService.delete(record: record)
+    }
+    
+}
+extension RecordingViewController: UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return recordings.count
+    }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "recordingTableViewCell", for: indexPath) as! RecordingTableViewCell
+        
+        let row = indexPath.row
+        let recording = recordings[row]
+        
+        cell.recordingTitle.text = recording.title
+        cell.recordingTitle.textColor = UIColor.white
+        cell.recordingDate.text = recording.getDateString()
+        cell.recordingDate.textColor = UIColor.white
+        cell.backgroundColor = .clear
+        
+        //cell.deleteButton.addTarget(self, action: #selector(RecordingViewController.deleteClicked(record: recording)), for: .touchUpInside)
+        //cell.deleteButton.addTarget(self, action: #selector(deleteClicked(record: recording)), for: .touchUpInside)
+        //cell.deleteButton.addTarget(self, action: Selector("deleteClicked:"), for: UIControlEvents.touchUpInside)
+        //button.setTitle("Click Me !", forState: UIControlState.Normal)
+        
+        return cell
+    }
+    
 }
 
 extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{

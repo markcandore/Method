@@ -45,10 +45,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var listButton: UIButton!
     @IBOutlet weak var profileButton: UIButton!
-    @IBOutlet weak var countdownTimerLabel: UILabel!
     @IBOutlet weak var countingTimerLabel: UILabel!
-    
-    
     
     // Video Setup
     
@@ -119,7 +116,13 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         // Disable the record buttons until authorization has been granted.
         recordButton.isEnabled = false
         recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
-        self.countdownTimerLabel.text = "\(countdownTime)s"
+        profileButton.setTitle(User.current.username, for: .normal)
+        profileButton.setTitleColor(UIColor.white, for: .normal)
+        //profileButton.backgroundColor = .clear
+        profileButton.layer.cornerRadius = 5
+        profileButton.layer.borderWidth = 1
+        //profileButton.layer.borderColor = UIColor.black.cgColor
+        
         self.countingTimerLabel.text = "\(recordingTime)s"
     }
 
@@ -457,7 +460,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             
             let button = UIImage(named: "RecordButton1 (\(countdownImage))")
             recordButton.setImage(button, for: .normal)
-            countdownTimerLabel.text = "\(countdownTime)s"
             
         } else{
             print("stopping")
@@ -475,11 +477,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             savingAlert(time: time)
             
             countdownTime = 60.0
-            countdownTimerLabel.text = "\(countdownTime)s"
             recordingTime = 0.0
             countingTimerLabel.text = "\(recordingTime)s"
-            
-            print("works")
+            transcriptTextView.text = ""
             countdownImage = -1
             recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
         }
@@ -523,6 +523,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             var isFinal = false
             
             if let result = result {
+                let range = NSMakeRange(self.transcriptTextView.text.characters.count - 1, 0)
+                self.transcriptTextView.scrollRangeToVisible(range)
                 self.transcriptTextView.text = result.bestTranscription.formattedString
                 isFinal = result.isFinal
             }
@@ -685,10 +687,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             savingAlert(time: time)
             
             countdownTime = 60.0
-            countdownTimerLabel.text = "\(countdownTime)s"
             recordingTime = 0.0
             countingTimerLabel.text = "\(recordingTime)s"
-          
+            transcriptTextView.text = ""
             countdownImage = -1
             recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
          
@@ -704,8 +705,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
     }
     
-    @IBAction func listButtonTapped(_ sender: UIButton) {
-        
+    @IBAction func listButtonTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         let listPage = storyboard.instantiateViewController(withIdentifier: "recordsListViewController") as? RecordsListViewController
         self.present(listPage!, animated: true, completion: nil)

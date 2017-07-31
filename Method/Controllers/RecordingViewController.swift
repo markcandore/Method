@@ -700,7 +700,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             listButton.isEnabled = false
             runCountdownTimer()
             runCountingTimer()
-            //recordButton.setTitle("Stop recording", for: [])
         }
         
     }
@@ -712,10 +711,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     @IBAction func profileButtonTapped(_ sender: UIButton) {
+        
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         let profilePage = storyboard.instantiateViewController(withIdentifier: "profileViewController") as? ProfileViewController
         self.present(profilePage!, animated: true, completion: nil)
-        
     }
 }
 

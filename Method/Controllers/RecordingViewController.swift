@@ -727,6 +727,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             try! startAudioRecording()
             startVideoRecording()
             
+            recordButton.setImage(UIImage(named: "RecordButtonPlayed"), for: .normal)
             listButton.isEnabled = false
             runCountdownTimer()
             runCountingTimer()

@@ -33,9 +33,12 @@
                                 <rect key="frame" x="325" y="628" width="46" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Profile"/>
+                                <connections>
+                                    <action selector="profileButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="A9E-vQ-yoz"/>
+                                </connections>
                             </button>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="myC-tK-qXu">
-                                <rect key="frame" x="0.0" y="416" width="375" height="153"/>
+                                <rect key="frame" x="0.0" y="486" width="375" height="58"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.962079787498756" green="0.97160532994923865" blue="0.97160532994923865" alpha="0.067824272260273974" colorSpace="custom" customColorSpace="sRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -49,17 +52,15 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="CountdownTimer" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jTH-bV-yjy">
-                                <rect key="frame" x="115" y="588" width="153" height="21"/>
+                                <rect key="frame" x="111" y="58" width="153" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uJB-a4-5PD">
-                                <rect key="frame" x="70" y="628" width="249" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uJB-a4-5PD">
+                                <rect key="frame" x="140" y="564" width="95" height="95"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
-                                <state key="normal" title="Record"/>
                                 <connections>
                                     <action selector="recordButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pFa-dG-QoA"/>
                                 </connections>
@@ -72,6 +73,7 @@
                         <outlet property="countdownTimerLabel" destination="jTH-bV-yjy" id="WdT-wD-cMD"/>
                         <outlet property="countingTimerLabel" destination="mKf-Ob-8Eb" id="GDC-ye-h4B"/>
                         <outlet property="listButton" destination="1aR-NI-gSZ" id="Tg0-GI-nNl"/>
+                        <outlet property="profileButton" destination="KEW-oz-CJS" id="hNC-od-Z5F"/>
                         <outlet property="recordButton" destination="uJB-a4-5PD" id="IS2-lH-DL1"/>
                         <outlet property="transcriptTextView" destination="myC-tK-qXu" id="gZR-l8-sYQ"/>
                     </connections>
@@ -165,12 +167,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hp4-jW-9Xe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1506" y="152"/>
+            <point key="canvasLocation" x="790" y="841"/>
         </scene>
-        <!--View Controller-->
+        <!--Profile View Controller-->
         <scene sceneID="tqb-3S-LUa">
             <objects>
-                <viewController id="GlI-EC-KS1" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="profileViewController" id="GlI-EC-KS1" customClass="ProfileViewController" customModule="Method" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="dpf-C7-SHJ"/>
                         <viewControllerLayoutGuide type="bottom" id="or5-Ur-g4s"/>
@@ -186,13 +188,21 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mfC-xM-C6N">
+                                <rect key="frame" x="162" y="588" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Back"/>
+                                <connections>
+                                    <action selector="backButtonTapped:" destination="GlI-EC-KS1" eventType="touchUpInside" id="W13-oI-5nW"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7D9-VG-oS7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1588" y="989"/>
+            <point key="canvasLocation" x="1558" y="142"/>
         </scene>
         <!--Media Player View Controller-->
         <scene sceneID="wVK-By-egn">
@@ -284,7 +294,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="toP-Fd-6cR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2244" y="152"/>
+            <point key="canvasLocation" x="1534" y="841"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="e3T-jn-Vkc">

@@ -15,7 +15,7 @@ class PreviewView: UIView{
     init(frame: CGRect, videoGravity: VideoGravity){
         gravity = videoGravity
         super.init(frame: frame)
-        self.backgroundColor = UIColor.darkGray
+        self.backgroundColor = UIColor.black
     }
     
     required init?(coder aDecoder: NSCoder) {

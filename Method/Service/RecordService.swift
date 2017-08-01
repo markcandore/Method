@@ -14,7 +14,7 @@ struct RecordService {
 
 
     static func create(audioData: Data, videoData: Data, transcriptText: String,title: String, time: TimeInterval) {
-        
+        //print("works2")
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         var audioURL: String = ""
@@ -40,8 +40,9 @@ struct RecordService {
             }
             videoURL = downloadURL.absoluteString
         }
-        
-        dispatchGroup.notify(queue: .main) { 
+        //print("works3")
+        dispatchGroup.notify(queue: .main) {
+            print("uploaded to storage")
             create(forAudioURL: audioURL, forVideoURL: videoURL, forTranscript: transcriptText, forTitle: title, forTime: time)
         }
     }
@@ -58,6 +59,7 @@ struct RecordService {
         let rootRef = Database.database().reference()
         let recordingRef = rootRef.child("recordings").child(currentUser.uid).childByAutoId()
         recordingRef.updateChildValues(dict)
+        print("uploaded to database")
     }
     
     static func delete(record: Recording) {

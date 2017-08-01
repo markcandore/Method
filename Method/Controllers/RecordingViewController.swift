@@ -55,7 +55,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         case configurationFailed
     }
     
-    private var videoQuality: VideoQuality = .high
+    private var videoQuality: VideoQuality = .medium
     private var videoGravity: VideoGravity = .resizeAspect
     private var camera: CameraSelection = .front
     private var videoSession = AVCaptureSession()
@@ -150,32 +150,19 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         if let connection =  self.previewLayer?.videoPreviewLayer.connection  {
             
             let currentDevice: UIDevice = UIDevice.current
-            
             let orientation: UIDeviceOrientation = currentDevice.orientation
-            
             let previewLayerConnection : AVCaptureConnection = connection
-            
             if previewLayerConnection.isVideoOrientationSupported {
-                
                 switch (orientation) {
                 case .portrait: updatePreviewLayer(layer: previewLayerConnection, orientation: .portrait)
-                
                     break
-                    
                 case .landscapeRight: updatePreviewLayer(layer: previewLayerConnection, orientation: .landscapeLeft)
-                
                     break
-                    
                 case .landscapeLeft: updatePreviewLayer(layer: previewLayerConnection, orientation: .landscapeRight)
-                
                     break
-                    
                 case .portraitUpsideDown: updatePreviewLayer(layer: previewLayerConnection, orientation: .portraitUpsideDown)
-                
                     break
-                    
                 default: updatePreviewLayer(layer: previewLayerConnection, orientation: .portrait)
-                
                     break
                 }
             }
@@ -229,7 +216,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 switch authStatus {
                 case .authorized:
                     self.recordButton.isEnabled = true
-                    
                 case .denied:
                     self.recordButton.isEnabled = false
                     self.recordButton.setTitle("User denied access to speech recognition", for: .disabled)
@@ -303,12 +289,12 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     fileprivate func configureVideoPreset(){
         if camera == .front {
-            videoSession.sessionPreset = videoInputPresetFromVideoQuality(quality: .high)
+            videoSession.sessionPreset = videoInputPresetFromVideoQuality(quality: .medium)
         } else {
             if videoSession.canSetSessionPreset(videoInputPresetFromVideoQuality(quality: videoQuality)) {
                 videoSession.sessionPreset = videoInputPresetFromVideoQuality(quality: videoQuality)
             } else {
-                videoSession.sessionPreset = videoInputPresetFromVideoQuality(quality: .high)
+                videoSession.sessionPreset = videoInputPresetFromVideoQuality(quality: .medium)
             }
         }
     }
@@ -639,19 +625,20 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
         
         alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
-        
+            
+            print("works")
             let audioPath = self.audioOutputFilePath
             guard let audioData = FileManager.default.contents(atPath: audioPath!) else{
                 return
             }
-            
+            print("works2")
             let videoPath = self.videoOutputFilePath
             guard let videoData = FileManager.default.contents(atPath: videoPath!) else{
                 return
             }
-            
+            print("works3")
             let transcriptText = self.transcriptTextView.text
-            
+            print("works3")
             let format = DateFormatter()
             format.dateFormat = "yyyy-MM-dd-HH-mm-ss"
             self.currentFilename = "Recording-\(format.string(from: Date()))"
@@ -659,21 +646,24 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             if alert.textFields?[0].text != "" {
                 self.currentFilename = alert.textFields?[0].text
             }
+            print("works5")
             RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, time: time)
            
-            self.removeFiles()
+            FileManager.default.clearTmpDirectory()
+            //self.removeFiles()
             
         }))
         
         alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.cancel, handler: { action in
-            self.removeFiles()
+            //self.removeFiles()
+            FileManager.default.clearTmpDirectory()
         }))
         
         self.present(alert, animated: true, completion: nil)
         listButton.isEnabled = true
     }
     
-    
+    /*
     func removeFiles(){
         do{
             try FileManager.default.removeItem(atPath: self.audioOutputFilePath)
@@ -682,7 +672,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             print(error)
         }
     }
-    
+    */
     // MARK: SFSpeechRecognizerDelegate
     
     public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
@@ -715,7 +705,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             
             stopVideoRecording()
             savingAlert(time: time)
-            
+        
             countdownTime = 60.0
             recordingTime = 0.0
             countingTimerLabel.text = "\(recordingTime)s"
@@ -844,6 +834,69 @@ extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
             if currentBackgroundRecordingID != UIBackgroundTaskInvalid {
                 UIApplication.shared.endBackgroundTask(currentBackgroundRecordingID)
             }
+        }
+        
+        guard let data = NSData(contentsOf: outputFileURL as URL) else {
+            return
+        }
+        
+        print("File size before compression: \(Double(data.length / 1048576)) mb")
+        let compressedURL = NSURL.fileURL(withPath: NSTemporaryDirectory() + NSUUID().uuidString + ".mov")
+        compressVideo(inputURL: outputFileURL as URL, outputURL: compressedURL) { (exportSession) in
+            guard let session = exportSession else {
+                return
+            }
+            
+            switch session.status {
+            case .unknown:
+                break
+            case .waiting:
+                break
+            case .exporting:
+                break
+            case .completed:
+                guard let compressedData = NSData(contentsOf: compressedURL) else {
+                    return
+                }
+                //let data = FileManager.default.contents(atPath: compressedURL.absoluteString)
+                //print(self.videoOutputFilePath)
+                //print(compressedURL.absoluteString)
+                //self.videoOutputFilePath = compressedURL.absoluteString
+                print("File size after compression: \(Double(compressedData.length / 1048576)) mb")
+            case .failed:
+                break
+            case .cancelled:
+                break
+            }
+        }
+    }
+    func compressVideo(inputURL: URL, outputURL: URL, handler:@escaping (_ exportSession: AVAssetExportSession?)-> Void) {
+        let urlAsset = AVURLAsset(url: inputURL, options: nil)
+        guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetMediumQuality) else {
+            handler(nil)
+            
+            return
+        }
+        
+        exportSession.outputURL = outputURL
+        exportSession.outputFileType = AVFileTypeQuickTimeMovie
+        exportSession.shouldOptimizeForNetworkUse = true
+        exportSession.exportAsynchronously { () -> Void in
+            handler(exportSession)
+        }
+    }
+}
+
+extension FileManager {
+    func clearTmpDirectory() {
+        do {
+            let tmpDirectory = try contentsOfDirectory(atPath: NSTemporaryDirectory())
+            try tmpDirectory.forEach {[unowned self] file in
+                let path = String.init(format: "%@%@", NSTemporaryDirectory(), file)
+                try self.removeItem(atPath: path)
+            }
+        } catch {
+            print(error)
         }
     }
 }

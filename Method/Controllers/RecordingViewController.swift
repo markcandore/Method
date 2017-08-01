@@ -773,7 +773,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     @IBAction func unwind(segue:UIStoryboardSegue) { }
     
-    func deleteClicked(record: Recording){
+    func delete(record: Recording){
         RecordService.delete(record: record)
     }
     
@@ -799,13 +799,16 @@ extension RecordingViewController: UITableViewDataSource{
         cell.recordingDate.text = recording.getDateString()
         cell.recordingDate.textColor = UIColor.white
         cell.backgroundColor = .clear
-        
-        //cell.deleteButton.addTarget(self, action: #selector(RecordingViewController.deleteClicked(record: recording)), for: .touchUpInside)
-        //cell.deleteButton.addTarget(self, action: #selector(deleteClicked(record: recording)), for: .touchUpInside)
-        //cell.deleteButton.addTarget(self, action: Selector("deleteClicked:"), for: UIControlEvents.touchUpInside)
-        //button.setTitle("Click Me !", forState: UIControlState.Normal)
-        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        // 2
+        if editingStyle == .delete {
+            // 3
+            delete(record: recordings[indexPath.row])
+            //recordings.remove(at: indexPath.row)
+        }
     }
     
 }

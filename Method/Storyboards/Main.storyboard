@@ -91,15 +91,9 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hNh-lj-QQb">
-                                                    <rect key="frame" x="309" y="13" width="46" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <state key="normal" title="Button"/>
-                                                </button>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="deleteButton" destination="hNh-lj-QQb" id="HEU-oY-0e9"/>
                                             <outlet property="recordingDate" destination="cG1-tT-Idd" id="Dqo-Hh-RVt"/>
                                             <outlet property="recordingTitle" destination="wt8-9n-Yw8" id="zrp-KH-6wM"/>
                                             <segue destination="UrB-Sq-Pgw" kind="show" identifier="showMedia" id="J4g-pQ-OTk"/>

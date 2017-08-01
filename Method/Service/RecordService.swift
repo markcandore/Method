@@ -68,7 +68,7 @@ struct RecordService {
         
         let databaseRef = Database.database().reference().child("recordings").child(currentUser.uid).child(recordKey!)
         
-        databaseRef.setValue(NSNull.self)
+        databaseRef.removeValue()
         
         let audioURL = record.audioURL
         let videoURL = record.videoURL

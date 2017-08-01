@@ -18,5 +18,4 @@ class RecordingTableViewCell: UITableViewCell {
         super.awakeFromNib()
     }
 
-    @IBOutlet weak var deleteButton: UIButton!
 }

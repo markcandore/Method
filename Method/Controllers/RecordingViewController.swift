@@ -17,7 +17,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     // MARK: Properties
     
     // Timer
-    var countdownTime = 60.0
+    var countdownTime = 60.0 - 1.36363636364
     var countdownTimer = Timer()
     var isTimerRunning = false
     
@@ -101,11 +101,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         switch AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo){
         case .authorized:
-            
             // already authorized
             break
         case .notDetermined:
-            
             // not yet determined
             sessionQueue.suspend()
             AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { [unowned self] granted in
@@ -115,7 +113,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.sessionQueue.resume()
             })
         default:
-            
             // already been asked. Denied access
             setupResult = .notAuthorized
         }
@@ -128,10 +125,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
         profileButton.setTitle(User.current.username, for: .normal)
         profileButton.setTitleColor(UIColor.white, for: .normal)
-        //profileButton.backgroundColor = .clear
         profileButton.layer.cornerRadius = 5
         profileButton.layer.borderWidth = 1
-        //profileButton.layer.borderColor = UIColor.black.cgColor
         
         self.countingTimerLabel.text = "\(recordingTime)s"
     }
@@ -367,14 +362,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     // Get Device
     fileprivate class func deviceWithMediaType(_ mediaType: String, preferringPosition position: AVCaptureDevicePosition) -> AVCaptureDevice? {
-//        if let devices = AVCaptureDevice.devices(withMediaType: mediaType) as? [AVCaptureDevice] {
-//            return devices.filter({ $0.position == position }).first
-//        }
-//        return nil
         
-        if let deviceDescoverySession = AVCaptureDeviceDiscoverySession.init(deviceTypes: [AVCaptureDeviceType.builtInWideAngleCamera],
-                                                                             mediaType: AVMediaTypeVideo,
-                                                                             position: AVCaptureDevicePosition.unspecified) {
+        if let deviceDescoverySession = AVCaptureDeviceDiscoverySession.init(deviceTypes: [AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified) {
             
             for device in deviceDescoverySession.devices {
                 if device.position == position {
@@ -382,7 +371,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 }
             }
         }
-        
         return nil
     }
     
@@ -451,61 +439,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
     }
     
-    func loadRecordingUI() {
-        //recordButton = UIButton(frame: CGRect(x: 64, y: 64, width: 128, height: 64))
-        //recordButton.setTitle("Tap to Record", for: .normal)
-        //recordButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.title1)
-        //recordButton.addTarget(self, action: #selector(recordButtonTapped), for: .touchUpInside)
-        //view.addSubview(recordButton)
-    }
-    
-    //Countdown Timer
-    func runCountdownTimer(){
-        countdownTimer = Timer.scheduledTimer(timeInterval: 1.36363636364, target: self, selector: (#selector(RecordingViewController.updateCountdownTimer)), userInfo: nil, repeats: true)
-    }
-    
-    func updateCountdownTimer(){
-        if countdownTime > 0 {
-            countdownTime -= 1.36363636364
-            countdownImage += 1
-            
-            let button = UIImage(named: "RecordButton1 (\(countdownImage))")
-            recordButton.setImage(button, for: .normal)
-            
-        } else{
-            print("stopping")
-            let time = recordingTime
-            countdownTimer.invalidate()
-            countingTimer.invalidate()
-            
-            audioEngine.stop()
-            audioRecorder.stop()
-            recognitionRequest?.endAudio()
-            recordButton.isEnabled = false
-            //recordButton.setTitle("Stopping", for: .disabled)
-            
-            stopVideoRecording()
-            savingAlert(time: time)
-            
-            countdownTime = 60.0
-            recordingTime = 0.0
-            countingTimerLabel.text = "\(recordingTime)s"
-            transcriptTextView.text = ""
-            countdownImage = -1
-            recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
-        }
-    }
-    
-    //Counting Timer
-    func runCountingTimer(){
-        countingTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: (#selector(RecordingViewController.updateCountingTimer)), userInfo: nil, repeats: true)
-    }
-    
-    func updateCountingTimer(){
-        recordingTime = audioRecorder.currentTime
-        countingTimerLabel.text = "\(recordingTime)s"
-    }
-    
     private func startAudioRecording() throws {
         
         // Cancel the previous task if it's running.
@@ -539,7 +472,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.transcriptTextView.text = result.bestTranscription.formattedString
                 isFinal = result.isFinal
             }
-            
             if error != nil || isFinal {
                 self.audioEngine.stop()
                 inputNode.removeTap(onBus: 0)
@@ -575,8 +507,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         audioRecorder.record()
         try audioEngine.start()
-        
-        //transcriptTextView.text = "(Go ahead, I'm listening)"
     }
     
     func startVideoRecording(){
@@ -625,20 +555,16 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
         
         alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
-            
-            print("works")
+
             let audioPath = self.audioOutputFilePath
             guard let audioData = FileManager.default.contents(atPath: audioPath!) else{
                 return
             }
-            print("works2")
             let videoPath = self.videoOutputFilePath
             guard let videoData = FileManager.default.contents(atPath: videoPath!) else{
                 return
             }
-            print("works3")
             let transcriptText = self.transcriptTextView.text
-            print("works3")
             let format = DateFormatter()
             format.dateFormat = "yyyy-MM-dd-HH-mm-ss"
             self.currentFilename = "Recording-\(format.string(from: Date()))"
@@ -646,33 +572,19 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             if alert.textFields?[0].text != "" {
                 self.currentFilename = alert.textFields?[0].text
             }
-            print("works5")
             RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, time: time)
            
             FileManager.default.clearTmpDirectory()
-            //self.removeFiles()
             
         }))
         
         alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.cancel, handler: { action in
-            //self.removeFiles()
             FileManager.default.clearTmpDirectory()
         }))
         
         self.present(alert, animated: true, completion: nil)
         listButton.isEnabled = true
     }
-    
-    /*
-    func removeFiles(){
-        do{
-            try FileManager.default.removeItem(atPath: self.audioOutputFilePath)
-            try FileManager.default.removeItem(atPath: self.videoOutputFilePath)
-        } catch{
-            print(error)
-        }
-    }
-    */
     // MARK: SFSpeechRecognizerDelegate
     
     public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
@@ -685,7 +597,87 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
     }
     
+    //Counting Timer
+    func runCountingTimer(){
+        countingTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: (#selector(RecordingViewController.updateCountingTimer)), userInfo: nil, repeats: true)
+    }
     
+    func updateCountingTimer(){
+        recordingTime = audioRecorder.currentTime
+        let recordTime = String(format: "%.01f", recordingTime)
+        countingTimerLabel.text = recordTime + "s"
+    }
+    
+    //Countdown Timer
+    func runCountdownTimer(){
+        countdownTimer = Timer.scheduledTimer(timeInterval: 1.36363636364, target: self, selector: (#selector(RecordingViewController.updateCountdownTimer)), userInfo: nil, repeats: true)
+    }
+    
+    func updateCountdownTimer(){
+        if countdownTime > 0 {
+            countdownTime -= 1.36363636364
+            countdownImage += 1
+            let button = UIImage(named: "RecordButton1 (\(countdownImage))")
+            recordButton.setImage(button, for: .normal)
+            
+        } else{
+            end()
+        }
+    }
+
+    func stopTimers(){
+        countdownTimer.invalidate()
+        countingTimer.invalidate()
+    }
+    
+    func stopAudio(){
+        audioEngine.stop()
+        audioRecorder.stop()
+        recognitionRequest?.endAudio()
+    }
+    
+    func reset(){
+        countdownTime = 60.0 - 1.36363636364
+        recordingTime = 0.0
+        countingTimerLabel.text = "\(recordingTime)s"
+        transcriptTextView.text = ""
+        countdownImage = -1
+        recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
+    }
+    
+    func end(){
+        let time = recordingTime
+        stopTimers()
+        stopAudio()
+        stopVideoRecording()
+        recordButton.isEnabled = false
+        savingAlert(time: time)
+        reset()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let identifier = segue.identifier {
+            if identifier == "showMedia" {
+                print("Table view cell tapped")
+                
+                // 1
+                let indexPath = listTableView.indexPathForSelectedRow!
+                // 2
+                let record = recordings[indexPath.row]
+                // 3
+                let mediaPlayerViewController = segue.destination
+                    as! MediaPlayerViewController
+                
+                mediaPlayerViewController.record = record
+            }
+        }
+    }
+    
+    
+    func delete(record: Recording){
+        RecordService.delete(record: record)
+    }
+
     // MARK: Interface Builder actions
     
     @IBAction func recordButtonTapped(_ sender: UIButton) {
@@ -693,25 +685,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         listTableView.isHidden = true
         
         if audioEngine.isRunning {
-            //print("\(recordingTime)")
-            let time = recordingTime
-            countdownTimer.invalidate()
-            countingTimer.invalidate()
-            audioEngine.stop()
-            audioRecorder.stop()
-            recognitionRequest?.endAudio()
-            recordButton.isEnabled = false
-            //recordButton.setTitle("Stopping", for: .disabled)
-            
-            stopVideoRecording()
-            savingAlert(time: time)
-        
-            countdownTime = 60.0
-            recordingTime = 0.0
-            countingTimerLabel.text = "\(recordingTime)s"
-            transcriptTextView.text = ""
-            countdownImage = -1
-            recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
+            end()
          
         } else {
             try! startAudioRecording()
@@ -743,29 +717,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         self.present(profilePage!, animated: true, completion: nil)
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let identifier = segue.identifier {
-            if identifier == "showMedia" {
-                print("Table view cell tapped")
-                
-                // 1
-                let indexPath = listTableView.indexPathForSelectedRow!
-                // 2
-                let record = recordings[indexPath.row]
-                // 3
-                let mediaPlayerViewController = segue.destination
-                    as! MediaPlayerViewController
-                
-                mediaPlayerViewController.record = record
-            }
-        }
-    }
-    
     @IBAction func unwind(segue:UIStoryboardSegue) { }
-    
-    func delete(record: Recording){
-        RecordService.delete(record: record)
-    }
     
 }
 extension RecordingViewController: UITableViewDataSource{
@@ -858,10 +810,6 @@ extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
                 guard let compressedData = NSData(contentsOf: compressedURL) else {
                     return
                 }
-                //let data = FileManager.default.contents(atPath: compressedURL.absoluteString)
-                //print(self.videoOutputFilePath)
-                //print(compressedURL.absoluteString)
-                //self.videoOutputFilePath = compressedURL.absoluteString
                 print("File size after compression: \(Double(compressedData.length / 1048576)) mb")
             case .failed:
                 break
@@ -870,6 +818,7 @@ extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
             }
         }
     }
+    
     func compressVideo(inputURL: URL, outputURL: URL, handler:@escaping (_ exportSession: AVAssetExportSession?)-> Void) {
         let urlAsset = AVURLAsset(url: inputURL, options: nil)
         guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetMediumQuality) else {

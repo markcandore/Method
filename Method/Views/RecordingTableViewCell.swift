@@ -14,6 +14,8 @@ class RecordingTableViewCell: UITableViewCell {
     
     @IBOutlet weak var recordingDate: UILabel!
     
+    @IBOutlet weak var viewPreview: UIImageView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }

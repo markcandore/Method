@@ -53,7 +53,7 @@ struct RecordService {
         
         let currentUser = User.current
         
-        let recording = Recording(audioURL: audioURL, videoURL: videoURL, title: title, transcript: transcriptText, time: time)
+        let recording = Recording(audioURL: audioURL, videoURL: videoURL, title: title, transcript: transcriptText, duration: time)
         let dict = recording.dictValue
         
         let rootRef = Database.database().reference()

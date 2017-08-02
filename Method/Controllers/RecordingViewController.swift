@@ -15,7 +15,7 @@ import FirebaseDatabase
 class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate{
 
     // MARK: Properties
-    
+    //var visage: Visage?
     // Timer
     var countdownTime = 60.0 - 1.36363636364
     var countdownTimer = Timer()
@@ -86,11 +86,15 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //let frame = CGRect(x: (self.view.frame.width/2.0) - 200, y: 40, width: 200, height: 100)
+        
+        //self.view.addSubview(PlotView.getPlot())
+        
         //TableView
         self.listTableView.dataSource = self
         configureTableView()
-        reloadList()
-   
+        self.listTableView.reloadData()
+        
         //Video Preview Layer
         previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
         previewLayer.session = videoSession
@@ -125,6 +129,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
         profileButton.setTitle(User.current.username, for: .normal)
         profileButton.setTitleColor(UIColor.white, for: .normal)
+        //let profileImage = UIImage(named: "DefaultProfile")
+        //profileButton.setImage(profileImage, for: .normal)
         profileButton.layer.cornerRadius = 5
         profileButton.layer.borderWidth = 1
         
@@ -244,6 +250,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     func reloadList(){
         UserService.posts(for: User.current) { (recordings) in
             self.recordings = recordings
+            FileManager.default.clearTmpDirectory()
             self.listTableView.reloadData()
         }
     }
@@ -566,15 +573,17 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             }
             let transcriptText = self.transcriptTextView.text
             let format = DateFormatter()
-            format.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-            self.currentFilename = "Recording-\(format.string(from: Date()))"
+            format.dateFormat = "MMM d, YYYY h:mm a"
+            let recordingNum = self.recordings.count + 1
+            self.currentFilename = "Recording \(recordingNum) - \(format.string(from: Date()))"
          
             if alert.textFields?[0].text != "" {
                 self.currentFilename = alert.textFields?[0].text
             }
             RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, time: time)
            
-            FileManager.default.clearTmpDirectory()
+            //FileManager.default.clearTmpDirectory()
+            self.reloadList()
             
         }))
         
@@ -657,25 +666,17 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let identifier = segue.identifier {
-            if identifier == "showMedia" {
+            if identifier == Constants.Segue.showMedia {
                 print("Table view cell tapped")
                 
-                // 1
                 let indexPath = listTableView.indexPathForSelectedRow!
-                // 2
                 let record = recordings[indexPath.row]
-                // 3
                 let mediaPlayerViewController = segue.destination
                     as! MediaPlayerViewController
                 
                 mediaPlayerViewController.record = record
             }
         }
-    }
-    
-    
-    func delete(record: Recording){
-        RecordService.delete(record: record)
     }
 
     // MARK: Interface Builder actions
@@ -713,7 +714,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     @IBAction func profileButtonTapped(_ sender: UIButton) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        let profilePage = storyboard.instantiateViewController(withIdentifier: "profileViewController") as? ProfileViewController
+        let profilePage = storyboard.instantiateViewController(withIdentifier: Constants.Storyboards.profileViewController) as? ProfileViewController
         self.present(profilePage!, animated: true, completion: nil)
     }
     
@@ -721,6 +722,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
 }
 extension RecordingViewController: UITableViewDataSource{
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return recordings.count
     }
@@ -730,8 +732,9 @@ extension RecordingViewController: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "recordingTableViewCell", for: indexPath) as! RecordingTableViewCell
+        cell.isOpaque = true
+        cell.isUserInteractionEnabled = false
         
         let row = indexPath.row
         let recording = recordings[row]
@@ -741,15 +744,28 @@ extension RecordingViewController: UITableViewDataSource{
         cell.recordingDate.text = recording.getDateString()
         cell.recordingDate.textColor = UIColor.white
         cell.backgroundColor = .clear
+        cell.selectionStyle = .none
+        
+        DownloadService.download(record: recording){ (downloadURL) in
+            if downloadURL  == nil {
+                print("url is nil")
+            } else{
+                //print(recording.duration)
+                cell.viewPreview.image = ImageCaptureHelper.videoPreviewUiimage(vidURL: downloadURL!, duration: recording.duration)
+
+            }
+            cell.isOpaque = false
+            cell.isUserInteractionEnabled = true
+        }
+        
         return cell
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        // 2
         if editingStyle == .delete {
-            // 3
-            delete(record: recordings[indexPath.row])
-            //recordings.remove(at: indexPath.row)
+            
+            print("delete")
+            RecordService.delete(record: recordings[indexPath.row])
         }
     }
     
@@ -838,6 +854,7 @@ extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
 
 extension FileManager {
     func clearTmpDirectory() {
+        print("temp directoary being cleared")
         do {
             let tmpDirectory = try contentsOfDirectory(atPath: NSTemporaryDirectory())
             try tmpDirectory.forEach {[unowned self] file in

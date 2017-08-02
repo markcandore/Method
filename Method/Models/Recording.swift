@@ -18,7 +18,10 @@ class Recording{
     var videoURL: String
     var creationDate: Date
     var creator: User
-    var time: TimeInterval
+    var duration: TimeInterval
+    
+    var localAudioURL: URL?
+    var localVideoURL: URL?
     
     let timestampFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
@@ -27,10 +30,10 @@ class Recording{
         return dateFormatter
     }()
     
-    init(audioURL: String, videoURL: String, title: String, transcript: String, time: TimeInterval){
+    init(audioURL: String, videoURL: String, title: String, transcript: String, duration: TimeInterval){
         self.title = title
         self.transcript = transcript
-        self.time = time
+        self.duration = duration
         self.audioURL = audioURL
         self.videoURL = videoURL
         self.creationDate = Date()
@@ -44,7 +47,7 @@ class Recording{
             let audioTitle = dict["title"] as? String,
             let transcriptText = dict["transcript"] as? String,
             let createdAgo = dict["created_at"] as? TimeInterval,
-            let time = dict["time"] as? TimeInterval,
+            let duration = dict["duration"] as? TimeInterval,
             let userDict = dict["creator"] as? [String : Any],
             let uid = userDict["uid"] as? String,
             let username = userDict["username"] as? String
@@ -57,7 +60,7 @@ class Recording{
         self.audioURL = audioURL
         self.videoURL = videoURL
         self.creationDate = Date(timeIntervalSince1970: createdAgo)
-        self.time = time
+        self.duration = duration
         self.creator = User(uid: uid, username: username)
         
     }
@@ -72,7 +75,7 @@ class Recording{
                 "title" : title,
                 "transcript" : transcript,
                 "created_at" : createdAgo,
-                "time" : time,
+                "duration" : duration,
                 "creator" : userDict]
     }
     

@@ -1,4 +1,5 @@
 PODS:
+  - AudioKit (3.7.1)
   - Firebase/Auth (4.0.2):
     - Firebase/Core
     - FirebaseAuth (= 4.0.0)
@@ -44,6 +45,7 @@ PODS:
   - GTMSessionFetcher/Core (1.1.10)
 
 DEPENDENCIES:
+  - AudioKit
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Database
@@ -51,6 +53,7 @@ DEPENDENCIES:
   - FirebaseUI/Auth
 
 SPEC CHECKSUMS:
+  AudioKit: e04d3282bf904cdf7121965edb067177c6d1c7d1
   Firebase: c7ad0731eab26d18a3fc547dd048b0f7cd9c63ae
   FirebaseAnalytics: 4d7040fefc3cd8b291cde35f12cf063d7963f15d
   FirebaseAuth: ebb6abcbabae00fc47446d690c19ce68d8484fde
@@ -62,6 +65,6 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
 
-PODFILE CHECKSUM: 94ca9bbcd6e1f560281b6054adcc8c6da762ad1f
+PODFILE CHECKSUM: 48afc724aa03e36e482de313e212ba0323b4ffc1
 
 COCOAPODS: 1.2.1

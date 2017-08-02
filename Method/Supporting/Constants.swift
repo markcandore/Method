@@ -11,5 +11,10 @@ import Foundation
 struct Constants {
     struct Segue {
         static let toCreateUsername = "toCreateUsername"
+        static let showMedia = "showMedia"
+    }
+    
+    struct Storyboards{
+        static let profileViewController = "profileViewController"
     }
 }

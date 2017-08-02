@@ -8,10 +8,25 @@
 
 import Foundation
 import UIKit
+import FirebaseAuth
 
 class ProfileViewController: UIViewController{
     
     @IBAction func backButtonTapped(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
+    }
+    @IBAction func logoutButtonTapped(_ sender: Any) {
+        /*
+        let firebaseAuth = Auth.auth()
+        do {
+            try firebaseAuth.signOut()
+        } catch let signOutError as NSError {
+            print ("Error signing out: %@", signOutError)
+        }
+        
+        let initialViewController = UIStoryboard.initialViewController(for: .login)
+        self.view.window?.rootViewController = initialViewController
+        self.view.window?.makeKeyAndVisible()
+        */
     }
 }

@@ -34,6 +34,7 @@ class LoginViewController: UIViewController {
         let authViewController = authUI.authViewController()
         present(authViewController, animated: true)
     }
+    
 }
 
 extension LoginViewController: FUIAuthDelegate {

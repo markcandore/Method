@@ -93,7 +93,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         //TableView
         self.listTableView.dataSource = self
         configureTableView()
-        self.listTableView.reloadData()
+        reloadList()
         
         //Video Preview Layer
         previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
@@ -243,14 +243,13 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         listTableView.tableFooterView = UIView()
         // remove separators from cells
         listTableView.separatorStyle = .none
-        
         listTableView.isHidden = true
     }
     
     func reloadList(){
         UserService.posts(for: User.current) { (recordings) in
             self.recordings = recordings
-            FileManager.default.clearTmpDirectory()
+            //FileManager.default.clearTmpDirectory()
             self.listTableView.reloadData()
         }
     }
@@ -702,7 +701,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     @IBAction func listButtonTapped(_ sender: Any) {
         if isListShown == false {
-            reloadList()
+            //reloadList()
+            //listTableView.reloadData()
             listTableView.isHidden = false
             isListShown = true
         } else{

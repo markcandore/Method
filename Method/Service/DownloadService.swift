@@ -49,30 +49,26 @@ struct DownloadService {
             
             downloadAudioTask.observe(.success) { snapshot in
                 // Download completed successfully
-                print("audio download success")
+                print("\(record.title) audio download success")
                 dispatchGroup.leave()
             }
             
             dispatchGroup.enter()
             downloadVideoTask.observe(.success) { snapshot in
                 // Download completed successfully
-                print("video download success")
+                print("\(record.title) video download success")
                 dispatchGroup.leave()
             }
-            
             
             dispatchGroup.notify(queue: .main){
                 record.localAudioURL = localAudioURL
                 record.localVideoURL = localVideoURL
-                print("works")
-                if record.localAudioURL == nil{
-                    print("dfjahdknil")
-                }
+               
                 completion(localVideoURL)
             }
         } else{
-            print("does not download because it's been downloaded already")
-        
+            print("\(record.title) does not download because it's been downloaded already")
+            completion(record.localVideoURL)
         }
     }
 }

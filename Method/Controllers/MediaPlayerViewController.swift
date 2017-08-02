@@ -44,8 +44,7 @@ class MediaPlayerViewController: UIViewController {
   
     func removeFile(){
         do{
-            //try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending("audio.m4a"))
-            //try FileManager.default.removeItem(atPath: NSTemporaryDirectory().appending("video.mov"))
+            
             try FileManager.default.removeItem(atPath: (record?.localAudioURL?.absoluteString)!)
             try FileManager.default.removeItem(atPath: (record?.localVideoURL?.absoluteString)!)
         } catch{
@@ -97,7 +96,6 @@ class MediaPlayerViewController: UIViewController {
     }
     
     @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
-        //removeFile()
         performSegue(withIdentifier: "unwindBackToRVC", sender: self)
         /*
         if self.videoPlayer != nil {
@@ -105,7 +103,7 @@ class MediaPlayerViewController: UIViewController {
             self.videoPlayer!.play()
             self.audioPlayer!.play()
         }
- */
+         */
     }
     
     @IBAction func backButtonTapped(_ sender: UIButton) {

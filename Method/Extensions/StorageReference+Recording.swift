@@ -25,4 +25,11 @@ extension StorageReference {
         
         return Storage.storage().reference().child("recordings/\(uid)/video/\(timestamp).mov")
     }
+    
+    static func newImageReference() -> StorageReference {
+        let uid = User.current.uid
+        let timestamp = dateFormatter.string(from: Date())
+        
+        return Storage.storage().reference().child("recordings/\(uid)/preview/\(timestamp).png")
+    }
 }

@@ -42,12 +42,29 @@ struct StorageService {
         })
     }
     
-    static func deleteFiles(audioURL: String, videoURL: String){
+    static func uploadPreview(_ imageData: Data?, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
+        guard let image = imageData else{
+            return completion(nil)
+        }
+        
+        reference.putData(image, metadata: nil, completion: { (metadata, error) in
+            if let error = error {
+                assertionFailure(error.localizedDescription)
+                return completion(nil)
+            }
+            
+            completion(metadata?.downloadURL())
+        })
+    }
+    
+    static func deleteFiles(audioURL: String, videoURL: String, imageURL: String){
         let audioRef = Storage.storage().reference(forURL: audioURL)
         let videoRef = Storage.storage().reference(forURL: videoURL)
+        let imageRef = Storage.storage().reference(forURL: imageURL)
 
         audioRef.delete()
         videoRef.delete()
+        imageRef.delete()
     }
  
 

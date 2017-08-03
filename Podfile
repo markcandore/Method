@@ -11,5 +11,10 @@ target 'Method' do
   pod 'FirebaseUI/Auth'
   pod 'Firebase/Database'
   pod 'Firebase/Storage'
-  pod ‘AudioKit'
+  pod 'AudioKit', '~> 2.2'
+  pod 'SwiftyJSON'
+  pod 'Alamofire', :git => 'https://github.com/Alamofire/Alamofire.git'
+  pod 'AlamofireImage', :git => 'https://github.com/Alamofire/AlamofireImage.git'
+  pod 'AlamofireNetworkActivityIndicator', :git => 'https://github.com/Alamofire/AlamofireNetworkActivityIndicator.git'
+
 end

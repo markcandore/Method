@@ -7,15 +7,16 @@
 //
 
 import Foundation
-import AudioKit
+//import AudioKit
 
 class Tuner{
 
+    /*
 
     init(input: AKNode){
 
         //let manager = AKFrequencyTracker(input)
         //AKVocalTract
     }
-
+*/
 }

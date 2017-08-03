@@ -25,6 +25,8 @@
 		5FA1A3921F31369800BCB32B /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA1A3911F31369800BCB32B /* Note.swift */; };
 		5FA1A3981F318D4F00BCB32B /* DownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA1A3971F318D4F00BCB32B /* DownloadService.swift */; };
 		5FA1A39E1F31A2DC00BCB32B /* ImageCaptureHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA1A39D1F31A2DC00BCB32B /* ImageCaptureHelper.swift */; };
+		5FA1A3A01F32987500BCB32B /* Visage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA1A39F1F32987500BCB32B /* Visage.swift */; };
+		5FA1A3A21F33807800BCB32B /* ScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA1A3A11F33807800BCB32B /* ScriptView.swift */; };
 		5FA262181F1FF1F000A1B7F8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5FA262161F1FF1F000A1B7F8 /* GoogleService-Info.plist */; };
 		5FA262221F1FF39800A1B7F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5FA262201F1FF39800A1B7F8 /* LaunchScreen.storyboard */; };
 		5FA262231F1FF39800A1B7F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5FA262211F1FF39800A1B7F8 /* Main.storyboard */; };
@@ -36,6 +38,8 @@
 		5FA262411F20038700A1B7F8 /* Storyboard+Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262401F20038700A1B7F8 /* Storyboard+Utility.swift */; };
 		5FA262431F20039300A1B7F8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262421F20039300A1B7F8 /* Constants.swift */; };
 		5FA262451F20118B00A1B7F8 /* RecordingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */; };
+		5FFC1FD11F3390910094253E /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD01F3390910094253E /* Script.swift */; };
+		5FFC1FD31F33954B0094253E /* movie-quotes.json in Resources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD21F33954B0094253E /* movie-quotes.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +62,8 @@
 		5FA1A3911F31369800BCB32B /* Note.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Note.swift; path = Logic/Note.swift; sourceTree = "<group>"; };
 		5FA1A3971F318D4F00BCB32B /* DownloadService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DownloadService.swift; path = Service/DownloadService.swift; sourceTree = "<group>"; };
 		5FA1A39D1F31A2DC00BCB32B /* ImageCaptureHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageCaptureHelper.swift; path = Helpers/ImageCaptureHelper.swift; sourceTree = "<group>"; };
+		5FA1A39F1F32987500BCB32B /* Visage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Visage.swift; path = Logic/Visage.swift; sourceTree = "<group>"; };
+		5FA1A3A11F33807800BCB32B /* ScriptView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScriptView.swift; path = Views/ScriptView.swift; sourceTree = "<group>"; };
 		5FA262161F1FF1F000A1B7F8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Supporting/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5FA262171F1FF1F000A1B7F8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Supporting/Info.plist; sourceTree = "<group>"; };
 		5FA262201F1FF39800A1B7F8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Storyboards/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -70,6 +76,8 @@
 		5FA262401F20038700A1B7F8 /* Storyboard+Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Storyboard+Utility.swift"; path = "Extensions/Storyboard+Utility.swift"; sourceTree = "<group>"; };
 		5FA262421F20039300A1B7F8 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Supporting/Constants.swift; sourceTree = "<group>"; };
 		5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingViewController.swift; path = Controllers/RecordingViewController.swift; sourceTree = "<group>"; };
+		5FFC1FD01F3390910094253E /* Script.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Script.swift; path = Logic/Script.swift; sourceTree = "<group>"; };
+		5FFC1FD21F33954B0094253E /* movie-quotes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "movie-quotes.json"; sourceTree = "<group>"; };
 		8CCBD35002A1CBF5D14C6731 /* Pods_Method.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Method.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F646C45D56F6E717222CC5AF /* Pods-Method.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Method.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Method/Pods-Method.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -125,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				5F6BBE741F1FD2C400A157E2 /* AppDelegate.swift */,
+				5FFC1FD41F3395530094253E /* JSON */,
 				5FA1A3881F311D3600BCB32B /* Logic */,
 				5F6BBE7B1F1FD2C400A157E2 /* Assets.xcassets */,
 				5FA2621E1F1FF2E900A1B7F8 /* Views */,
@@ -145,6 +154,8 @@
 				5FA1A3891F311D6500BCB32B /* Scoring.swift */,
 				5FA1A38B1F311D7200BCB32B /* Tuner.swift */,
 				5FA1A3911F31369800BCB32B /* Note.swift */,
+				5FA1A39F1F32987500BCB32B /* Visage.swift */,
+				5FFC1FD01F3390910094253E /* Script.swift */,
 			);
 			name = Logic;
 			sourceTree = "<group>";
@@ -188,6 +199,7 @@
 				5F42EECB1F2A639C00519C2F /* PreviewView.swift */,
 				5F42EED71F2FBFFD00519C2F /* RecordingTableViewCell.swift */,
 				5FA1A3861F31122100BCB32B /* PlotView.swift */,
+				5FA1A3A11F33807800BCB32B /* ScriptView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -227,6 +239,14 @@
 				5F0101961F26C1F200C45F9C /* StorageReference+Recording.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		5FFC1FD41F3395530094253E /* JSON */ = {
+			isa = PBXGroup;
+			children = (
+				5FFC1FD21F33954B0094253E /* movie-quotes.json */,
+			);
+			name = JSON;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -295,6 +315,7 @@
 				5FA262221F1FF39800A1B7F8 /* LaunchScreen.storyboard in Resources */,
 				5F6BBE7C1F1FD2C400A157E2 /* Assets.xcassets in Resources */,
 				5FA262181F1FF1F000A1B7F8 /* GoogleService-Info.plist in Resources */,
+				5FFC1FD31F33954B0094253E /* movie-quotes.json in Resources */,
 				5FA262291F1FF42200A1B7F8 /* Login.storyboard in Resources */,
 				5FA262231F1FF39800A1B7F8 /* Main.storyboard in Resources */,
 			);
@@ -369,14 +390,17 @@
 				5F42EECE1F2A64A000519C2F /* CameraVideoEnums.swift in Sources */,
 				5FA262451F20118B00A1B7F8 /* RecordingViewController.swift in Sources */,
 				5F42EED01F2BF47200519C2F /* ProfileViewController.swift in Sources */,
+				5FFC1FD11F3390910094253E /* Script.swift in Sources */,
 				5FA262431F20039300A1B7F8 /* Constants.swift in Sources */,
 				5F42EED81F2FBFFD00519C2F /* RecordingTableViewCell.swift in Sources */,
+				5FA1A3A21F33807800BCB32B /* ScriptView.swift in Sources */,
 				5F0101911F26B68900C45F9C /* RecordService.swift in Sources */,
 				5F6BBE751F1FD2C400A157E2 /* AppDelegate.swift in Sources */,
 				5FA262411F20038700A1B7F8 /* Storyboard+Utility.swift in Sources */,
 				5F42EECC1F2A639C00519C2F /* PreviewView.swift in Sources */,
 				5F0101971F26C1F200C45F9C /* StorageReference+Recording.swift in Sources */,
 				5F0101951F26B6C000C45F9C /* StorageService.swift in Sources */,
+				5FA1A3A01F32987500BCB32B /* Visage.swift in Sources */,
 				5FA1A3981F318D4F00BCB32B /* DownloadService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -16,6 +16,7 @@ class Recording{
     var transcript: String
     var audioURL: String
     var videoURL: String
+    var imageURL: String
     var creationDate: Date
     var creator: User
     var duration: TimeInterval
@@ -30,12 +31,13 @@ class Recording{
         return dateFormatter
     }()
     
-    init(audioURL: String, videoURL: String, title: String, transcript: String, duration: TimeInterval){
+    init(audioURL: String, videoURL: String, imageURL: String, title: String, transcript: String, duration: TimeInterval){
         self.title = title
         self.transcript = transcript
         self.duration = duration
         self.audioURL = audioURL
         self.videoURL = videoURL
+        self.imageURL = imageURL
         self.creationDate = Date()
         self.creator = User.current
     }
@@ -44,6 +46,7 @@ class Recording{
         guard let dict = snapshot.value as? [String : Any],
             let audioURL = dict["audio_url"] as? String,
             let videoURL = dict["video_url"] as? String,
+            let imageURL = dict["image_url"] as? String,
             let audioTitle = dict["title"] as? String,
             let transcriptText = dict["transcript"] as? String,
             let createdAgo = dict["created_at"] as? TimeInterval,
@@ -59,6 +62,7 @@ class Recording{
         self.transcript = transcriptText
         self.audioURL = audioURL
         self.videoURL = videoURL
+        self.imageURL = imageURL
         self.creationDate = Date(timeIntervalSince1970: createdAgo)
         self.duration = duration
         self.creator = User(uid: uid, username: username)
@@ -72,6 +76,7 @@ class Recording{
         
         return ["audio_url" : audioURL,
                 "video_url" : videoURL,
+                "image_url" : imageURL,
                 "title" : title,
                 "transcript" : transcript,
                 "created_at" : createdAgo,

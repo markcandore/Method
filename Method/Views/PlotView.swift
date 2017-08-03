@@ -6,11 +6,9 @@
 //  Copyright © 2017 MarkWang. All rights reserved.
 //
 //import AudioKitPlaygrounds
-import AudioKit
 
-
-class PlotView: UIView {
-    
+//class PlotView: UIView {
+    /*
     public static func getPlot() -> AKNodeFFTPlot{
         //addTitle("Node FFT Plot")
         let microphone = AKMicrophone()
@@ -24,4 +22,5 @@ class PlotView: UIView {
         plot.gain = 100
         return plot
     }
-}
+ */
+//}

@@ -9,12 +9,12 @@
 import Foundation
 import FirebaseStorage
 import FirebaseDatabase
-
+import UIKit
 struct RecordService {
 
 
-    static func create(audioData: Data, videoData: Data, transcriptText: String,title: String, time: TimeInterval) {
-        //print("works2")
+    static func create(audioData: Data, videoData: Data, transcriptText: String,title: String, duration: TimeInterval, preview: UIImage) {
+        
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         var audioURL: String = ""
@@ -28,6 +28,7 @@ struct RecordService {
             }
             audioURL = downloadURL.absoluteString
         }
+        
         dispatchGroup.enter()
         var videoURL: String = ""
         let videoRef = StorageReference.newVideoReference()
@@ -40,20 +41,32 @@ struct RecordService {
             }
             videoURL = downloadURL.absoluteString
         }
-        //print("works3")
+        
+        dispatchGroup.enter()
+        var imageURL: String = ""
+        let imageRef = StorageReference.newImageReference()
+        let imageData = UIImagePNGRepresentation(preview) as Data!
+        StorageService.uploadPreview(imageData, at: imageRef) { (downloadURL) in
+            defer {
+                dispatchGroup.leave()
+            }
+            guard let downloadURL = downloadURL else {
+                return
+            }
+            imageURL = downloadURL.absoluteString
+        }
+        
         dispatchGroup.notify(queue: .main) {
             print("uploaded to storage")
-            create(forAudioURL: audioURL, forVideoURL: videoURL, forTranscript: transcriptText, forTitle: title, forTime: time)
+            create(forAudioURL: audioURL, forVideoURL: videoURL, forPreviewURL: imageURL, forTranscript: transcriptText, forTitle: title, forTime: duration)
         }
     }
 
-
-
-    private static func create(forAudioURL audioURL: String, forVideoURL videoURL: String, forTranscript transcriptText: String, forTitle title: String, forTime time: TimeInterval) {
+    private static func create(forAudioURL audioURL: String, forVideoURL videoURL: String, forPreviewURL imageURL: String, forTranscript transcriptText: String, forTitle title: String, forTime time: TimeInterval) {
         
         let currentUser = User.current
         
-        let recording = Recording(audioURL: audioURL, videoURL: videoURL, title: title, transcript: transcriptText, duration: time)
+        let recording = Recording(audioURL: audioURL, videoURL: videoURL, imageURL: imageURL, title: title, transcript: transcriptText, duration: time)
         let dict = recording.dictValue
         
         let rootRef = Database.database().reference()
@@ -74,8 +87,9 @@ struct RecordService {
         
         let audioURL = record.audioURL
         let videoURL = record.videoURL
+        let imageURL = record.imageURL
         
-        StorageService.deleteFiles(audioURL: audioURL, videoURL: videoURL)
+        StorageService.deleteFiles(audioURL: audioURL, videoURL: videoURL, imageURL: imageURL)
     }
     
     

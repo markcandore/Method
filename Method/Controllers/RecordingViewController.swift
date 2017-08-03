@@ -11,13 +11,19 @@ import Speech
 import AVFoundation
 import FirebaseStorage
 import FirebaseDatabase
+import SwiftyJSON
 
 class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate{
 
     // MARK: Properties
-    //var visage: Visage?
+    
+    // Face Detection
+    //fileprivate var visage : Visage?
+    //fileprivate let notificationCenter : NotificationCenter = NotificationCenter.default
+    //let emojiLabel : UILabel = UILabel(frame: UIScreen.main.bounds)
+    
     // Timer
-    var countdownTime = 60.0 - 1.36363636364
+    var countdownTime = 30.0 - (2*0.68181818181)
     var countdownTimer = Timer()
     var isTimerRunning = false
     
@@ -42,12 +48,16 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     //UI Elements
     @IBOutlet weak var listTableView: UITableView!
     @IBOutlet weak var transcriptTextView: UITextView!
+    @IBOutlet weak var scriptTextView: UITextView!
     @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var listButton: UIButton!
     @IBOutlet weak var profileButton: UIButton!
     @IBOutlet weak var countingTimerLabel: UILabel!
+    @IBOutlet weak var scriptButton: UIButton!
+    //Script
+    var script: UITextView!
     
-    // Video Setup
+    //Video Setup
     
     fileprivate enum SessionSetupResult {
         case success
@@ -77,23 +87,75 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     var videoOutputFilePath: String!
     var audioOutputFilePath: String!
+    
     var recordings = [Recording]()
+    var recordingPreviews = [UIImage](){
+        didSet{
+            print("reloading")
+            self.listTableView.reloadData()
+        }
+    }
+ 
     
-    var isListShown = false;
+    func configureTableView() {
+        listTableView.tableFooterView = UIView()
+        listTableView.separatorStyle = .none
+        listTableView.isHidden = true
+    }
     
+    func reloadList(){
+       
+        UserService.retrieveRecords(for: User.current) { (recordings) in
+            self.recordings = recordings
+            
+            print(recordings.count)
+            
+            let dispatchGroup = DispatchGroup()
+            var previews = [UIImage]()
+            
+            for record in self.recordings{
+                dispatchGroup.enter()
+                DownloadService.download(record: record){ (videoURL) in
+                    
+                    dispatchGroup.leave()
+                }
+            }
+            
+            dispatchGroup.notify(queue: .main){
+                for record in self.recordings{
+                    
+                    guard let url = record.localVideoURL else {
+                        return
+                    }
+                    previews.append(ImageCaptureHelper.videoPreviewUiimage(vidURL: url, duration: record.duration) )
+                }
+
+                print("works")
+                self.recordingPreviews = previews
+            }
+ 
+        }
+
+    }
+    
+    func getScript(){
+        guard let jsonURL = Bundle.main.url(forResource: "movie-quotes", withExtension: "json") else {
+            print("Could not find movie-quotes.json!")
+            return
+        }
+        let jsonData = try! Data(contentsOf: jsonURL)
+        let json = JSON(jsonData)
+        let script = Script(json: json)
+    }
     // MARK: RecordingViewController
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+
         
-        //let frame = CGRect(x: (self.view.frame.width/2.0) - 200, y: 40, width: 200, height: 100)
-        
-        //self.view.addSubview(PlotView.getPlot())
-        
-        //TableView
         self.listTableView.dataSource = self
         configureTableView()
         reloadList()
+
         
         //Video Preview Layer
         previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
@@ -135,12 +197,61 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         profileButton.layer.borderWidth = 1
         
         self.countingTimerLabel.text = "\(recordingTime)s"
+        
+        /*
+        //Setup "Visage" with a camera-position (iSight-Camera (Back), FaceTime-Camera (Front)) and an optimization mode for either better feature-recognition performance (HighPerformance) or better battery-life (BatteryLife)
+        visage = Visage(cameraPosition: Visage.CameraDevice.faceTimeCamera, optimizeFor: Visage.DetectorAccuracy.higherPerformance)
+        
+        //If you enable "onlyFireNotificationOnStatusChange" you won't get a continuous "stream" of notifications, but only one notification once the status changes.
+        visage!.onlyFireNotificatonOnStatusChange = false
+        
+        
+        //You need to call "beginFaceDetection" to start the detection, but also if you want to use the cameraView.
+        visage!.beginFaceDetection()
+        
+        //This is a very simple cameraView you can use to preview the image that is seen by the camera.
+        //let cameraView = visage!.visageCameraView
+        //self.view.addSubview(cameraView)
+        /*
+        let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        visualEffectView.frame = self.view.bounds
+        self.view.addSubview(visualEffectView)
+        */
+        emojiLabel.text = "😐"
+        emojiLabel.font = UIFont.systemFont(ofSize: 50)
+        emojiLabel.textAlignment = .center
+        self.view.addSubview(emojiLabel)
+        
+        //Subscribing to the "visageFaceDetectedNotification" (for a list of all available notifications check out the "ReadMe" or switch to "Visage.swift") and reacting to it with a completionHandler. You can also use the other .addObserver-Methods to react to notifications.
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "visageFaceDetectedNotification"), object: nil, queue: OperationQueue.main, using: { notification in
+            
+            UIView.animate(withDuration: 0.5, animations: {
+                self.emojiLabel.alpha = 1
+            })
+            
+            if ((self.visage!.hasSmile == true && self.visage!.isWinking == true)) {
+                self.emojiLabel.text = "😜"
+            } else if ((self.visage!.isWinking == true && self.visage!.hasSmile == false)) {
+                self.emojiLabel.text = "😉"
+            } else if ((self.visage!.hasSmile == true && self.visage!.isWinking == false)) {
+                self.emojiLabel.text = "😃"
+            } else {
+                self.emojiLabel.text = "😐"
+            }
+        })
+        
+        //The same thing for the opposite, when no face is detected things are reset.
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "visageNoFaceDetectedNotification"), object: nil, queue: OperationQueue.main, using: { notification in
+            
+            UIView.animate(withDuration: 0.5, animations: {
+                self.emojiLabel.alpha = 0.25
+            })
+        })
+ */
     }
 
     private func updatePreviewLayer(layer: AVCaptureConnection, orientation: AVCaptureVideoOrientation) {
-        
         layer.videoOrientation = orientation
-        
         previewLayer.frame = self.view.bounds
         
     }
@@ -238,21 +349,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         super.didReceiveMemoryWarning()
     }
     
-    func configureTableView() {
-        // remove separators for empty cells
-        listTableView.tableFooterView = UIView()
-        // remove separators from cells
-        listTableView.separatorStyle = .none
-        listTableView.isHidden = true
-    }
-    
-    func reloadList(){
-        UserService.posts(for: User.current) { (recordings) in
-            self.recordings = recordings
-            //FileManager.default.clearTmpDirectory()
-            self.listTableView.reloadData()
-        }
-    }
     /// Handle Denied App Privacy Settings
     
     fileprivate func promptToAppSettings() {
@@ -579,15 +675,35 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             if alert.textFields?[0].text != "" {
                 self.currentFilename = alert.textFields?[0].text
             }
-            RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, time: time)
-           
-            //FileManager.default.clearTmpDirectory()
-            self.reloadList()
+            let url = URL(fileURLWithPath: videoPath!)
+            guard let image = ImageCaptureHelper.videoPreviewUiimage(vidURL: url, duration: time) else{
+                return
+            }
             
+            if self.recordings.count > 10{
+                RecordService.delete(record: self.recordings[0])
+            }
+            RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, duration: time, preview: image)
+          
+
+            do{
+                try FileManager.default.removeItem(at: URL(fileURLWithPath: self.audioOutputFilePath))
+                try FileManager.default.removeItem(at: URL(fileURLWithPath: self.videoOutputFilePath))
+            } catch{
+                print(error)
+            }
+    
         }))
         
         alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.cancel, handler: { action in
-            FileManager.default.clearTmpDirectory()
+            do{
+                try FileManager.default.removeItem(at: URL(fileURLWithPath: self.audioOutputFilePath))
+                try FileManager.default.removeItem(at: URL(fileURLWithPath: self.videoOutputFilePath))
+
+            } catch{
+                print(error)
+            }
+           
         }))
         
         self.present(alert, animated: true, completion: nil)
@@ -598,10 +714,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
         if available {
             recordButton.isEnabled = true
-            //recordButton.setTitle("Start Recording", for: [])
         } else {
             recordButton.isEnabled = false
-            //recordButton.setTitle("Recognition not available", for: .disabled)
         }
     }
     
@@ -618,12 +732,14 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     //Countdown Timer
     func runCountdownTimer(){
-        countdownTimer = Timer.scheduledTimer(timeInterval: 1.36363636364, target: self, selector: (#selector(RecordingViewController.updateCountdownTimer)), userInfo: nil, repeats: true)
+        
+        // 1.36363636364
+        countdownTimer = Timer.scheduledTimer(timeInterval: 0.68181818181, target: self, selector: (#selector(RecordingViewController.updateCountdownTimer)), userInfo: nil, repeats: true)
     }
     
     func updateCountdownTimer(){
         if countdownTime > 0 {
-            countdownTime -= 1.36363636364
+            countdownTime -= 0.68181818181
             countdownImage += 1
             let button = UIImage(named: "RecordButton1 (\(countdownImage))")
             recordButton.setImage(button, for: .normal)
@@ -645,7 +761,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     func reset(){
-        countdownTime = 60.0 - 1.36363636364
+        countdownTime = 30.0 - (2*0.68181818181)
         recordingTime = 0.0
         countingTimerLabel.text = "\(recordingTime)s"
         transcriptTextView.text = ""
@@ -672,7 +788,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 let record = recordings[indexPath.row]
                 let mediaPlayerViewController = segue.destination
                     as! MediaPlayerViewController
-                
                 mediaPlayerViewController.record = record
             }
         }
@@ -699,15 +814,12 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
     }
     
-    @IBAction func listButtonTapped(_ sender: Any) {
-        if isListShown == false {
-            //reloadList()
-            //listTableView.reloadData()
+    @IBAction func listButtonTapped(_ sender: UIButton) {
+        if listTableView.isHidden == true{
             listTableView.isHidden = false
-            isListShown = true
-        } else{
+        }
+        else{
             listTableView.isHidden = true
-            isListShown = false
         }
     }
     
@@ -718,24 +830,28 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         self.present(profilePage!, animated: true, completion: nil)
     }
     
+    
+    @IBAction func scriptButtonTapped(_ sender: UIButton) {
+        print("script tapped")
+        //scriptTextView.textColor = UIColor.white
+        scriptTextView.text = "hello"
+    }
+    
     @IBAction func unwind(segue:UIStoryboardSegue) { }
     
 }
 extension RecordingViewController: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return recordings.count
+        return recordingPreviews.count
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+        print("works")
         let cell = tableView.dequeueReusableCell(withIdentifier: "recordingTableViewCell", for: indexPath) as! RecordingTableViewCell
-        cell.isOpaque = true
-        cell.isUserInteractionEnabled = false
-        
         let row = indexPath.row
         let recording = recordings[row]
         
@@ -745,19 +861,7 @@ extension RecordingViewController: UITableViewDataSource{
         cell.recordingDate.textColor = UIColor.white
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
-        
-        DownloadService.download(record: recording){ (downloadURL) in
-            if downloadURL  == nil {
-                print("url is nil")
-            } else{
-                //print(recording.duration)
-                cell.viewPreview.image = ImageCaptureHelper.videoPreviewUiimage(vidURL: downloadURL!, duration: recording.duration)
-
-            }
-            cell.isOpaque = false
-            cell.isUserInteractionEnabled = true
-        }
-        
+        cell.viewPreview.image = recordingPreviews[row]
         return cell
     }
     
@@ -772,28 +876,6 @@ extension RecordingViewController: UITableViewDataSource{
 }
 
 extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
-    
-    /*!
-     @method captureOutput:didFinishRecordingToOutputFileAtURL:fromConnections:error:
-     @abstract
-     Informs the delegate when all pending data has been written to an output file.
-     
-     @param captureOutput
-     The capture file output that has finished writing the file.
-     @param fileURL
-     The file URL of the file that has been written.
-     @param connections
-     An array of AVCaptureConnection objects attached to the file output that provided the data that was written to the file.
-     @param error
-     An error describing what caused the file to stop recording, or nil if there was no error.
-     
-     @discussion
-     This method is called when the file output has finished writing all data to a file whose recording was stopped, either because startRecordingToOutputFileURL:recordingDelegate: or stopRecording were called, or because an error, described by the error parameter, occurred (if no error occurred, the error parameter will be nil). This method will always be called for each recording request, even if no data is successfully written to the file.
-     
-     Clients should not assume that this method will be called on a specific thread.
-     
-     Delegates are required to implement this method.
-     */
     
     func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
         if let currentBackgroundRecordingID = backgroundRecordingID {
@@ -862,6 +944,15 @@ extension FileManager {
                 try self.removeItem(atPath: path)
             }
         } catch {
+            print(error)
+        }
+    }
+    
+    func removeFile(record: Recording){
+        do{
+            try FileManager.default.removeItem(atPath: (record.localAudioURL?.absoluteString)!)
+            try FileManager.default.removeItem(atPath: (record.localVideoURL?.absoluteString)!)
+        } catch{
             print(error)
         }
     }

@@ -10,28 +10,26 @@ import Foundation
 import SwiftyJSON
 
 struct Script {
-    let quote: String?
-    let title: String?
+    var sentence: String
     init(json: JSON) {
         let count = json.count
-        //let lines =  json[]
-        
+     
         let random = arc4random_uniform(UInt32(count)) + 1
         let line = json[Int(random)].stringValue
-        self.quote = ""
-        self.title = ""
-        //quote = setQuote(line: line)
-        //title = setTitle(line: line)
-        setQuote(line: line)
-        setTitle(line: line)
+        self.sentence = ""
+        setSentence(line: line)
+    }
+
+    mutating func setSentence(line: String){
+        self.sentence = line
     }
     
-    private func setQuote(line: String){
+    func getQuote() -> String{
         
+        return ""
     }
     
-    private func setTitle(line: String){
-        
+    func getTitle() -> String{
+        return ""
     }
-    
 }

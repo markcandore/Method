@@ -54,8 +54,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     @IBOutlet weak var profileButton: UIButton!
     @IBOutlet weak var countingTimerLabel: UILabel!
     @IBOutlet weak var scriptButton: UIButton!
-    //Script
-    var script: UITextView!
     
     //Video Setup
     
@@ -138,14 +136,16 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
 
     }
     
-    func getScript(){
+    func getScript() -> String{
         guard let jsonURL = Bundle.main.url(forResource: "movie-quotes", withExtension: "json") else {
-            print("Could not find movie-quotes.json!")
-            return
+            //print("Could not find movie-quotes.json!")
+            return "Could not find movie-quotes.json!"
         }
         let jsonData = try! Data(contentsOf: jsonURL)
         let json = JSON(jsonData)
         let script = Script(json: json)
+        return script.sentence
+        
     }
     // MARK: RecordingViewController
     override func viewDidLoad() {
@@ -833,8 +833,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     @IBAction func scriptButtonTapped(_ sender: UIButton) {
         print("script tapped")
-        //scriptTextView.textColor = UIColor.white
-        scriptTextView.text = "hello"
+        
+        scriptTextView.text = getScript()
     }
     
     @IBAction func unwind(segue:UIStoryboardSegue) { }

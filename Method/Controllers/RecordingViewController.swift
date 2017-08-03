@@ -22,6 +22,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     //fileprivate let notificationCenter : NotificationCenter = NotificationCenter.default
     //let emojiLabel : UILabel = UILabel(frame: UIScreen.main.bounds)
     
+    var isRecording = false
     // Timer
     var countdownTime = 30.0 - (2*0.68181818181)
     var countdownTimer = Timer()
@@ -39,7 +40,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     private let audioEngine = AVAudioEngine()
     
     //Audio
-    private var recordingSession: AVAudioSession!
     private var audioRecorder: AVAudioRecorder!
     var soundFileURL:URL!
     var currentFilename: String!
@@ -68,7 +68,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     private var camera: CameraSelection = .front
     private var videoSession = AVCaptureSession()
 
-    var isVideoRecording = false
+    //var isVideoRecording = false
     var isSessionRunning = false
     var lowLightBoost = true
     var shouldUseDeviceOrientation = false
@@ -555,6 +555,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         try audioSession.setMode(AVAudioSessionModeMeasurement)
         try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
         
+        
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         
         guard let inputNode = audioEngine.inputNode else { fatalError("Audio engine has no input node") }
@@ -582,7 +583,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.recognitionTask = nil
                 
                 self.recordButton.isEnabled = true
-                //self.recordButton.setTitle("Start Recording", for: [])
             }
         }
         
@@ -635,7 +635,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.videoOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
                 movieFileOutput.startRecording(toOutputFileURL: URL(fileURLWithPath: self.videoOutputFilePath!), recordingDelegate: self)
                
-                self.isVideoRecording = true
             } else{
                 movieFileOutput.stopRecording()
             }
@@ -644,7 +643,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     func stopVideoRecording(){
         if self.movieFileOutput?.isRecording == true{
-            self.isVideoRecording = false
             movieFileOutput!.stopRecording()
         }
     }
@@ -662,6 +660,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             guard let audioData = FileManager.default.contents(atPath: audioPath!) else{
                 return
             }
+            
             let videoPath = self.videoOutputFilePath
             guard let videoData = FileManager.default.contents(atPath: videoPath!) else{
                 return
@@ -707,7 +706,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }))
         
         self.present(alert, animated: true, completion: nil)
-        listButton.isEnabled = true
     }
     // MARK: SFSpeechRecognizerDelegate
     
@@ -732,8 +730,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     
     //Countdown Timer
     func runCountdownTimer(){
-        
-        // 1.36363636364
+        // 1.36363636364 for 60 seconds
         countdownTimer = Timer.scheduledTimer(timeInterval: 0.68181818181, target: self, selector: (#selector(RecordingViewController.updateCountdownTimer)), userInfo: nil, repeats: true)
     }
     
@@ -799,6 +796,21 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         listTableView.isHidden = true
         
+        if isRecording == false{
+            try! startAudioRecording()
+            startVideoRecording()
+            
+            recordButton.setImage(UIImage(named: "RecordButtonPlayed"), for: .normal)
+            listButton.isEnabled = false
+            runCountdownTimer()
+            runCountingTimer()
+            isRecording = true
+        } else {
+            end()
+            listButton.isEnabled = true
+            isRecording = false
+        }
+        /*
         if audioEngine.isRunning {
             end()
          
@@ -811,6 +823,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             runCountdownTimer()
             runCountingTimer()
         }
+ */
         
     }
     
@@ -874,7 +887,15 @@ extension RecordingViewController: UITableViewDataSource{
     }
     
 }
-
+/*
+extension RecordingViewController:UIScrollViewDelegate{
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        
+        let index = round(scrollView.contentOffset.x / scrollView.frame.size.width)
+        print(index)
+    }
+}
+ */
 extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
     
     func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {

@@ -32,7 +32,7 @@ class MediaPlayerViewController: UIViewController {
         self.play()
         /*
         DownloadService.download(record: record){ (vidURL) in
-            /*
+         
             guard let url = vidURL else{
                 return
             }
@@ -42,10 +42,10 @@ class MediaPlayerViewController: UIViewController {
             let previewView = UIView(frame: self.view.frame)
             previewView.backgroundColor = UIColor(patternImage: image)
             super.view.addSubview(previewView)
- */
+
             self.play()
         }
- */
+        */
     }
   
     func removeFile(){
@@ -71,6 +71,12 @@ class MediaPlayerViewController: UIViewController {
         print("play")
         if (record.localVideoURL != nil && record.localAudioURL != nil){
             do{
+                let audioSession = AVAudioSession.sharedInstance()
+                try audioSession.setCategory(AVAudioSessionCategoryRecord)
+                try audioSession.setCategory(AVAudioSessionCategoryPlayback)
+                try audioSession.setMode(AVAudioSessionModeMoviePlayback)
+                try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
+                
                 self.audioPlayer = try AVAudioPlayer(contentsOf: (record?.localAudioURL)!)
                 self.videoPlayer = AVPlayer(url: (record?.localVideoURL)!)
                 
@@ -90,7 +96,6 @@ class MediaPlayerViewController: UIViewController {
                 NotificationCenter.default.addObserver(self, selector: #selector(self.playerItemDidReachEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.videoPlayer!.currentItem)
                 
                 self.tap()
-                
                 self.audioPlayer.play()
                 self.videoPlayer?.play()
                 print("play success")
@@ -105,14 +110,15 @@ class MediaPlayerViewController: UIViewController {
     }
     
     @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
-        performSegue(withIdentifier: "unwindBackToRVC", sender: self)
-        /*
+        //self.audioEngine.stop()
+        //performSegue(withIdentifier: "unwindBackToRVC", sender: self)
+        
         if self.videoPlayer != nil {
             self.videoPlayer!.seek(to: kCMTimeZero)
             self.videoPlayer!.play()
             self.audioPlayer!.play()
         }
-         */
+ 
     }
     
     @IBAction func backButtonTapped(_ sender: UIButton) {

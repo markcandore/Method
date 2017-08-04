@@ -13,14 +13,11 @@ import FirebaseStorage
 import FirebaseDatabase
 import SwiftyJSON
 
-class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate{
+class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate, TunerDelegate{
 
     // MARK: Properties
-    
-    // Face Detection
-    //fileprivate var visage : Visage?
-    //fileprivate let notificationCenter : NotificationCenter = NotificationCenter.default
-    //let emojiLabel : UILabel = UILabel(frame: UIScreen.main.bounds)
+    let tuner       = Tuner()
+    let displayView = DisplayView()
     
     var isRecording = false
     // Timer
@@ -53,8 +50,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     @IBOutlet weak var listButton: UIButton!
     @IBOutlet weak var profileButton: UIButton!
     @IBOutlet weak var countingTimerLabel: UILabel!
-    @IBOutlet weak var scriptButton: UIButton!
     
+    @IBOutlet weak var pitchTextLabel: UITextField!
+    //@IBOutlet weak var displayView: DisplayView!
     //Video Setup
     
     fileprivate enum SessionSetupResult {
@@ -83,9 +81,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     fileprivate var previewLayer: PreviewView!
     fileprivate var deviceOrientation : UIDeviceOrientation?
     
-    var videoOutputFilePath: String!
-    var audioOutputFilePath: String!
-    
+    //var videoOutputFilePath: String!
+    //var audioOutputFilePath: String!
+    var outputFileName: String!
     var recordings = [Recording]()
     var recordingPreviews = [UIImage](){
         didSet{
@@ -99,6 +97,30 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         listTableView.tableFooterView = UIView()
         listTableView.separatorStyle = .none
         listTableView.isHidden = true
+    }
+    
+    func tunerDidMeasurePitch(_ pitch: Pitch, withDistance distance: Double,
+                              amplitude: Double) {
+        /* Scale the amplitude to make it look more dramatic. */
+        displayView.amplitude = min(1.0, amplitude * 25.0)
+        displayView.frequency = pitch.frequency
+        
+        if amplitude < 0.01 {
+            return
+        }
+        pitchTextLabel.text = pitch.note.description
+        /*
+        //knobView.pitch = pitch
+        
+        /* Calculate the difference between the nearest pitch and the second
+         * nearest pitch to express the distance in a percentage. */
+        /let previous   = pitch - 1
+        let next       = pitch + 1
+        let difference = distance < 0 ?
+            (pitch.frequency - previous.frequency) :
+            (next.frequency  - pitch.frequency)
+        */
+        //knobView.distance = distance / difference / 2.0
     }
     
     func reloadList(){
@@ -131,39 +153,38 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
     }
     
-    @objc fileprivate func singleTapGesture(write: UITapGestureRecognizer) {
-        scriptTextView.text = getScript()
-    }
-    
-    func getScript() -> String{
-        guard let jsonURL = Bundle.main.url(forResource: "movie-quotes", withExtension: "json") else {
-            //print("Could not find movie-quotes.json!")
-            return "Could not find movie-quotes.json!"
-        }
-        let jsonData = try! Data(contentsOf: jsonURL)
-        let json = JSON(jsonData)
-        let script = Script(json: json)
-        return script.sentence
-    }
-    
     // MARK: RecordingViewController
     override func viewDidLoad() {
         super.viewDidLoad()
     
+       /*
+        displayView.frame = CGRect(
+            origin: CGPoint(x: round(self.view.bounds.width - 141)  / 2,
+                            y: round(self.view.bounds.height - 141) / 2),
+            size:   CGSize(width: 141, height: 141)
+        )
+        */
+        displayView.frame = CGRect(x: 77, y: 536, width: 230, height: 48)
+        
+
+        self.view.addSubview(displayView)
+        /* Start the tuner. */
+        tuner.delegate = self
+        tuner.startMonitoring()
+        
         configureTableView()
         reloadList()
-     
         
-        let topView = UIView.init(frame: scriptTextView.frame)
-        topView.backgroundColor = .clear
-        scriptTextView.addSubview(topView)
+        let scriptView = UIView.init(frame: scriptTextView.frame)
+        scriptView.backgroundColor = .clear
+        scriptTextView.addSubview(scriptView)
+        scriptTextView.text = "Tap here for a movie quote"
         
-        let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(singleTapGesture(write:)))
-        singleTapGesture.numberOfTapsRequired = 1
-        singleTapGesture.delegate = self
-        topView.addGestureRecognizer(singleTapGesture)
+        let scriptTapGesture = UITapGestureRecognizer(target: self, action: #selector(scriptTapGesture(write:)))
+        scriptTapGesture.numberOfTapsRequired = 1
+        scriptTapGesture.delegate = self
+        scriptView.addGestureRecognizer(scriptTapGesture)
         
-        //scriptTextView.target(forAction: #Selector(writeScript()), withSender: Any)
         //Video Preview Layer
         previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
         previewLayer.session = videoSession
@@ -203,56 +224,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         profileButton.layer.borderWidth = 1
         countingTimerLabel.text = "\(recordingTime)s"
         
-        /*
-        //Setup "Visage" with a camera-position (iSight-Camera (Back), FaceTime-Camera (Front)) and an optimization mode for either better feature-recognition performance (HighPerformance) or better battery-life (BatteryLife)
-        visage = Visage(cameraPosition: Visage.CameraDevice.faceTimeCamera, optimizeFor: Visage.DetectorAccuracy.higherPerformance)
-        
-        //If you enable "onlyFireNotificationOnStatusChange" you won't get a continuous "stream" of notifications, but only one notification once the status changes.
-        visage!.onlyFireNotificatonOnStatusChange = false
-        
-        
-        //You need to call "beginFaceDetection" to start the detection, but also if you want to use the cameraView.
-        visage!.beginFaceDetection()
-        
-        //This is a very simple cameraView you can use to preview the image that is seen by the camera.
-        //let cameraView = visage!.visageCameraView
-        //self.view.addSubview(cameraView)
-        /*
-        let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        visualEffectView.frame = self.view.bounds
-        self.view.addSubview(visualEffectView)
-        */
-        emojiLabel.text = "😐"
-        emojiLabel.font = UIFont.systemFont(ofSize: 50)
-        emojiLabel.textAlignment = .center
-        self.view.addSubview(emojiLabel)
-        
-        //Subscribing to the "visageFaceDetectedNotification" (for a list of all available notifications check out the "ReadMe" or switch to "Visage.swift") and reacting to it with a completionHandler. You can also use the other .addObserver-Methods to react to notifications.
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "visageFaceDetectedNotification"), object: nil, queue: OperationQueue.main, using: { notification in
-            
-            UIView.animate(withDuration: 0.5, animations: {
-                self.emojiLabel.alpha = 1
-            })
-            
-            if ((self.visage!.hasSmile == true && self.visage!.isWinking == true)) {
-                self.emojiLabel.text = "😜"
-            } else if ((self.visage!.isWinking == true && self.visage!.hasSmile == false)) {
-                self.emojiLabel.text = "😉"
-            } else if ((self.visage!.hasSmile == true && self.visage!.isWinking == false)) {
-                self.emojiLabel.text = "😃"
-            } else {
-                self.emojiLabel.text = "😐"
-            }
-        })
-        
-        //The same thing for the opposite, when no face is detected things are reset.
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "visageNoFaceDetectedNotification"), object: nil, queue: OperationQueue.main, using: { notification in
-            
-            UIView.animate(withDuration: 0.5, animations: {
-                self.emojiLabel.alpha = 0.25
-            })
-        })
- */
     }
 
     private func updatePreviewLayer(layer: AVCaptureConnection, orientation: AVCaptureVideoOrientation) {
@@ -451,6 +422,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             }
             self.movieFileOutput = movieFileOutput
         }
+        
     }
     
     fileprivate func videoInputPresetFromVideoQuality(quality: VideoQuality) -> String{
@@ -574,8 +546,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             self.recognitionRequest?.append(buffer)
         }
 
-        let outputFileName = UUID().uuidString
-        self.audioOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("m4a")!)
+        let audioOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("m4a")!)
         
         let recordSettings:[String : Any] = [
             AVFormatIDKey:             kAudioFormatAppleLossless,
@@ -585,7 +556,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             AVSampleRateKey :          44100.0
         ]
         
-        audioRecorder = try AVAudioRecorder(url: URL(fileURLWithPath: self.audioOutputFilePath!), settings: recordSettings)
+        audioRecorder = try AVAudioRecorder(url: URL(fileURLWithPath: audioOutputFilePath), settings: recordSettings)
         audioRecorder.delegate = self
         
         audioEngine.prepare()
@@ -614,9 +585,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 movieFileOutputConnection?.videoOrientation = self.getVideoOrientation()
                 
                 // Start recording to a temporary file.
-                let outputFileName = UUID().uuidString
-                self.videoOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
-                movieFileOutput.startRecording(toOutputFileURL: URL(fileURLWithPath: self.videoOutputFilePath!), recordingDelegate: self)
+                let videoOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("mov")!)
+                movieFileOutput.startRecording(toOutputFileURL: URL(fileURLWithPath: videoOutputFilePath), recordingDelegate: self)
                
             } else{
                 movieFileOutput.stopRecording()
@@ -640,13 +610,13 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: {[unowned self] action in
 
-            let audioPath = self.audioOutputFilePath
-            guard let audioData = FileManager.default.contents(atPath: audioPath!) else{
+            let audioPath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("m4a")!)
+            guard let audioData = FileManager.default.contents(atPath: audioPath) else{
                 return
             }
             
-            let videoPath = self.videoOutputFilePath
-            guard let videoData = FileManager.default.contents(atPath: videoPath!) else{
+            let videoPath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("mov")!)
+            guard let videoData = FileManager.default.contents(atPath: videoPath) else{
                 return
             }
             let transcriptText = self.transcriptTextView.text
@@ -658,7 +628,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             if alert.textFields?[0].text != "" {
                 self.currentFilename = alert.textFields?[0].text
             }
-            let url = URL(fileURLWithPath: videoPath!)
+            let url = URL(fileURLWithPath: videoPath)
             guard let image = ImageCaptureHelper.videoPreviewUiimage(vidURL: url, duration: time) else{
                 return
             }
@@ -669,27 +639,16 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.recordingPreviews.remove(at: 0)
             }
             */
-            RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, duration: time, preview: image)
+            RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, preview: image)
             
-            do{
-                print("removing local")
-                try FileManager.default.removeItem(at: URL(fileURLWithPath: self.audioOutputFilePath))
-                try FileManager.default.removeItem(at: URL(fileURLWithPath: self.videoOutputFilePath))
-            } catch{
-                print(error)
-            }
+            print("local temp clear")
+            FileManager.default.clearTmpDirectory()
     
         }))
         
         alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.cancel, handler: { action in
-            do{
-                try FileManager.default.removeItem(at: URL(fileURLWithPath: self.audioOutputFilePath))
-                try FileManager.default.removeItem(at: URL(fileURLWithPath: self.videoOutputFilePath))
-
-            } catch{
-                print(error)
-            }
-           
+            print("local temp clear")
+            FileManager.default.clearTmpDirectory()
         }))
         
         self.present(alert, animated: true, completion: nil)
@@ -765,6 +724,20 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         reset()
     }
     
+    @objc fileprivate func scriptTapGesture(write: UITapGestureRecognizer) {
+        scriptTextView.text = getScript()
+    }
+    
+    func getScript() -> String{
+        guard let jsonURL = Bundle.main.url(forResource: "movie-quotes", withExtension: "json") else {
+            return "Could not find movie-quotes.json!"
+        }
+        let jsonData = try! Data(contentsOf: jsonURL)
+        let json = JSON(jsonData)
+        let script = Script(json: json)
+        return script.sentence
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let identifier = segue.identifier {
             if identifier == Constants.Segue.showMedia {
@@ -784,29 +757,14 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     @IBAction func recordButtonTapped(_ sender: UIButton) {
         
         listTableView.isHidden = true
-        
-        /*
-        if isRecording == false{
-            try! startAudioRecording()
-            startVideoRecording()
-            
-            recordButton.setImage(UIImage(named: "RecordButtonPlayed"), for: .normal)
-            listButton.isEnabled = false
-            runCountdownTimer()
-            runCountingTimer()
-            isRecording = true
-        } else {
-            end()
-            listButton.isEnabled = true
-            isRecording = false
-        }
-        */
+
         if audioEngine.isRunning{
             end()
             listButton.isEnabled = true
             isRecording = false
         }
         else {
+            outputFileName = UUID().uuidString
             try! startAudioRecording()
             startVideoRecording()
             
@@ -832,12 +790,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         let profilePage = storyboard.instantiateViewController(withIdentifier: Constants.Storyboards.profileViewController) as? ProfileViewController
         self.present(profilePage!, animated: true, completion: nil)
-    }
-    
-    @IBAction func scriptButtonTapped(_ sender: UIButton) {
-        print("script tapped")
-       
-        scriptTextView.text = getScript()
     }
     
     @IBAction func unwind(segue:UIStoryboardSegue) { }
@@ -948,7 +900,7 @@ extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
 
 extension FileManager {
     func clearTmpDirectory() {
-        print("temp directoary being cleared")
+        //print("temp directoary being cleared")
         do {
             let tmpDirectory = try contentsOfDirectory(atPath: NSTemporaryDirectory())
             try tmpDirectory.forEach {[unowned self] file in

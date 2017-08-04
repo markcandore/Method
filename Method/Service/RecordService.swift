@@ -13,7 +13,7 @@ import UIKit
 struct RecordService {
 
 
-    static func create(audioData: Data, videoData: Data, transcriptText: String,title: String, duration: TimeInterval, preview: UIImage) {
+    static func create(audioData: Data, videoData: Data, transcriptText: String,title: String, fileID : String,duration: TimeInterval, preview: UIImage) {
         
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
@@ -58,15 +58,15 @@ struct RecordService {
         
         dispatchGroup.notify(queue: .main) {
             print("uploaded to storage")
-            create(forAudioURL: audioURL, forVideoURL: videoURL, forPreviewURL: imageURL, forTranscript: transcriptText, forTitle: title, forTime: duration)
+            addToDatabase(forAudioURL: audioURL, forVideoURL: videoURL, forPreviewURL: imageURL, forTranscript: transcriptText, forTitle: title, forFileID: fileID,forTime: duration)
         }
     }
 
-    private static func create(forAudioURL audioURL: String, forVideoURL videoURL: String, forPreviewURL imageURL: String, forTranscript transcriptText: String, forTitle title: String, forTime time: TimeInterval) {
+    private static func addToDatabase(forAudioURL audioURL: String, forVideoURL videoURL: String, forPreviewURL imageURL: String, forTranscript transcriptText: String, forTitle title: String, forFileID fileID: String,forTime time: TimeInterval) {
         
         let currentUser = User.current
         
-        let recording = Recording(audioURL: audioURL, videoURL: videoURL, imageURL: imageURL, title: title, transcript: transcriptText, duration: time)
+        let recording = Recording(audioURL: audioURL, videoURL: videoURL, imageURL: imageURL, fileID: fileID, title: title,transcript: transcriptText, duration: time)
         let dict = recording.dictValue
         
         let rootRef = Database.database().reference()
@@ -80,16 +80,16 @@ struct RecordService {
         let currentUser = User.current
         
         let recordKey = record.key
-        
         let databaseRef = Database.database().reference().child("recordings").child(currentUser.uid).child(recordKey!)
         
         databaseRef.removeValue()
         
-        let audioURL = record.audioURL
-        let videoURL = record.videoURL
-        let imageURL = record.imageURL
+        let audioURL = record.FAudioURL
+        let videoURL = record.FVideoURL
+        let imageURL = record.FImageURL
         
         StorageService.deleteFiles(audioURL: audioURL, videoURL: videoURL, imageURL: imageURL)
+        
     }
     
     

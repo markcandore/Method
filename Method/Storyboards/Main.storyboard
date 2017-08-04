@@ -98,24 +98,14 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5KO-z1-eG5">
-                                <rect key="frame" x="71" y="20" width="304" height="62"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5KO-z1-eG5">
+                                <rect key="frame" x="0.0" y="20" width="375" height="62"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.64386237157534243" colorSpace="calibratedRGB"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uRO-e8-lw9">
-                                <rect key="frame" x="8" y="30" width="46" height="28"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Quote">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="scriptButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="dH6-ss-hHD"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleAspectFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KEW-oz-CJS">
                                 <rect key="frame" x="16" y="602" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -125,6 +115,14 @@
                                     <action selector="profileButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="A9E-vQ-yoz"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="HIL-CE-kfi">
+                                <rect key="frame" x="311" y="543" width="52" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
@@ -133,9 +131,9 @@
                         <outlet property="countingTimerLabel" destination="mKf-Ob-8Eb" id="GDC-ye-h4B"/>
                         <outlet property="listButton" destination="1aR-NI-gSZ" id="Tg0-GI-nNl"/>
                         <outlet property="listTableView" destination="mN2-UB-7UZ" id="8Zx-7k-q58"/>
+                        <outlet property="pitchTextLabel" destination="HIL-CE-kfi" id="Xoi-gg-Sn2"/>
                         <outlet property="profileButton" destination="KEW-oz-CJS" id="hNC-od-Z5F"/>
                         <outlet property="recordButton" destination="uJB-a4-5PD" id="IS2-lH-DL1"/>
-                        <outlet property="scriptButton" destination="uRO-e8-lw9" id="SAZ-9s-mnU"/>
                         <outlet property="scriptTextView" destination="5KO-z1-eG5" id="bUV-oU-Ygd"/>
                         <outlet property="transcriptTextView" destination="myC-tK-qXu" id="gZR-l8-sYQ"/>
                     </connections>

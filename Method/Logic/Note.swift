@@ -43,7 +43,8 @@ enum Note: CustomStringConvertible{
         let index = Note.all.index(where: { $0 == self   })! -
             Note.all.index(where: { $0 == Note.a(nil) })!
         
-        return 440 * pow(2, Double(index) / 12.0)
+        //return 440 * pow(2, Double(index) / 12.0)
+        return 220 * pow(2, Double(index) / 12.0)
     }
     
     

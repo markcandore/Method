@@ -19,6 +19,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>AudioKit.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>FirebaseUI-FirebaseAuthUI.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -62,7 +67,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>736ABCE986C998F44C067F1EB454EE93</key>
+		<key>367180281D677987F28A6929B360D331</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>87F230C55E51D2404076985943892813</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -77,12 +87,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9FE4CC435C46463140F37D584FAFDCAE</key>
+		<key>C052BEBFBD0AB5218CC64BA3450F6547</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C052BEBFBD0AB5218CC64BA3450F6547</key>
+		<key>ECABAA6A16B227BD6ED5097BD4BCB784</key>
 		<dict>
 			<key>primary</key>
 			<true/>

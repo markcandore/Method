@@ -13,12 +13,13 @@ import FirebaseStorage
 import FirebaseDatabase
 import SwiftyJSON
 
-class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate, TunerDelegate{
+class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate{
 
     // MARK: Properties
+    /*
     let tuner       = Tuner()
     let displayView = DisplayView()
-    
+    */
     var isRecording = false
     // Timer
     var countdownTime = 30.0 - (2*0.68181818181)
@@ -50,9 +51,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     @IBOutlet weak var listButton: UIButton!
     @IBOutlet weak var profileButton: UIButton!
     @IBOutlet weak var countingTimerLabel: UILabel!
-    
-    @IBOutlet weak var pitchTextLabel: UITextField!
-    //@IBOutlet weak var displayView: DisplayView!
+   
     //Video Setup
     
     fileprivate enum SessionSetupResult {
@@ -98,7 +97,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         listTableView.separatorStyle = .none
         listTableView.isHidden = true
     }
-    
+    /*
     func tunerDidMeasurePitch(_ pitch: Pitch, withDistance distance: Double,
                               amplitude: Double) {
         /* Scale the amplitude to make it look more dramatic. */
@@ -108,21 +107,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         if amplitude < 0.01 {
             return
         }
-        pitchTextLabel.text = pitch.note.description
-        /*
-        //knobView.pitch = pitch
-        
-        /* Calculate the difference between the nearest pitch and the second
-         * nearest pitch to express the distance in a percentage. */
-        /let previous   = pitch - 1
-        let next       = pitch + 1
-        let difference = distance < 0 ?
-            (pitch.frequency - previous.frequency) :
-            (next.frequency  - pitch.frequency)
-        */
-        //knobView.distance = distance / difference / 2.0
     }
-    
+    */
     func reloadList(){
         UserService.retrieveRecords(for: User.current) { (recordings) in
             self.recordings = recordings
@@ -157,21 +143,13 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     override func viewDidLoad() {
         super.viewDidLoad()
     
-       /*
-        displayView.frame = CGRect(
-            origin: CGPoint(x: round(self.view.bounds.width - 141)  / 2,
-                            y: round(self.view.bounds.height - 141) / 2),
-            size:   CGSize(width: 141, height: 141)
-        )
-        */
+        /*
         displayView.frame = CGRect(x: 77, y: 536, width: 230, height: 48)
-        
-
         self.view.addSubview(displayView)
         /* Start the tuner. */
         tuner.delegate = self
         tuner.startMonitoring()
-        
+        */
         configureTableView()
         reloadList()
         

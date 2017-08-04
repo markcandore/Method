@@ -40,6 +40,8 @@
 		5FA262451F20118B00A1B7F8 /* RecordingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */; };
 		5FFC1FD11F3390910094253E /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD01F3390910094253E /* Script.swift */; };
 		5FFC1FD31F33954B0094253E /* movie-quotes.json in Resources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD21F33954B0094253E /* movie-quotes.json */; };
+		5FFC1FD61F33BDFC0094253E /* AudioSessionCommandHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD51F33BDFC0094253E /* AudioSessionCommandHelper.swift */; };
+		5FFC1FD81F33DCD70094253E /* UIGestureHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD71F33DCD70094253E /* UIGestureHelpers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +80,8 @@
 		5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingViewController.swift; path = Controllers/RecordingViewController.swift; sourceTree = "<group>"; };
 		5FFC1FD01F3390910094253E /* Script.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Script.swift; path = Logic/Script.swift; sourceTree = "<group>"; };
 		5FFC1FD21F33954B0094253E /* movie-quotes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "movie-quotes.json"; sourceTree = "<group>"; };
+		5FFC1FD51F33BDFC0094253E /* AudioSessionCommandHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AudioSessionCommandHelper.swift; path = Helpers/AudioSessionCommandHelper.swift; sourceTree = "<group>"; };
+		5FFC1FD71F33DCD70094253E /* UIGestureHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIGestureHelpers.swift; path = Helpers/UIGestureHelpers.swift; sourceTree = "<group>"; };
 		8CCBD35002A1CBF5D14C6731 /* Pods_Method.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Method.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F646C45D56F6E717222CC5AF /* Pods-Method.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Method.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Method/Pods-Method.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -228,6 +232,8 @@
 			isa = PBXGroup;
 			children = (
 				5FA1A39D1F31A2DC00BCB32B /* ImageCaptureHelper.swift */,
+				5FFC1FD51F33BDFC0094253E /* AudioSessionCommandHelper.swift */,
+				5FFC1FD71F33DCD70094253E /* UIGestureHelpers.swift */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -395,7 +401,9 @@
 				5F42EED81F2FBFFD00519C2F /* RecordingTableViewCell.swift in Sources */,
 				5FA1A3A21F33807800BCB32B /* ScriptView.swift in Sources */,
 				5F0101911F26B68900C45F9C /* RecordService.swift in Sources */,
+				5FFC1FD61F33BDFC0094253E /* AudioSessionCommandHelper.swift in Sources */,
 				5F6BBE751F1FD2C400A157E2 /* AppDelegate.swift in Sources */,
+				5FFC1FD81F33DCD70094253E /* UIGestureHelpers.swift in Sources */,
 				5FA262411F20038700A1B7F8 /* Storyboard+Utility.swift in Sources */,
 				5F42EECC1F2A639C00519C2F /* PreviewView.swift in Sources */,
 				5F0101971F26C1F200C45F9C /* StorageReference+Recording.swift in Sources */,

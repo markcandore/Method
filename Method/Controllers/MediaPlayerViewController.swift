@@ -71,11 +71,7 @@ class MediaPlayerViewController: UIViewController {
         print("play")
         if (record.localVideoURL != nil && record.localAudioURL != nil){
             do{
-                let audioSession = AVAudioSession.sharedInstance()
-                try audioSession.setCategory(AVAudioSessionCategoryRecord)
-                try audioSession.setCategory(AVAudioSessionCategoryPlayback)
-                try audioSession.setMode(AVAudioSessionModeMoviePlayback)
-                try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
+                AudioSessionCommandHelper.setAudioSessionCategoryPlayback()
                 
                 self.audioPlayer = try AVAudioPlayer(contentsOf: (record?.localAudioURL)!)
                 self.videoPlayer = AVPlayer(url: (record?.localVideoURL)!)
@@ -110,7 +106,6 @@ class MediaPlayerViewController: UIViewController {
     }
     
     @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
-        //self.audioEngine.stop()
         //performSegue(withIdentifier: "unwindBackToRVC", sender: self)
         
         if self.videoPlayer != nil {

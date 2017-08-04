@@ -93,16 +93,15 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             self.listTableView.reloadData()
         }
     }
- 
     
     func configureTableView() {
+        listTableView.dataSource = self
         listTableView.tableFooterView = UIView()
         listTableView.separatorStyle = .none
         listTableView.isHidden = true
     }
     
     func reloadList(){
-       
         UserService.retrieveRecords(for: User.current) { (recordings) in
             self.recordings = recordings
             
@@ -121,19 +120,19 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             
             dispatchGroup.notify(queue: .main){
                 for record in self.recordings{
-                    
                     guard let url = record.localVideoURL else {
                         return
                     }
                     previews.append(ImageCaptureHelper.videoPreviewUiimage(vidURL: url, duration: record.duration) )
                 }
-
                 print("works")
                 self.recordingPreviews = previews
             }
- 
         }
-
+    }
+    
+    @objc fileprivate func singleTapGesture(write: UITapGestureRecognizer) {
+        scriptTextView.text = getScript()
     }
     
     func getScript() -> String{
@@ -145,22 +144,29 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         let json = JSON(jsonData)
         let script = Script(json: json)
         return script.sentence
-        
     }
+    
     // MARK: RecordingViewController
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        
-        self.listTableView.dataSource = self
+    
         configureTableView()
         reloadList()
-
+     
         
+        let topView = UIView.init(frame: scriptTextView.frame)
+        topView.backgroundColor = .clear
+        scriptTextView.addSubview(topView)
+        
+        let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(singleTapGesture(write:)))
+        singleTapGesture.numberOfTapsRequired = 1
+        singleTapGesture.delegate = self
+        topView.addGestureRecognizer(singleTapGesture)
+        
+        //scriptTextView.target(forAction: #Selector(writeScript()), withSender: Any)
         //Video Preview Layer
         previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)
         previewLayer.session = videoSession
-
         self.view.insertSubview(previewLayer, at: 0)
 
         // Test authorization status for Camera and Micophone
@@ -195,8 +201,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         //profileButton.setImage(profileImage, for: .normal)
         profileButton.layer.cornerRadius = 5
         profileButton.layer.borderWidth = 1
-        
-        self.countingTimerLabel.text = "\(recordingTime)s"
+        countingTimerLabel.text = "\(recordingTime)s"
         
         /*
         //Setup "Visage" with a camera-position (iSight-Camera (Back), FaceTime-Camera (Front)) and an optimization mode for either better feature-recognition performance (HighPerformance) or better battery-life (BatteryLife)
@@ -285,7 +290,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         super.viewDidAppear(animated)
         
         //Video
-        
         if shouldUseDeviceOrientation {
             subscribeToDeviceOrientationChangeNotifications()
         }
@@ -300,9 +304,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 DispatchQueue.main.async {
                     self.previewLayer.videoPreviewLayer.connection?.videoOrientation = self.getPreviewLayerOrientation()
                 }
-                
             case .notAuthorized:
-                //print("do app settings later")
                 // Prompt to App Settings
                 self.promptToAppSettings()
             case .configurationFailed:
@@ -320,10 +322,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         speechRecognizer.delegate = self
         
         SFSpeechRecognizer.requestAuthorization { authStatus in
-            /*
-             The callback may not be called on the main thread. Add an
-             operation to the main queue to update the record button's state.
-             */
             OperationQueue.main.addOperation {
                 switch authStatus {
                 case .authorized:
@@ -345,14 +343,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
     }
     
-    override func didReceiveMemoryWarning(){
-        super.didReceiveMemoryWarning()
-    }
-    
     /// Handle Denied App Privacy Settings
-    
     fileprivate func promptToAppSettings() {
-        // prompt User with UIAlertView
         
         DispatchQueue.main.async(execute: { [unowned self] in
             let message = NSLocalizedString("AVCam doesn't have permission to use the camera, please change privacy settings", comment: "Alert message when the user has denied access to the camera")
@@ -384,6 +376,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         videoSession.commitConfiguration()
     }
+    
     fileprivate func configureVideoPreset(){
         if camera == .front {
             videoSession.sessionPreset = videoInputPresetFromVideoQuality(quality: .medium)
@@ -413,15 +406,12 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                         device.isSmoothAutoFocusEnabled = true
                     }
                 }
-                
                 if device.isExposureModeSupported(.continuousAutoExposure) {
                     device.exposureMode = .continuousAutoExposure
                 }
-                
                 if device.isWhiteBalanceModeSupported(.continuousAutoWhiteBalance) {
                     device.whiteBalanceMode = .continuousAutoWhiteBalance
                 }
-                
                 if device.isLowLightBoostSupported && lowLightBoost == true {
                     device.automaticallyEnablesLowLightBoostWhenAvailable = true
                 }
@@ -431,7 +421,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 print("Error locking configuration")
             }
         }
-        
+
         do {
             let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
             if videoSession.canAddInput(videoDeviceInput) {
@@ -448,6 +438,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             return
         }
     }
+    
     fileprivate func configureVideoOutput() {
         let movieFileOutput = AVCaptureMovieFileOutput()
         
@@ -460,20 +451,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             }
             self.movieFileOutput = movieFileOutput
         }
-    }
-    
-    // Get Device
-    fileprivate class func deviceWithMediaType(_ mediaType: String, preferringPosition position: AVCaptureDevicePosition) -> AVCaptureDevice? {
-        
-        if let deviceDescoverySession = AVCaptureDeviceDiscoverySession.init(deviceTypes: [AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified) {
-            
-            for device in deviceDescoverySession.devices {
-                if device.position == position {
-                    return device
-                }
-            }
-        }
-        return nil
     }
     
     fileprivate func videoInputPresetFromVideoQuality(quality: VideoQuality) -> String{
@@ -494,6 +471,20 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 return AVCaptureSessionPresetHigh
             }
         }
+    }
+    
+    // Get Device
+    fileprivate class func deviceWithMediaType(_ mediaType: String, preferringPosition position: AVCaptureDevicePosition) -> AVCaptureDevice? {
+        
+        if let deviceDescoverySession = AVCaptureDeviceDiscoverySession.init(deviceTypes: [AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: AVCaptureDevicePosition.unspecified) {
+            
+            for device in deviceDescoverySession.devices {
+                if device.position == position {
+                    return device
+                }
+            }
+        }
+        return nil
     }
     
     fileprivate func subscribeToDeviceOrientationChangeNotifications() {
@@ -549,13 +540,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             self.recognitionTask = nil
             self.audioRecorder = nil
         }
-        
-        let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(AVAudioSessionCategoryRecord)
-        try audioSession.setMode(AVAudioSessionModeMeasurement)
-        try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
-        
-        
+        AudioSessionCommandHelper.setAudioSessionCategoryRecording()
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         
         guard let inputNode = audioEngine.inputNode else { fatalError("Audio engine has no input node") }
@@ -564,8 +549,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         // Configure request so that results are returned before audio recording is finished
         recognitionRequest.shouldReportPartialResults = true
         
-        // A recognition task represents a speech recognition session.
-        // We keep a reference to the task so that it can be cancelled.
         recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
             var isFinal = false
             
@@ -644,6 +627,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     func stopVideoRecording(){
         if self.movieFileOutput?.isRecording == true{
             movieFileOutput!.stopRecording()
+
         }
     }
     func savingAlert(time: TimeInterval){
@@ -654,7 +638,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             textField.placeholder = "Enter recording title"
         }
         
-        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
+        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: {[unowned self] action in
 
             let audioPath = self.audioOutputFilePath
             guard let audioData = FileManager.default.contents(atPath: audioPath!) else{
@@ -678,14 +662,17 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             guard let image = ImageCaptureHelper.videoPreviewUiimage(vidURL: url, duration: time) else{
                 return
             }
-            
+            /*
             if self.recordings.count > 10{
                 RecordService.delete(record: self.recordings[0])
+                self.recordings.remove(at: 0)
+                self.recordingPreviews.remove(at: 0)
             }
+            */
             RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, duration: time, preview: image)
-          
-
+            
             do{
+                print("removing local")
                 try FileManager.default.removeItem(at: URL(fileURLWithPath: self.audioOutputFilePath))
                 try FileManager.default.removeItem(at: URL(fileURLWithPath: self.videoOutputFilePath))
             } catch{
@@ -743,6 +730,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             
         } else{
             end()
+            listButton.isEnabled = true
+            isRecording = false
         }
     }
 
@@ -796,6 +785,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         
         listTableView.isHidden = true
         
+        /*
         if isRecording == false{
             try! startAudioRecording()
             startVideoRecording()
@@ -810,11 +800,13 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             listButton.isEnabled = true
             isRecording = false
         }
-        /*
-        if audioEngine.isRunning {
+        */
+        if audioEngine.isRunning{
             end()
-         
-        } else {
+            listButton.isEnabled = true
+            isRecording = false
+        }
+        else {
             try! startAudioRecording()
             startVideoRecording()
             
@@ -822,9 +814,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             listButton.isEnabled = false
             runCountdownTimer()
             runCountingTimer()
+            isRecording = true
         }
- */
-        
     }
     
     @IBAction func listButtonTapped(_ sender: UIButton) {
@@ -843,10 +834,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         self.present(profilePage!, animated: true, completion: nil)
     }
     
-    
     @IBAction func scriptButtonTapped(_ sender: UIButton) {
         print("script tapped")
-        
+       
         scriptTextView.text = getScript()
     }
     
@@ -872,17 +862,18 @@ extension RecordingViewController: UITableViewDataSource{
         cell.recordingTitle.textColor = UIColor.white
         cell.recordingDate.text = recording.getDateString()
         cell.recordingDate.textColor = UIColor.white
+        cell.viewPreview.image = recordingPreviews[row]
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
-        cell.viewPreview.image = recordingPreviews[row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            
-            print("delete")
+            print("Delete")
             RecordService.delete(record: recordings[indexPath.row])
+            recordings.remove(at: indexPath.row)
+            recordingPreviews.remove(at: indexPath.row)
         }
     }
     
@@ -977,5 +968,9 @@ extension FileManager {
             print(error)
         }
     }
+}
+
+extension RecordingViewController: UIGestureRecognizerDelegate{
+    
 }
 

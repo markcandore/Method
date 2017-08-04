@@ -34,6 +34,12 @@ struct UserService {
         })
     }
     
+    static func removeObserver(for user: User, completion: @escaping (String) -> Void) {
+        let ref = Database.database().reference().child("recordings").child(user.uid)
+        ref.removeAllObservers()
+        completion("works"  )
+    }
+    
     static func show(forUID uid: String, completion: @escaping (User?) -> Void) {
         let ref = Database.database().reference().child("users").child(uid)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in

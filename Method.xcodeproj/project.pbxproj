@@ -43,6 +43,8 @@
 		5FFC1FD81F33DCD70094253E /* UIGestureHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD71F33DCD70094253E /* UIGestureHelpers.swift */; };
 		5FFC1FDA1F346AAA0094253E /* Pitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD91F346AAA0094253E /* Pitch.swift */; };
 		5FFC1FDC1F346BCC0094253E /* DisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FDB1F346BCC0094253E /* DisplayView.swift */; };
+		5FFC1FDF1F352F220094253E /* Method.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FDD1F352F220094253E /* Method.xcdatamodeld */; };
+		5FFC1FE91F37F3870094253E /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FE81F37F3870094253E /* CoreDataHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +86,8 @@
 		5FFC1FD71F33DCD70094253E /* UIGestureHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIGestureHelpers.swift; path = Helpers/UIGestureHelpers.swift; sourceTree = "<group>"; };
 		5FFC1FD91F346AAA0094253E /* Pitch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Pitch.swift; path = Logic/Pitch.swift; sourceTree = "<group>"; };
 		5FFC1FDB1F346BCC0094253E /* DisplayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DisplayView.swift; path = Views/DisplayView.swift; sourceTree = "<group>"; };
+		5FFC1FDE1F352F220094253E /* Method.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Method.xcdatamodel; sourceTree = "<group>"; };
+		5FFC1FE81F37F3870094253E /* CoreDataHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
 		8CCBD35002A1CBF5D14C6731 /* Pods_Method.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Method.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F646C45D56F6E717222CC5AF /* Pods-Method.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Method.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Method/Pods-Method.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -140,14 +144,14 @@
 			children = (
 				5F6BBE741F1FD2C400A157E2 /* AppDelegate.swift */,
 				5FFC1FD41F3395530094253E /* JSON */,
-				5FA1A3881F311D3600BCB32B /* Logic */,
+				5FA2622E1F1FF66C00A1B7F8 /* Helpers */,
 				5F6BBE7B1F1FD2C400A157E2 /* Assets.xcassets */,
-				5FA2621E1F1FF2E900A1B7F8 /* Views */,
+				5FA1A3881F311D3600BCB32B /* Logic */,
 				5FA2621C1F1FF2CB00A1B7F8 /* View Controllers */,
+				5FA2622D1F1FF65700A1B7F8 /* Services */,
+				5FA2621E1F1FF2E900A1B7F8 /* Views */,
 				5FA2621D1F1FF2D600A1B7F8 /* Storyboards */,
 				5FA2621F1F1FF2ED00A1B7F8 /* Models */,
-				5FA2622D1F1FF65700A1B7F8 /* Services */,
-				5FA2622E1F1FF66C00A1B7F8 /* Helpers */,
 				5FA2622F1F1FF67900A1B7F8 /* Extensions */,
 				5FA2621A1F1FF1F600A1B7F8 /* Supporting */,
 			);
@@ -214,6 +218,7 @@
 		5FA2621F1F1FF2ED00A1B7F8 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				5FFC1FDD1F352F220094253E /* Method.xcdatamodeld */,
 				5F0101921F26B6AA00C45F9C /* Recording.swift */,
 				5FA262361F1FFDE100A1B7F8 /* User.swift */,
 			);
@@ -237,6 +242,7 @@
 				5FA1A39D1F31A2DC00BCB32B /* ImageCaptureHelper.swift */,
 				5FFC1FD51F33BDFC0094253E /* AudioSessionCommandHelper.swift */,
 				5FFC1FD71F33DCD70094253E /* UIGestureHelpers.swift */,
+				5FFC1FE81F37F3870094253E /* CoreDataHelper.swift */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -387,6 +393,7 @@
 			files = (
 				5FA262391F1FFE0600A1B7F8 /* UserService.swift in Sources */,
 				5FA262371F1FFDE100A1B7F8 /* User.swift in Sources */,
+				5FFC1FDF1F352F220094253E /* Method.xcdatamodeld in Sources */,
 				5FA1A3921F31369800BCB32B /* Note.swift in Sources */,
 				5FA1A3871F31122100BCB32B /* PlotView.swift in Sources */,
 				5FA2622B1F1FF63F00A1B7F8 /* LoginViewController.swift in Sources */,
@@ -412,6 +419,7 @@
 				5FA262411F20038700A1B7F8 /* Storyboard+Utility.swift in Sources */,
 				5F42EECC1F2A639C00519C2F /* PreviewView.swift in Sources */,
 				5F0101971F26C1F200C45F9C /* StorageReference+Recording.swift in Sources */,
+				5FFC1FE91F37F3870094253E /* CoreDataHelper.swift in Sources */,
 				5F0101951F26B6C000C45F9C /* StorageService.swift in Sources */,
 				5FA1A3981F318D4F00BCB32B /* DownloadService.swift in Sources */,
 			);
@@ -563,6 +571,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		5FFC1FDD1F352F220094253E /* Method.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				5FFC1FDE1F352F220094253E /* Method.xcdatamodel */,
+			);
+			currentVersion = 5FFC1FDE1F352F220094253E /* Method.xcdatamodel */;
+			path = Method.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 5F6BBE691F1FD2C400A157E2 /* Project object */;
 }

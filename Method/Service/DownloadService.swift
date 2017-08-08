@@ -8,9 +8,10 @@
 
 import Foundation
 import FirebaseStorage
+import Photos
 
 struct DownloadService {
-    
+    /*
     static func downloadPreview(record: Recording, completion: @escaping (URL?) -> Void) {
         let fileName = UUID().uuidString
         
@@ -40,7 +41,35 @@ struct DownloadService {
             completion(localImageURL)
         }
     }
+*/
+    static func download(recording: Recording){
+        
+        let allVidOptions = PHFetchOptions()
+        allVidOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.video.rawValue)
+        allVidOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        
+        
+        let allVids = PHAsset.fetchAssets(with: allVidOptions)
+        for index in 0..<allVids.count {
+            //fetch Asset here
+            print(allVids[index])
+        }
 
+        /*
+        PHPhotoLibrary.requestAuthorization { (status) -> Void in
+            let allVidOptions = PHFetchOptions()
+            allVidOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.video.rawValue)
+            allVidOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+            let allVids = PHAsset.fetchAssets(with: allVidOptions)
+            for index in 0..<allVids.count {
+                //fetch Asset here
+                print(allVids[index])
+            }
+            
+        }
+ */
+    }
+    
     static func download(record: Recording, completion: @escaping (URL?) -> Void) {
         let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let localAudioURL = documentDirectoryURL.appendingPathComponent(record.fileID).appendingPathExtension("m4a")
@@ -96,4 +125,5 @@ struct DownloadService {
             completion(record.localVideoURL)
         }
     }
+    
 }

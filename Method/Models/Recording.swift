@@ -101,4 +101,12 @@ class Recording{
         return timestampFormatter.string(from: self.creationDate)
     }
     
+    func getTimeString() -> String{
+        let format = DateFormatter()
+        //format.dateFormat = "MMM d, YYYY h:mm a"
+        format.dateFormat = "MM/dd/yyyy h:mm a"
+        let time = format.string(from: self.creationDate)
+        return time
+    }
 }
+

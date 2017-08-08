@@ -11,6 +11,7 @@ import FirebaseAuth.FIRUser
 import FirebaseDatabase
 
 struct UserService {
+    
     static func retrieveRecords(for user: User, completion: @escaping ([Recording]) -> Void) {
         let ref = Database.database().reference().child("recordings").child(user.uid)
         /*
@@ -28,12 +29,12 @@ struct UserService {
             guard let snapshot = snapshot.children.allObjects as? [DataSnapshot] else {
                 return completion([])
             }
-            print("retrieve")
+         
             let recordings = snapshot.flatMap(Recording.init)
             completion(recordings)
         })
     }
-    
+ 
     static func removeObserver(for user: User, completion: @escaping (String) -> Void) {
         let ref = Database.database().reference().child("recordings").child(user.uid)
         ref.removeAllObservers()

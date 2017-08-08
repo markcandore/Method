@@ -10,16 +10,20 @@ import Foundation
 import UIKit
 import AVFoundation
 import AVKit
+import Photos
+
 //import AudioKit
 import FirebaseStorage
-class MediaPlayerViewController: UIViewController {
+class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelegate{
 
     var volume = 1.0
     var record: Recording!
     var audioPlayer: AVAudioPlayer!
     var videoPlayer: AVPlayer?
     var playerController : AVPlayerViewController?
-
+    var url: URL!
+    var item: AVPlayerItem!
+    var avAsset: AVURLAsset!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var transcriptTextView: UITextView!
     
@@ -48,6 +52,7 @@ class MediaPlayerViewController: UIViewController {
         */
     }
   
+    /*
     func removeFile(){
         do{
             try FileManager.default.removeItem(atPath: (record?.localAudioURL?.absoluteString)!)
@@ -56,6 +61,7 @@ class MediaPlayerViewController: UIViewController {
             print(error)
         }
     }
+   */
     func tap(){
         let topView = UIView.init(frame: self.view.frame)
         topView.backgroundColor = .clear
@@ -67,6 +73,59 @@ class MediaPlayerViewController: UIViewController {
         topView.addGestureRecognizer(singleTapGesture)
     }
     
+    func play(){
+        print("play")
+        if self.item != nil{
+            do{
+                //AudioSessionCommandHelper.setAudioSessionCategoryPlayback()
+                //print(url.absoluteString)
+   
+                
+                DispatchQueue.main.async(execute: {
+                    
+                    if self.item.asset.isPlayable{
+                        //self.videoPlayer?.replaceCurrentItem(with: self.item)
+                        self.videoPlayer = AVPlayer(playerItem: self.item)
+                        let playerViewController = AVPlayerViewController()
+                        playerViewController.delegate = self
+                        playerViewController.player = self.videoPlayer
+                        playerViewController.showsPlaybackControls = false
+                        playerViewController.view.frame = self.view.frame
+                        //NotificationCenter.default.addObserver(self, selector: #selector(self.playerItemDidReachEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.videoPlayer!.currentItem)
+                        
+                        self.view.addSubview(playerViewController.view)
+                        self.tap()
+                        //self.present(playerViewController, animated: true) {
+                        playerViewController.player!.play()
+
+                        //}
+                    } else{
+                        print("not playable")
+                    }
+                })
+ 
+                /*
+                //let playerItem: AVPlayerItem = self.item
+                let videoPlayer = AVPlayer(playerItem: self.item)
+                let layer = AVPlayerLayer(player: videoPlayer)
+                let bounds = CGRect(x: 0 , y: 0 , width: self.view.frame.width, height: self.view.frame.height)
+                layer.bounds = bounds
+                //layer.bounds = self.view.frame
+                layer.videoGravity = AVLayerVideoGravityResizeAspect
+                self.view.layer.addSublayer(layer)
+                videoPlayer.seek(to: kCMTimeZero)
+                videoPlayer.play()
+                print("play success")
+ */
+            } catch{
+                //self.videoPlayer = nil
+                print(error.localizedDescription)
+            }
+        } else{
+            print("files do not exist")
+        }
+    }
+    /*
     func play(){
         print("play")
         if (record.localVideoURL != nil && record.localAudioURL != nil){
@@ -92,7 +151,7 @@ class MediaPlayerViewController: UIViewController {
                 NotificationCenter.default.addObserver(self, selector: #selector(self.playerItemDidReachEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.videoPlayer!.currentItem)
                 
                 self.tap()
-                self.audioPlayer.play()
+                //self.audioPlayer.play()
                 self.videoPlayer?.play()
                 print("play success")
             } catch{
@@ -104,14 +163,14 @@ class MediaPlayerViewController: UIViewController {
             print("files do not exist")
         }
     }
-    
+    */
     @objc fileprivate func playerItemDidReachEnd(_ notification: Notification) {
         //performSegue(withIdentifier: "unwindBackToRVC", sender: self)
         
         if self.videoPlayer != nil {
             self.videoPlayer!.seek(to: kCMTimeZero)
             self.videoPlayer!.play()
-            self.audioPlayer!.play()
+            //self.audioPlayer!.play()
         }
  
     }

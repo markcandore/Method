@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Method/Controllers/RecordingViewController.swift"
-            timestampString = "523925023.850317"
+            timestampString = "524008809.27196"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "237"
-            endingLineNumber = "237"
+            startingLineNumber = "241"
+            endingLineNumber = "241"
             landmarkName = "reloadList()"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,27 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Method/Controllers/RecordingViewController.swift"
-            timestampString = "523925023.850317"
+            timestampString = "524008809.27196"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "241"
-            endingLineNumber = "241"
+            startingLineNumber = "293"
+            endingLineNumber = "293"
+            landmarkName = "reloadList()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Method/Controllers/RecordingViewController.swift"
+            timestampString = "524008809.27196"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "275"
+            endingLineNumber = "275"
             landmarkName = "reloadList()"
             landmarkType = "7">
          </BreakpointContent>

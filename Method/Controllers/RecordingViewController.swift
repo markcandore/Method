@@ -21,6 +21,7 @@ import SwiftyJSON
 import Photos
 class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate, PHPhotoLibraryChangeObserver{
 
+    
     // MARK: Properties
     /*
     let tuner       = Tuner()
@@ -93,6 +94,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     var outputFileName: String!
     var recordings = [Recording]()
     
+    var fetchResult : PHFetchResult<PHAsset>!
     var phAssets = [PHAsset]()
     var avAssets = [AVURLAsset]()
     var avPlayerItems = [AVPlayerItem]()
@@ -123,6 +125,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         listTableView.separatorStyle = .none
         listTableView.isHidden = true
     }
+    
     /*
     func tunerDidMeasurePitch(_ pitch: Pitch, withDistance distance: Double,
                               amplitude: Double) {
@@ -137,11 +140,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     */
     
     func photoLibraryDidChange(_ changeInstance: PHChange) {
-        /*
-        guard let collectionView = self.collectionView else { return }
         // Change notifications may be made on a background queue.
         // Re-dispatch to the main queue to update the UI.
         DispatchQueue.main.sync {
+            /*
             // Check for changes to the displayed album itself
             // (its existence and metadata, not its member assets).
             if let albumChanges = changeInstance.changeDetails(for: assetCollection) {
@@ -149,12 +151,25 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 assetCollection = albumChanges.objectAfterChanges! as! PHAssetCollection
                 navigationController?.navigationItem.title = assetCollection.localizedTitle
             }
+ */
+            /*
             // Check for changes to the list of assets (insertions, deletions, moves, or updates).
             if let changes = changeInstance.changeDetails(for: fetchResult) {
                 // Keep the new fetch result for future use.
                 fetchResult = changes.fetchResultAfterChanges
                 if changes.hasIncrementalChanges {
                     // If there are incremental diffs, animate them in the collection view.
+                    print("list changes")
+                    /*
+                    if let removed = changes.removedIndexes, removed.count > 0 {
+                        listTableView.deleteRows(at: removed.map { IndexPath(item: $0, section:0) }, with: .automatic)
+                    }
+                    if let inserted = changes.insertedIndexes, inserted.count > 0{
+                        listTableView.insertRows(at: inserted.map { IndexPath(item: $0, section:0) }, with: .automatic)
+                    }
+                    */
+                    
+                    /*
                     collectionView.performBatchUpdates({
                         // For indexes to make sense, updates must be in this order:
                         // delete, insert, reload, move
@@ -172,75 +187,127 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                                                     to: IndexPath(item: toIndex, section: 0))
                         }
                     })
+                */
                 } else {
                     // Reload the collection view if incremental diffs are not available.
-                    collectionView.reloadData()
+                    print("no change")
+                    listTableView.reloadData()
                 }
             }
-        }
  */
+        }
     }
     
     func reloadList(){
         
+        PHPhotoLibrary.shared().register(self)
         recordings = CoreDataHelper.retrieveRecordings()
-        
-        //let observer = PHPhotoLibrary.shared().register(<#T##observer: PHPhotoLibraryChangeObserver##PHPhotoLibraryChangeObserver#>)
         
         PHPhotoLibrary.shared().performChanges({
             
             let fetchOptions = PHFetchOptions()
             fetchOptions.predicate = NSPredicate(format: "localizedTitle = %@", "Method")
-            let fetchResult  = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.album, subtype: PHAssetCollectionSubtype.any, options: fetchOptions)
-            let assetCollection = fetchResult.object(at: 0)
-            let assets = PHAsset.fetchAssets(in: assetCollection, options: nil)
-            
-            print(assets.description)
-            if assets.count > 0{
-                let end = assets.count - 1
-                var array = [Int]()
-                for index in 0...end{
-                    array.append(index)
-                }
-                let index = IndexSet(array)
-                
-                let videoOptions = PHVideoRequestOptions()
-                videoOptions.deliveryMode = .automatic
-                videoOptions.version = .current
-                videoOptions.isNetworkAccessAllowed = true
-                
-                self.phAssets = assets.objects(at: index)
-                
-                for (index,asset) in self.phAssets.enumerated(){
-                    guard (asset.mediaType == PHAssetMediaType.video)
-                        else {
-                            print("Not a valid video media type")
-                            return
-                    }
-                    var previews = [UIImage]()
-                    self.videoManager.requestPlayerItem(forVideo: asset, options: videoOptions, resultHandler: {(avPlayerItem: AVPlayerItem?,info: [AnyHashable : Any]?) -> Void in
-                        guard let playerItem = avPlayerItem else{
-                            return
-                        }
-                        if playerItem.asset.isPlayable == true{
-                            print("playable")
-                        } else{
-                            print("is not playable")
-                        }
-                        self.avPlayerItems.append(playerItem)
-                        
-                        let asset = playerItem.asset
-                        let duration = asset.duration.seconds
-                      
-                        let time = TimeInterval.init(exactly: duration)
-                        let image = ImageCaptureHelper.videoPreviewUiimage(asset: asset, duration: time!)
-                        previews.append(image!)
-                    })
-                    self.recordingPreviews = previews
-                }
+            let fetchCollectionResult  = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.album, subtype: PHAssetCollectionSubtype.any, options: fetchOptions)
+            if fetchCollectionResult.count > 0{
+                let assetCollection = fetchCollectionResult.object(at: 0)
+                let options = PHFetchOptions()
+                options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+                options.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.video.rawValue)
+                self.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: options)
+                let assets = self.fetchResult
           
+                if (assets?.count)! > 0{
+                    
+                    let end = (assets?.count)! - 1
+                    var array = [Int]()
+                    for index in 0...end{
+                        array.append(index)
+                    }
+                    let index = IndexSet(array)
+                    
+                    let videoOptions = PHVideoRequestOptions()
+                    videoOptions.deliveryMode = .automatic
+                    videoOptions.version = .current
+                    videoOptions.isNetworkAccessAllowed = true
+                    
+                    self.phAssets = (assets?.objects(at: index))!
+    
+                    var previews = [UIImage]()
+                    var avassets = [AVAsset]()
+                    
+                    let dispatchGroup = DispatchGroup()
+                    for asset in self.phAssets{
+                        print(asset.creationDate?.description)
+                        dispatchGroup.enter()
+                        guard (asset.mediaType == PHAssetMediaType.video)
+                            else {
+                                print("Not a valid video media type")
+                                return
+                        }
+                        self.videoManager.requestPlayerItem(forVideo: asset, options: videoOptions, resultHandler: {(avPlayerItem: AVPlayerItem?,info: [AnyHashable : Any]?) -> Void in
+                            guard let playerItem = avPlayerItem else{
+                                return
+                            }
+                            if playerItem.asset.isPlayable == true{
+                                print("playable")
+                            } else{
+                                print("is not playable")
+                            }
+                            
+                            
+                            self.avPlayerItems.append(playerItem)
+                        })
+                        self.videoManager.requestAVAsset(forVideo: asset, options: videoOptions, resultHandler:
+                            {(avasset: AVAsset?,audiomix: AVAudioMix?,info: [AnyHashable : Any]?) -> Void in
+                            print(avasset?.creationDate?.stringValue)
+                            avassets.append(avasset!)
+                                
+                            //let asset = playerItem.asset
+                            //let duration = asset.duration.seconds
+                                
+                            //let time = TimeInterval.init(exactly: duration)
+                            //let image = ImageCaptureHelper.videoPreviewUiimage(asset: asset, duration: time!)
+                            //previews.append(image!)
+                        })
+                        dispatchGroup.leave()
+                    }
+                    dispatchGroup.notify(queue: .main){
+                        //self.recordingPreviews = previews
+                        print("before")
+                        for avasset in avassets{
+                            print(avasset.creationDate?.startDate?.description)
+                        }
+                        
+                        avassets = avassets.sorted(by: { (item1, item2) -> Bool in
+                            if let date2 = item2.creationDate?.startDate{
+                                return item1.creationDate!.startDate!.timeIntervalSince(date2) < TimeInterval(0.0)
+                            }
+                            return false
+                        })
+                        print("after")
+                        for avasset in avassets{
+                            print(avasset.creationDate?.startDate?.description)
+                        }
+                    }
+                    /*
+                    print("before")
+                    for item in self.avPlayerItems{
+                        print(item.asset.creationDate?.startDate?.description)
+                    }
+                    self.avPlayerItems = self.avPlayerItems.sorted(by: { (item1, item2) -> Bool in
+                        if let date2 = item2.asset.creationDate?.startDate {
+                            return (item1.asset.creationDate?.startDate?.timeIntervalSince(date2))! < TimeInterval(0.0)
+                        }
+                        return false
+                    })
+                    print("after")
+                    for item in self.avPlayerItems{
+                        print(item.asset.creationDate?.startDate?.description)
+                    }
+                    */
+                }
             }
-
+            
         })
     
         /*
@@ -271,13 +338,14 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.recordingPreviews = previews
             }
         }
- */
+         */
     }
     
     // MARK: RecordingViewController
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        
         /*
         displayView.frame = CGRect(x: 77, y: 536, width: 230, height: 48)
         self.view.addSubview(displayView)
@@ -674,7 +742,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 let range = NSMakeRange(self.transcriptTextView.text.characters.count - 1, 0)
                 self.transcriptTextView.scrollRangeToVisible(range)
                 
-                var mainAttributedString : NSMutableAttributedString = NSMutableAttributedString(string: "", attributes: [NSFontAttributeName:UIFont.systemFont(ofSize: 20.0)])
+                let mainAttributedString : NSMutableAttributedString = NSMutableAttributedString(string: "", attributes: [NSFontAttributeName:UIFont.systemFont(ofSize: 20.0)])
                 for segment in result.bestTranscription.segments{
                     let confidence = segment.confidence
                     var string = segment.substring
@@ -692,7 +760,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                         color = UIColor.white
                     }
                     
-                    var attributedString = NSMutableAttributedString(string: string, attributes: [NSFontAttributeName:UIFont.systemFont(ofSize: 20.0)])
+                    let attributedString = NSMutableAttributedString(string: string, attributes: [NSFontAttributeName:UIFont.systemFont(ofSize: 20.0)])
                     
                     print("\(string): \(segment.confidence)")
                     let range = (string as NSString).range(of: string)
@@ -827,15 +895,18 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
       
         alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {[unowned self] action in
 
+            /*
             let audioPath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("m4a")!)
             guard let audioData = FileManager.default.contents(atPath: audioPath) else{
                 return
             }
-            
+            */
             let videoPath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("mov")!)
+            /*
             guard let videoData = FileManager.default.contents(atPath: videoPath) else{
                 return
             }
+ */
             let transcriptText = self.transcriptTextView.text
             let format = DateFormatter()
             //format.dateFormat = "MMM d, YYYY h:mm a"
@@ -858,10 +929,12 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             }
             let url = URL(fileURLWithPath: videoPath)
            
+            /*
             guard let image = ImageCaptureHelper.videoPreviewUiimage(vidURL: url, duration: time) else{
                 return
             }
             
+             */
             let recording = CoreDataHelper.newRecording()
             recording.title = self.currentFilename
             recording.date = Date() as NSDate
@@ -880,6 +953,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 }
             }
          
+            //self.reloadList()
            // RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, score: self.articulationScore ,preview: image)
     
         }))

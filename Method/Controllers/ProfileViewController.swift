@@ -27,7 +27,7 @@ class ProfileViewController: UIViewController{
     }
     @IBAction func logoutButtonTapped(_ sender: Any) {
         
-        let firebaseAuth = Auth.auth()
+        //let firebaseAuth = Auth.auth()
         /*
         UserService.removeObserver(for: User.current, completion:{ (word) in
             do {

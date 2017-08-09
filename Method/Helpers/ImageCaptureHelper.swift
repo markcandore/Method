@@ -32,10 +32,7 @@ class ImageCaptureHelper{
     
     static func videoPreviewUiimage(asset: AVAsset, duration: TimeInterval) -> UIImage! {
         print("preview")
-        let asset = asset
-        if asset == nil{
-            print("asset is nil")
-        }
+        
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
         

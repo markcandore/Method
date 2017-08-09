@@ -30,6 +30,41 @@ class ImageCaptureHelper{
         }
     }
     
+    static func videoPreviewUiimage(asset: AVAsset, duration: TimeInterval) -> UIImage! {
+        print("preview")
+        let asset = asset
+        if asset == nil{
+            print("asset is nil")
+        }
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.appliesPreferredTrackTransform = true
+        
+        var defaultImage: UIImage? = nil
+        var time = duration
+        if time > 10 {
+            time = 10
+        }
+        
+        for index in 0 ... Int(time){
+            let timestamp = CMTime(seconds: Double(index), preferredTimescale: 1)
+            do {
+                let imageRef = try generator.copyCGImage(at: timestamp, actualTime: nil)
+                let image = UIImage(cgImage: imageRef)
+                if hasFace(image: image) == true{
+                    return image
+                }
+                defaultImage = image
+            }
+            catch let error as NSError
+            {
+                print("Image generation failed with error \(error)")
+                return nil
+            }
+        }
+        
+        return defaultImage
+    }
+    
     static func videoPreviewUiimage(vidURL: URL, duration: TimeInterval) -> UIImage! {
         print("preview")
         let asset = AVURLAsset(url: vidURL as URL)

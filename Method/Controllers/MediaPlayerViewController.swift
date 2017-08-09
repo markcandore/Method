@@ -17,9 +17,9 @@ import FirebaseStorage
 class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelegate{
 
     var volume = 1.0
-    var record: Recording!
+    //var record: Recording!
     var audioPlayer: AVAudioPlayer!
-    var videoPlayer: AVPlayer?
+    var videoPlayer: AVPlayer!
     var playerController : AVPlayerViewController?
     var url: URL!
     var item: AVPlayerItem!
@@ -30,10 +30,12 @@ class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //self.view.backgroundColor = UIColor.black
+        self.play()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.play()
+        //self.play()
         /*
         DownloadService.download(record: record){ (vidURL) in
          
@@ -84,18 +86,19 @@ class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelega
                 DispatchQueue.main.async(execute: {
                     
                     if self.item.asset.isPlayable{
-                        //self.videoPlayer?.replaceCurrentItem(with: self.item)
-                        self.videoPlayer = AVPlayer(playerItem: self.item)
+                        //self.videoPlayer = AVPlayer(playerItem: self.item)
                         let playerViewController = AVPlayerViewController()
                         playerViewController.delegate = self
                         playerViewController.player = self.videoPlayer
+                        
                         playerViewController.showsPlaybackControls = false
                         playerViewController.view.frame = self.view.frame
-                        //NotificationCenter.default.addObserver(self, selector: #selector(self.playerItemDidReachEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.videoPlayer!.currentItem)
+                        NotificationCenter.default.addObserver(self, selector: #selector(self.playerItemDidReachEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.videoPlayer!.currentItem)
                         
                         self.view.addSubview(playerViewController.view)
                         self.tap()
                         //self.present(playerViewController, animated: true) {
+                        self.videoPlayer.seek(to: kCMTimeZero)
                         playerViewController.player!.play()
 
                         //}
@@ -104,19 +107,6 @@ class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelega
                     }
                 })
  
-                /*
-                //let playerItem: AVPlayerItem = self.item
-                let videoPlayer = AVPlayer(playerItem: self.item)
-                let layer = AVPlayerLayer(player: videoPlayer)
-                let bounds = CGRect(x: 0 , y: 0 , width: self.view.frame.width, height: self.view.frame.height)
-                layer.bounds = bounds
-                //layer.bounds = self.view.frame
-                layer.videoGravity = AVLayerVideoGravityResizeAspect
-                self.view.layer.addSublayer(layer)
-                videoPlayer.seek(to: kCMTimeZero)
-                videoPlayer.play()
-                print("play success")
- */
             } catch{
                 //self.videoPlayer = nil
                 print(error.localizedDescription)
@@ -185,6 +175,7 @@ class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelega
     }
     
     @objc fileprivate func singleTapGesture(tap: UITapGestureRecognizer) {
+        self.videoPlayer?.pause()
         performSegue(withIdentifier: "unwindBackToRVC", sender: self)
     }
 }

@@ -34,6 +34,7 @@ class CreateUsernameViewController: UIViewController{
             self.view.window?.rootViewController = initialViewController
             self.view.window?.makeKeyAndVisible()
         }
+
     }
     
     override func viewDidLoad() {

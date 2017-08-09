@@ -19,7 +19,7 @@ import FirebaseStorage
 import FirebaseDatabase
 import SwiftyJSON
 import Photos
-class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate{
+class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVAudioRecorderDelegate, PHPhotoLibraryChangeObserver{
 
     // MARK: Properties
     /*
@@ -96,7 +96,18 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     var phAssets = [PHAsset]()
     var avAssets = [AVURLAsset]()
     var avPlayerItems = [AVPlayerItem]()
+    /*
+    var avPlayerItems = [AVPlayerItem](){
+        didSet{
+            print("reloading")
+            self.listTableView.reloadData()
+        }
+    }
+ */
     let videoManager = PHCachingImageManager()
+    
+    let avplayer = AVPlayer()
+    //var recordingPreviews = [UIImage]()
     
     var recordingPreviews = [UIImage](){
         didSet{
@@ -124,8 +135,57 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
     }
     */
+    
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        /*
+        guard let collectionView = self.collectionView else { return }
+        // Change notifications may be made on a background queue.
+        // Re-dispatch to the main queue to update the UI.
+        DispatchQueue.main.sync {
+            // Check for changes to the displayed album itself
+            // (its existence and metadata, not its member assets).
+            if let albumChanges = changeInstance.changeDetails(for: assetCollection) {
+                // Fetch the new album and update the UI accordingly.
+                assetCollection = albumChanges.objectAfterChanges! as! PHAssetCollection
+                navigationController?.navigationItem.title = assetCollection.localizedTitle
+            }
+            // Check for changes to the list of assets (insertions, deletions, moves, or updates).
+            if let changes = changeInstance.changeDetails(for: fetchResult) {
+                // Keep the new fetch result for future use.
+                fetchResult = changes.fetchResultAfterChanges
+                if changes.hasIncrementalChanges {
+                    // If there are incremental diffs, animate them in the collection view.
+                    collectionView.performBatchUpdates({
+                        // For indexes to make sense, updates must be in this order:
+                        // delete, insert, reload, move
+                        if let removed = changes.removedIndexes where removed.count > 0 {
+                            collectionView.deleteItems(at: removed.map { IndexPath(item: $0, section:0) })
+                        }
+                        if let inserted = changes.insertedIndexes where inserted.count > 0 {
+                            collectionView.insertItems(at: inserted.map { IndexPath(item: $0, section:0) })
+                        }
+                        if let changed = changes.changedIndexes where changed.count > 0 {
+                            collectionView.reloadItems(at: changed.map { IndexPath(item: $0, section:0) })
+                        }
+                        changes.enumerateMoves { fromIndex, toIndex in
+                            collectionView.moveItem(at: IndexPath(item: fromIndex, section: 0),
+                                                    to: IndexPath(item: toIndex, section: 0))
+                        }
+                    })
+                } else {
+                    // Reload the collection view if incremental diffs are not available.
+                    collectionView.reloadData()
+                }
+            }
+        }
+ */
+    }
+    
     func reloadList(){
         
+        recordings = CoreDataHelper.retrieveRecordings()
+        
+        //let observer = PHPhotoLibrary.shared().register(<#T##observer: PHPhotoLibraryChangeObserver##PHPhotoLibraryChangeObserver#>)
         
         PHPhotoLibrary.shared().performChanges({
             
@@ -134,74 +194,56 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             let fetchResult  = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.album, subtype: PHAssetCollectionSubtype.any, options: fetchOptions)
             let assetCollection = fetchResult.object(at: 0)
             let assets = PHAsset.fetchAssets(in: assetCollection, options: nil)
-            print(assets.description)
-        
-            let end = assets.count - 1
-            var array = [Int]()
-            for index in 0...end{
-                array.append(index)
-            }
-            let index = IndexSet(array)
             
-            let videoOptions = PHVideoRequestOptions()
-            videoOptions.deliveryMode = .automatic
-            videoOptions.version = .current
-            videoOptions.isNetworkAccessAllowed = true
-         
-            self.phAssets = assets.objects(at: index)
-            let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            for (index,asset) in self.phAssets.enumerated(){
-                
-                guard (asset.mediaType == PHAssetMediaType.video)
-                    
-                    else {
-                        print("Not a valid video media type")
-                        return
+            print(assets.description)
+            if assets.count > 0{
+                let end = assets.count - 1
+                var array = [Int]()
+                for index in 0...end{
+                    array.append(index)
                 }
+                let index = IndexSet(array)
                 
-                self.videoManager.requestPlayerItem(forVideo: asset, options: videoOptions, resultHandler: {(avPlayerItem: AVPlayerItem?,info: [AnyHashable : Any]?) -> Void in
-                    guard let playerItem = avPlayerItem else{
-                        return
+                let videoOptions = PHVideoRequestOptions()
+                videoOptions.deliveryMode = .automatic
+                videoOptions.version = .current
+                videoOptions.isNetworkAccessAllowed = true
+                
+                self.phAssets = assets.objects(at: index)
+                
+                for (index,asset) in self.phAssets.enumerated(){
+                    guard (asset.mediaType == PHAssetMediaType.video)
+                        else {
+                            print("Not a valid video media type")
+                            return
                     }
-                    if playerItem.asset.isPlayable == true{
-                        print("playable")
-                    } else{
-                        print("is not playable")
-                    }
-                    self.avPlayerItems.append(playerItem)
-                    //let localVideoURL = documentDirectoryURL.appendingPathComponent("\(index)").appendingPathExtension("mov")
-                    
-                    
-                })
-
-                /*
-                self.videoManager.requestAVAsset(forVideo: asset, options: videoOptions, resultHandler:{(avAsset: AVAsset?, audioMix: AVAudioMix?, info: [AnyHashable : Any]?) -> Void in
-                    
-                    let localVideoURL = documentDirectoryURL.appendingPathComponent("\(index)").appendingPathExtension("mov")
-                    
-                    let avAsset = AVURLAsset(url: localVideoURL)
-                    print(avAsset.debugDescription)
-                    if avAsset.isReadable{
-                        print("video \(index) is readable")
-                    } else{
-                        print("video \(index) not readable")
-                    }
-                    if avAsset.isPlayable{
-                        print("video \(index)is playable")
-                    } else{
-                        print("video \(index) not playable")
-                    }
-                    self.avAssets.append(avAsset)
-                  
-                    
-                })
-                 */
+                    var previews = [UIImage]()
+                    self.videoManager.requestPlayerItem(forVideo: asset, options: videoOptions, resultHandler: {(avPlayerItem: AVPlayerItem?,info: [AnyHashable : Any]?) -> Void in
+                        guard let playerItem = avPlayerItem else{
+                            return
+                        }
+                        if playerItem.asset.isPlayable == true{
+                            print("playable")
+                        } else{
+                            print("is not playable")
+                        }
+                        self.avPlayerItems.append(playerItem)
+                        
+                        let asset = playerItem.asset
+                        let duration = asset.duration.seconds
+                      
+                        let time = TimeInterval.init(exactly: duration)
+                        let image = ImageCaptureHelper.videoPreviewUiimage(asset: asset, duration: time!)
+                        previews.append(image!)
+                    })
+                    self.recordingPreviews = previews
+                }
+          
             }
 
         })
-        
-     //   recordings = CoreDataHelper.retrieveRecordings()
     
+        /*
         UserService.retrieveRecords(for: User.current) { (recordings) in
             self.recordings = recordings
             
@@ -229,7 +271,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.recordingPreviews = previews
             }
         }
- 
+ */
     }
     
     // MARK: RecordingViewController
@@ -799,8 +841,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             //format.dateFormat = "MMM d, YYYY h:mm a"
             format.dateFormat = "MM/dd/yyyy h:mm a"
 
-            let recordingNum = self.recordings.count + 1
-            
+           // let recordingNum = self.recordings.count + 1
+            let recordingNum = self.avPlayerItems.count + 1
             if self.isQuoteToggled == true{
                 let movieTitle = self.getTitle(sentence: self.scriptTextView.text)
                 self.currentFilename = "\(movieTitle)"
@@ -809,7 +851,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             }
             
             
-          //self.currentFilename = "Recording \(recordingNum)"
+            //self.currentFilename = "Recording \(recordingNum)"
             
             if alert.textFields?[0].text != "" {
                 self.currentFilename = alert.textFields?[0].text
@@ -819,13 +861,12 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             guard let image = ImageCaptureHelper.videoPreviewUiimage(vidURL: url, duration: time) else{
                 return
             }
-            /*
+            
             let recording = CoreDataHelper.newRecording()
             recording.title = self.currentFilename
             recording.date = Date() as NSDate
             recording.transcript = transcriptText
             CoreDataHelper.saveRecording()
-            */
             
             let albumName = "Method"
             
@@ -838,25 +879,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                     }
                 }
             }
-            
-             /*
-            PHPhotoLibrary.shared().performChanges({
-                print("works")
-                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-             
-            }) { saved, error in
-                if saved {
-                    print("local temp clear")
-                    FileManager.default.clearTmpDirectory()
-                    let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
-                    let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-                    alertController.addAction(defaultAction)
-                    self.present(alertController, animated: true, completion: nil)
-                }
-            }
-             */
          
-            RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, score: self.articulationScore ,preview: image)
+           // RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, score: self.articulationScore ,preview: image)
     
         }))
         
@@ -964,15 +988,15 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 
                 let indexPath = listTableView.indexPathForSelectedRow!
                 
-                //let avAsset = avAssets[indexPath.row]
-                //let url = avAsset.url
                 let item = avPlayerItems[indexPath.row]
-                //let record = recordings[indexPath.row]
-                let mediaPlayerViewController = segue.destination as! MediaPlayerViewController
-                //mediaPlayerViewController.url = url
-                //mediaPlayerViewController.avAsset = avAsset
-                mediaPlayerViewController.item = item
                 
+                let mediaPlayerViewController = segue.destination as! MediaPlayerViewController
+                
+                mediaPlayerViewController.item = item
+                avplayer.replaceCurrentItem(with: item)
+                mediaPlayerViewController.videoPlayer = avplayer
+                
+                //let record = recordings[indexPath.row]
                 //mediaPlayerViewController.record = record
             }
         }
@@ -1032,7 +1056,7 @@ extension RecordingViewController: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //return recordings.count
-        return avPlayerItems.count
+        return recordings.count
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -1043,25 +1067,21 @@ extension RecordingViewController: UITableViewDataSource{
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "recordingTableViewCell", for: indexPath) as! RecordingTableViewCell
         let row = indexPath.row
-        //let recording = recordings[row]
+        let recording = recordings[row]
      
-        //let video = videos[row]
+        cell.recordingTitle.text = recording.title
+        cell.recordingTitle.textColor = UIColor.white
         
-       // let video = assets.object(at: indexPath.item)
-        //cell.recordingTitle.text = recording.title
-        //cell.recordingTitle.textColor = UIColor.white
-        
-       // cell.recordingDate.text = recording.date?.description
+        cell.recordingDate.text = recording.date!.description
         //cell.recordingDate.text = recording.getDateString()
-        
         //cell.recordingDate.text = recording.getTimeString()
-        //cell.recordingDate.textColor = UIColor.white
+        cell.recordingDate.textColor = UIColor.white
+        
         //cell.viewPreview.image = recordingPreviews[row]
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
         
         //cell.representedAssetIdentifier = asset.localIdentifier
-       
         
         return cell
     }
@@ -1069,9 +1089,14 @@ extension RecordingViewController: UITableViewDataSource{
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             print("Delete")
-            //CoreDataHelper.delete(recording: recordings[indexPath.row])
+            CoreDataHelper.delete(recording: recordings[indexPath.row])
+                        recordings.remove(at: indexPath.row)
+            avPlayerItems.remove(at: indexPath.row)
+            PHPhotoLibrary.shared().performChanges({
+         
+            })
+            
             //RecordService.delete(record: recordings[indexPath.row])
-            //recordings.remove(at: indexPath.row)
             //recordingPreviews.remove(at: indexPath.row)
         }
     }
@@ -1159,7 +1184,7 @@ extension FileManager {
             print(error)
         }
     }
- */
+  */
 }
 
 extension RecordingViewController: UIGestureRecognizerDelegate{

@@ -46,7 +46,6 @@ struct RecordService {
         PHPhotoLibrary.shared().performChanges({
             
             let assetRequest = PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-            //PHAssetChangeRequest.init(for: <#T##PHAsset#>)
             let assetPlaceholder = assetRequest?.placeholderForCreatedAsset
             let albumChangeRequest = PHAssetCollectionChangeRequest(for: album)
             let enumeration: NSArray = [assetPlaceholder!]
@@ -66,7 +65,7 @@ struct RecordService {
             }
         }
     }
-
+/*
     static func create(audioData: Data, videoData: Data, transcriptText: String,title: String, fileID : String,duration: TimeInterval, score: Double, preview: UIImage) {
         
         let dispatchGroup = DispatchGroup()
@@ -145,5 +144,6 @@ struct RecordService {
         StorageService.deleteFiles(audioURL: audioURL, videoURL: videoURL, imageURL: imageURL)
         
     }
+ */
 }
 

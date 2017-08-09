@@ -11,7 +11,7 @@ import FirebaseAuth.FIRUser
 import FirebaseDatabase
 
 struct UserService {
-    
+    /*
     static func retrieveRecords(for user: User, completion: @escaping ([Recording]) -> Void) {
         let ref = Database.database().reference().child("recordings").child(user.uid)
         /*
@@ -40,7 +40,7 @@ struct UserService {
         ref.removeAllObservers()
         completion("works"  )
     }
-    
+    */
     static func show(forUID uid: String, completion: @escaping (User?) -> Void) {
         let ref = Database.database().reference().child("users").child(uid)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
@@ -51,6 +51,7 @@ struct UserService {
             completion(user)
         })
     }
+     
     
     static func create(_ firUser: FIRUser, username: String, completion: @escaping (User?) -> Void) {
         let userAttrs = ["username": username]
@@ -69,4 +70,5 @@ struct UserService {
             })
         }
     }
+ 
 }

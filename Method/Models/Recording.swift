@@ -9,7 +9,7 @@
 import Foundation
 import FirebaseDatabase.FIRDataSnapshot
 import AVFoundation
-
+/*
 class Recording{
     var key: String?
     var title: String
@@ -109,4 +109,4 @@ class Recording{
         return time
     }
 }
-
+*/

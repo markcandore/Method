@@ -69,7 +69,7 @@ struct DownloadService {
         }
  */
     }
-    
+    /*
     static func download(record: Recording, completion: @escaping (URL?) -> Void) {
         let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let localAudioURL = documentDirectoryURL.appendingPathComponent(record.fileID).appendingPathExtension("m4a")
@@ -125,5 +125,6 @@ struct DownloadService {
             completion(record.localVideoURL)
         }
     }
+ */
     
 }

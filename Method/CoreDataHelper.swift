@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 import UIKit
-/*
+
 class CoreDataHelper {
     static let appDelegate = UIApplication.shared.delegate as! AppDelegate
     static let persistentContainer = appDelegate.persistentContainer
@@ -45,4 +45,3 @@ class CoreDataHelper {
         return []
     }
 }
-*/

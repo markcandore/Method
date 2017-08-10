@@ -21,9 +21,8 @@ class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelega
     var audioPlayer: AVAudioPlayer!
     var videoPlayer: AVPlayer!
     var playerController : AVPlayerViewController?
-    var url: URL!
+    //var url: URL!
     var item: AVPlayerItem!
-    var avAsset: AVURLAsset!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var transcriptTextView: UITextView!
     
@@ -53,17 +52,6 @@ class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelega
         }
         */
     }
-  
-    /*
-    func removeFile(){
-        do{
-            try FileManager.default.removeItem(atPath: (record?.localAudioURL?.absoluteString)!)
-            try FileManager.default.removeItem(atPath: (record?.localVideoURL?.absoluteString)!)
-        } catch{
-            print(error)
-        }
-    }
-   */
     func tap(){
         let topView = UIView.init(frame: self.view.frame)
         topView.backgroundColor = .clear
@@ -76,45 +64,45 @@ class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelega
     }
     
     func play(){
-        print("play")
+        print("try play")
         if self.item != nil{
-            do{
-                //AudioSessionCommandHelper.setAudioSessionCategoryPlayback()
-                //print(url.absoluteString)
-   
+            DispatchQueue.main.async(execute: {
                 
-                DispatchQueue.main.async(execute: {
+                if self.item.asset.isPlayable{
+                    //self.videoPlayer = AVPlayer(playerItem: self.item)
+                    let playerViewController = AVPlayerViewController()
+                    playerViewController.delegate = self
+                    playerViewController.player = self.videoPlayer
                     
-                    if self.item.asset.isPlayable{
-                        //self.videoPlayer = AVPlayer(playerItem: self.item)
-                        let playerViewController = AVPlayerViewController()
-                        playerViewController.delegate = self
-                        playerViewController.player = self.videoPlayer
-                        
-                        playerViewController.showsPlaybackControls = false
-                        playerViewController.view.frame = self.view.frame
-                        NotificationCenter.default.addObserver(self, selector: #selector(self.playerItemDidReachEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.videoPlayer!.currentItem)
-                        
-                        self.view.addSubview(playerViewController.view)
-                        self.tap()
-                        //self.present(playerViewController, animated: true) {
-                        self.videoPlayer.seek(to: kCMTimeZero)
-                        playerViewController.player!.play()
-
-                        //}
-                    } else{
-                        print("not playable")
-                    }
-                })
- 
-            } catch{
-                //self.videoPlayer = nil
-                print(error.localizedDescription)
-            }
+                    playerViewController.showsPlaybackControls = false
+                    playerViewController.view.frame = self.view.frame
+                    NotificationCenter.default.addObserver(self, selector: #selector(self.playerItemDidReachEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.videoPlayer!.currentItem)
+                    
+                    self.view.addSubview(playerViewController.view)
+                    self.tap()
+                    
+                    self.videoPlayer.seek(to: kCMTimeZero)
+                    playerViewController.player!.play()
+                    
+                } else{
+                    print("not playable")
+                }
+            })
         } else{
             print("files do not exist")
         }
     }
+    
+    /*
+     func removeFile(){
+     do{
+     try FileManager.default.removeItem(atPath: (record?.localAudioURL?.absoluteString)!)
+     try FileManager.default.removeItem(atPath: (record?.localVideoURL?.absoluteString)!)
+     } catch{
+     print(error)
+     }
+     }
+     */
     /*
     func play(){
         print("play")

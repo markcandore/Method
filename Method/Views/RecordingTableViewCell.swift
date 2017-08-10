@@ -16,8 +16,8 @@ class RecordingTableViewCell: UITableViewCell {
     
     @IBOutlet weak var viewPreview: UIImageView!
     
-    var representedAssetIdentifier: String!
-    
+    @IBOutlet weak var scoreLabel: UILabel!
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }

@@ -27,11 +27,22 @@ class ProfileViewController: UIViewController{
     }
     @IBAction func logoutButtonTapped(_ sender: Any) {
         
-        //let firebaseAuth = Auth.auth()
+        let firebaseAuth = Auth.auth()
+        
+        do {
+            try firebaseAuth.signOut()
+            print("signout")
+            self.dismiss(animated: true, completion: nil)
+            let initialViewController = UIStoryboard.initialViewController(for: .login)
+            let window = UIApplication.shared.keyWindow
+            window?.rootViewController = initialViewController
+            
+        } catch let signOutError as NSError {
+            print ("Error signing out: %@", signOutError)
+        }
         /*
         UserService.removeObserver(for: User.current, completion:{ (word) in
             do {
-                
                 try firebaseAuth.signOut()
                 print("signout")
                 //self.goHome()
@@ -45,6 +56,7 @@ class ProfileViewController: UIViewController{
 
         })
  */
+
     }
  
 }

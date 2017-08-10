@@ -10,11 +10,59 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Method/Controllers/RecordingViewController.swift"
-            timestampString = "524008809.27196"
+            timestampString = "524093370.843386"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "241"
-            endingLineNumber = "241"
+            startingLineNumber = "242"
+            endingLineNumber = "242"
+            landmarkName = "reloadList()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Method.RecordingViewController.(reloadList () -&gt; ()).(closure #1)"
+                  moduleName = "Method"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/markwang/Desktop/Method/Method/Controllers/RecordingViewController.swift"
+                  timestampString = "524090979.89392"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "241"
+                  endingLineNumber = "241"
+                  offsetFromSymbolStart = "2916">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Method.RecordingViewController.(reloadList () -&gt; ()).(closure #1).(closure #2)"
+                  moduleName = "Method"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/markwang/Desktop/Method/Method/Controllers/RecordingViewController.swift"
+                  timestampString = "524090979.895681"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "242"
+                  endingLineNumber = "242"
+                  offsetFromSymbolStart = "16">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Method/Controllers/RecordingViewController.swift"
+            timestampString = "524093370.843386"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "239"
+            endingLineNumber = "239"
             landmarkName = "reloadList()"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,12 +74,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Method/Controllers/RecordingViewController.swift"
-            timestampString = "524008809.27196"
+            timestampString = "524093370.843386"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "293"
-            endingLineNumber = "293"
-            landmarkName = "reloadList()"
+            startingLineNumber = "301"
+            endingLineNumber = "301"
+            landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -42,13 +90,45 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Method/Controllers/RecordingViewController.swift"
-            timestampString = "524008809.27196"
+            timestampString = "524093370.843386"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "275"
-            endingLineNumber = "275"
+            startingLineNumber = "247"
+            endingLineNumber = "247"
             landmarkName = "reloadList()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Method.RecordingViewController.(reloadList () -&gt; ()).(closure #1)"
+                  moduleName = "Method"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/markwang/Desktop/Method/Method/Controllers/RecordingViewController.swift"
+                  timestampString = "524090979.90493"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "245"
+                  endingLineNumber = "245"
+                  offsetFromSymbolStart = "3100">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Method.RecordingViewController.(reloadList () -&gt; ()).(closure #1).(closure #2)"
+                  moduleName = "Method"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/markwang/Desktop/Method/Method/Controllers/RecordingViewController.swift"
+                  timestampString = "524090979.906169"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "245"
+                  endingLineNumber = "245"
+                  offsetFromSymbolStart = "344">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -142,7 +142,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     func reloadList(){
         UserService.retrieveRecords(for: User.current) { (recordings) in
             self.recordings = recordings
-            
            // print(recordings.count)
             
             let dispatchGroup = DispatchGroup()
@@ -151,11 +150,9 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
             for record in self.recordings{
                 dispatchGroup.enter()
                 DownloadService.download(record: record){ (videoURL) in
-                    
                     dispatchGroup.leave()
                 }
             }
-            
             dispatchGroup.notify(queue: .main){
                 for record in self.recordings{
                     guard let url = record.localVideoURL else {
@@ -172,7 +169,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        listButton.isHidden = true
+        //listButton.isHidden = true
+        
         /*
         displayView.frame = CGRect(x: 77, y: 536, width: 230, height: 48)
         self.view.addSubview(displayView)
@@ -667,16 +665,12 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         let articulationScore = String(format: "%.01f", self.articulationScore)
         let alert = UIAlertController(title: "Recording Finished", message: "Your articulation score is\n \(articulationScore)% \n\n Transcript: \n\(self.transcriptTextView.text!)", preferredStyle: UIAlertControllerStyle.alert)
         
-        //let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
-        
-        /*
         alert.addTextField { (textField : UITextField!) -> Void in
             textField.placeholder = "Enter recording title"
         }
-        */
-        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: {[unowned self] action in
-
-            /*
+ 
+        alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {[unowned self] action in
+            
             let audioPath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("m4a")!)
             guard let audioData = FileManager.default.contents(atPath: audioPath) else{
                 return
@@ -707,20 +701,20 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.recordingPreviews.remove(at: 0)
             }
  
-            //RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, preview: image)
+            RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, preview: image)
             
             print("local temp clear")
             FileManager.default.clearTmpDirectory()
-             */
+            
     
         }))
         
-        /*
+        
         alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: { action in
             print("local temp clear")
             FileManager.default.clearTmpDirectory()
         }))
-        */
+ 
         self.present(alert, animated: true, completion: nil)
     }
     // MARK: SFSpeechRecognizerDelegate

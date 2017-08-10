@@ -9,6 +9,7 @@
 import UIKit
 import Speech
 import AVFoundation
+import FirebaseAuth
 import FirebaseStorage
 import FirebaseDatabase
 import SwiftyJSON
@@ -31,6 +32,8 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     var finalTime = 0.0
     var countdownImage = -1
     
+    var articulationScore = 0.0
+    
     //Speech Recognition
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))!
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
@@ -49,9 +52,36 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     @IBOutlet weak var scriptTextView: UITextView!
     @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var listButton: UIButton!
-    @IBOutlet weak var profileButton: UIButton!
     @IBOutlet weak var countingTimerLabel: UILabel!
    
+    @IBAction func logoutButton(_ sender: UIButton) {
+        let alert = UIAlertController(title: "Logout", message: "Do you want to logout?", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
+            let firebaseAuth = Auth.auth()
+            UserService.removeObserver(for: User.current, completion:{ (word) in
+                do {
+                    
+                    try firebaseAuth.signOut()
+                  //  print("signout")
+                    //self.goHome()
+                    let initialViewController = UIStoryboard.initialViewController(for: .login)
+                    let window = UIApplication.shared.keyWindow
+                    window?.rootViewController = initialViewController
+                    window?.makeKeyAndVisible()
+                    
+                } catch let signOutError as NSError {
+                    print ("Error signing out: %@", signOutError)
+                }
+                
+            })
+        }))
+        
+        alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.cancel, handler: { action in
+            
+        }))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
     //Video Setup
     
     fileprivate enum SessionSetupResult {
@@ -86,7 +116,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     var recordings = [Recording]()
     var recordingPreviews = [UIImage](){
         didSet{
-            print("reloading")
+           // print("reloading")
             self.listTableView.reloadData()
         }
     }
@@ -113,7 +143,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         UserService.retrieveRecords(for: User.current) { (recordings) in
             self.recordings = recordings
             
-            print(recordings.count)
+           // print(recordings.count)
             
             let dispatchGroup = DispatchGroup()
             var previews = [UIImage]()
@@ -133,7 +163,6 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                     }
                     previews.append(ImageCaptureHelper.videoPreviewUiimage(vidURL: url, duration: record.duration) )
                 }
-                print("works")
                 self.recordingPreviews = previews
             }
         }
@@ -143,6 +172,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        listButton.isHidden = true
         /*
         displayView.frame = CGRect(x: 77, y: 536, width: 230, height: 48)
         self.view.addSubview(displayView)
@@ -194,12 +224,10 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         // Disable the record buttons until authorization has been granted.
         recordButton.isEnabled = false
         recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
-        profileButton.setTitle(User.current.username, for: .normal)
-        profileButton.setTitleColor(UIColor.white, for: .normal)
+   
         //let profileImage = UIImage(named: "DefaultProfile")
         //profileButton.setImage(profileImage, for: .normal)
-        profileButton.layer.cornerRadius = 5
-        profileButton.layer.borderWidth = 1
+       
         countingTimerLabel.text = "\(recordingTime)s"
         
     }
@@ -377,7 +405,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 videoSession.addInput(videoDeviceInput)
                 self.videoDeviceInput = videoDeviceInput
             } else{
-                print(videoSession.canSetSessionPreset(videoInputPresetFromVideoQuality(quality: videoQuality)))
+               // print(videoSession.canSetSessionPreset(videoInputPresetFromVideoQuality(quality: videoQuality)))
                 setupResult = .configurationFailed
                 videoSession.commitConfiguration()
                 return
@@ -499,16 +527,68 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         // Configure request so that results are returned before audio recording is finished
         recognitionRequest.shouldReportPartialResults = true
         
+        var average: Double = 0.0
+        var sum: Float = 0.0
+        var count: Float = 0.0
+        
         recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
             var isFinal = false
             
             if let result = result {
                 let range = NSMakeRange(self.transcriptTextView.text.characters.count - 1, 0)
                 self.transcriptTextView.scrollRangeToVisible(range)
-                self.transcriptTextView.text = result.bestTranscription.formattedString
+                
+                let mainAttributedString : NSMutableAttributedString = NSMutableAttributedString(string: "", attributes: [NSFontAttributeName:UIFont.systemFont(ofSize: 20.0)])
+                for segment in result.bestTranscription.segments{
+                    let confidence = segment.confidence
+                    var string = segment.substring
+                    string.append(" ")
+                    var color: UIColor
+                    if confidence > 0.86{
+                        color = UIColor.green
+                    } else if confidence > 0.7{
+                        color = UIColor.yellow
+                    } else if confidence > 0.4{
+                        color = UIColor.orange
+                    } else if confidence > 0.0{
+                        color = UIColor.red
+                    } else {
+                        color = UIColor.white
+                    }
+                    
+                    let attributedString = NSMutableAttributedString(string: string, attributes: [NSFontAttributeName:UIFont.systemFont(ofSize: 20.0)])
+                    
+                   // print("\(string): \(segment.confidence)")
+                    let range = (string as NSString).range(of: string)
+                    
+                    attributedString.addAttribute(NSForegroundColorAttributeName, value: color , range: range)
+                    mainAttributedString.append(attributedString)
+                }
+                
+                self.transcriptTextView.attributedText = mainAttributedString
+                //self.transcriptTextView.text = result.bestTranscription.formattedString
                 isFinal = result.isFinal
             }
             if error != nil || isFinal {
+                
+                if let result = result{
+                    for segment in result.bestTranscription.segments{
+                        sum += segment.confidence
+                        
+                        //let string = segment.substring
+                        //print("\(string) confidence: \(segment.confidence)")
+                        //print("\(string) timestamp: \(segment.timestamp)")
+                        //print("\(string) duration: \(segment.duration)")
+                        
+                        count += 1
+                    }
+                }
+                
+                average = Double(sum / count)
+               // print("average: \(average)")
+                self.articulationScore = average * 100.0
+                //print("articulation: \(self.articulationScore)")
+                
                 self.audioEngine.stop()
                 inputNode.removeTap(onBus: 0)
                 
@@ -516,6 +596,11 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.recognitionTask = nil
                 
                 self.recordButton.isEnabled = true
+                
+                let time = self.recordingTime
+                self.stopTimers()
+                self.savingAlert(time: time)
+                self.reset()
             }
         }
         
@@ -579,15 +664,19 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
         }
     }
     func savingAlert(time: TimeInterval){
+        let articulationScore = String(format: "%.01f", self.articulationScore)
+        let alert = UIAlertController(title: "Recording Finished", message: "Your articulation score is\n \(articulationScore)% \n\n Transcript: \n\(self.transcriptTextView.text!)", preferredStyle: UIAlertControllerStyle.alert)
         
-        let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
+        //let alert = UIAlertController(title: "Recording Done", message: "Do you want to save this recording?", preferredStyle: UIAlertControllerStyle.alert)
         
+        /*
         alert.addTextField { (textField : UITextField!) -> Void in
             textField.placeholder = "Enter recording title"
         }
-        
-        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: {[unowned self] action in
+        */
+        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: {[unowned self] action in
 
+            /*
             let audioPath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("m4a")!)
             guard let audioData = FileManager.default.contents(atPath: audioPath) else{
                 return
@@ -607,28 +696,31 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
                 self.currentFilename = alert.textFields?[0].text
             }
             let url = URL(fileURLWithPath: videoPath)
+            
             guard let image = ImageCaptureHelper.videoPreviewUiimage(vidURL: url, duration: time) else{
                 return
             }
-            /*
+            
             if self.recordings.count > 10{
                 RecordService.delete(record: self.recordings[0])
                 self.recordings.remove(at: 0)
                 self.recordingPreviews.remove(at: 0)
             }
-            */
-            RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, preview: image)
+ 
+            //RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, preview: image)
             
             print("local temp clear")
             FileManager.default.clearTmpDirectory()
+             */
     
         }))
         
-        alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.cancel, handler: { action in
+        /*
+        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: { action in
             print("local temp clear")
             FileManager.default.clearTmpDirectory()
         }))
-        
+        */
         self.present(alert, animated: true, completion: nil)
     }
     // MARK: SFSpeechRecognizerDelegate
@@ -678,9 +770,11 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     func stopAudio(){
+        
         audioEngine.stop()
         audioRecorder.stop()
         recognitionRequest?.endAudio()
+        
     }
     
     func reset(){
@@ -693,13 +787,11 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     }
     
     func end(){
-        let time = recordingTime
-        stopTimers()
-        stopAudio()
+       
         stopVideoRecording()
+        stopAudio()
+        
         recordButton.isEnabled = false
-        savingAlert(time: time)
-        reset()
     }
     
     @objc fileprivate func scriptTapGesture(write: UITapGestureRecognizer) {
@@ -719,7 +811,7 @@ class RecordingViewController: UIViewController, SFSpeechRecognizerDelegate, AVA
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let identifier = segue.identifier {
             if identifier == Constants.Segue.showMedia {
-                print("Table view cell tapped")
+               // print("Table view cell tapped")
                 
                 let indexPath = listTableView.indexPathForSelectedRow!
                 let record = recordings[indexPath.row]
@@ -828,6 +920,7 @@ extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
             }
         }
         
+        /*
         guard let data = NSData(contentsOf: outputFileURL as URL) else {
             return
         }
@@ -857,8 +950,9 @@ extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
                 break
             }
         }
+ */
     }
-    
+    /*
     func compressVideo(inputURL: URL, outputURL: URL, handler:@escaping (_ exportSession: AVAssetExportSession?)-> Void) {
         let urlAsset = AVURLAsset(url: inputURL, options: nil)
         guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: AVAssetExportPresetMediumQuality) else {
@@ -874,6 +968,7 @@ extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
             handler(exportSession)
         }
     }
+ */
 }
 
 extension FileManager {

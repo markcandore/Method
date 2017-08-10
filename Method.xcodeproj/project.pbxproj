@@ -56,6 +56,7 @@
 		5F42EECD1F2A64A000519C2F /* CameraVideoEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraVideoEnums.swift; path = Supporting/CameraVideoEnums.swift; sourceTree = "<group>"; };
 		5F42EECF1F2BF47200519C2F /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfileViewController.swift; path = Controllers/ProfileViewController.swift; sourceTree = "<group>"; };
 		5F42EED71F2FBFFD00519C2F /* RecordingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingTableViewCell.swift; path = Views/RecordingTableViewCell.swift; sourceTree = "<group>"; };
+		5F6538F61F3C016400C7CC90 /* Method.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Method.entitlements; sourceTree = "<group>"; };
 		5F6BBE711F1FD2C400A157E2 /* Method.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Method.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F6BBE741F1FD2C400A157E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F6BBE7B1F1FD2C400A157E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -138,6 +139,7 @@
 		5F6BBE731F1FD2C400A157E2 /* Method */ = {
 			isa = PBXGroup;
 			children = (
+				5F6538F61F3C016400C7CC90 /* Method.entitlements */,
 				5F6BBE741F1FD2C400A157E2 /* AppDelegate.swift */,
 				5FFC1FD41F3395530094253E /* JSON */,
 				5FA1A3881F311D3600BCB32B /* Logic */,
@@ -295,6 +297,11 @@
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = MMWEE7C9T8;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -518,6 +525,7 @@
 			baseConfigurationReference = F646C45D56F6E717222CC5AF /* Pods-Method.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Method/Method.entitlements;
 				DEVELOPMENT_TEAM = MMWEE7C9T8;
 				INFOPLIST_FILE = "$(SRCROOT)/Method/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -532,6 +540,7 @@
 			baseConfigurationReference = 49D2C208BBDD1FB10E0DC2C0 /* Pods-Method.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Method/Method.entitlements;
 				DEVELOPMENT_TEAM = MMWEE7C9T8;
 				INFOPLIST_FILE = "$(SRCROOT)/Method/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

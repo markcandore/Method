@@ -4,12 +4,6 @@
 <dict>
 	<key>APInstallerURL</key>
 	<string></string>
-	<key>NSCameraUsageDescription</key>
-	<string>Take video recording</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Speak and watch your words transcribed onto the text view</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Your speech will be detected after tapping the record button</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -23,11 +17,17 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>1.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Take video recording</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Your speech will be detected after tapping the record button</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Speak and watch your words transcribed onto the text view</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

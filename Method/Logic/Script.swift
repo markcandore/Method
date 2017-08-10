@@ -14,7 +14,7 @@ struct Script {
     init(json: JSON) {
         let count = json.count
      
-        let random = arc4random_uniform(UInt32(count)) + 1
+        let random = arc4random_uniform(UInt32(count)) 
         let line = json[Int(random)].stringValue
         self.sentence = ""
         setSentence(line: line)
@@ -30,6 +30,17 @@ struct Script {
     }
     
     func getTitle() -> String{
-        return ""
+        
+        let removedFirst = sentence.characters.dropFirst()
+        let index = removedFirst.index(of: "\"")
+        if index != nil{
+            let index2 = removedFirst.index(index!, offsetBy: 2)
+            let title = sentence.substring(from: index2)
+            return title
+        } else{
+            print(sentence)
+            return "NONE"
+        }
+        //return "NONE"
     }
 }

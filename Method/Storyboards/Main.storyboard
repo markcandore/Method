@@ -106,13 +106,12 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <button opaque="NO" contentMode="scaleAspectFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KEW-oz-CJS">
-                                <rect key="frame" x="16" y="602" width="50" height="50"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FMW-jW-azW">
+                                <rect key="frame" x="26" y="617" width="56" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.64054473458904104" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" title="Profile"/>
+                                <state key="normal" title="Logout"/>
                                 <connections>
-                                    <action selector="profileButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="A9E-vQ-yoz"/>
+                                    <action selector="logoutButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="v8l-gT-Bzw"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -123,7 +122,6 @@
                         <outlet property="countingTimerLabel" destination="mKf-Ob-8Eb" id="GDC-ye-h4B"/>
                         <outlet property="listButton" destination="1aR-NI-gSZ" id="Tg0-GI-nNl"/>
                         <outlet property="listTableView" destination="mN2-UB-7UZ" id="8Zx-7k-q58"/>
-                        <outlet property="profileButton" destination="KEW-oz-CJS" id="hNC-od-Z5F"/>
                         <outlet property="recordButton" destination="uJB-a4-5PD" id="IS2-lH-DL1"/>
                         <outlet property="scriptTextView" destination="5KO-z1-eG5" id="bUV-oU-Ygd"/>
                         <outlet property="transcriptTextView" destination="myC-tK-qXu" id="gZR-l8-sYQ"/>
@@ -132,65 +130,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="789.60000000000002" y="141.67916041979012"/>
-        </scene>
-        <!--Profile View Controller-->
-        <scene sceneID="tqb-3S-LUa">
-            <objects>
-                <viewController storyboardIdentifier="profileViewController" id="GlI-EC-KS1" customClass="ProfileViewController" customModule="Method" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="dpf-C7-SHJ"/>
-                        <viewControllerLayoutGuide type="bottom" id="or5-Ur-g4s"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="yRe-Qg-nvG">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Profile Username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CvC-yL-Bxl">
-                                <rect key="frame" x="119" y="371" width="159" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mfC-xM-C6N">
-                                <rect key="frame" x="162" y="588" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Back"/>
-                                <connections>
-                                    <action selector="backButtonTapped:" destination="GlI-EC-KS1" eventType="touchUpInside" id="W13-oI-5nW"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PX9-bD-Mt8">
-                                <rect key="frame" x="153" y="476" width="68" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Log out"/>
-                                <connections>
-                                    <action selector="logoutButtonTapped:" destination="GlI-EC-KS1" eventType="touchUpInside" id="5I5-rj-GMp"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nHb-aF-NVZ">
-                                <rect key="frame" x="77" y="131" width="220" height="199"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button" image="DefaultProfile"/>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Full Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bB0-3X-O4t">
-                                <rect key="frame" x="133" y="76" width="130" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <connections>
-                        <outlet property="fullNameLabel" destination="bB0-3X-O4t" id="htT-hk-oWr"/>
-                        <outlet property="userNameLabel" destination="CvC-yL-Bxl" id="dWy-1f-YCO"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="7D9-VG-oS7" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="789.60000000000002" y="-523.088455772114"/>
         </scene>
         <!--Media Player View Controller-->
         <scene sceneID="wVK-By-egn">
@@ -277,7 +216,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="DefaultProfile" width="515" height="515"/>
         <image name="List" width="301" height="301"/>
     </resources>
 </document>

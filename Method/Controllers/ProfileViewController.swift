@@ -23,7 +23,13 @@ class ProfileViewController: UIViewController{
     }
     
     @IBAction func backButtonTapped(_ sender: UIButton) {
-        dismiss(animated: true, completion: nil)
+        let transition = CATransition()
+        transition.duration = 0.2
+        transition.type = kCATransitionPush
+        transition.subtype = kCATransitionFromRight
+        view.window!.layer.add(transition, forKey: kCATransition)
+        
+        dismiss(animated: false, completion: nil)
     }
     @IBAction func logoutButtonTapped(_ sender: Any) {
         

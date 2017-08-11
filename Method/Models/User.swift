@@ -18,7 +18,6 @@ class User {
     
     // MARK: - Singleton
     private static var _current: User?
-    
    
     static var current: User {
       

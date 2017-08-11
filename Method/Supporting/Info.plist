@@ -25,7 +25,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Your speech will be detected after tapping the record button</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Save video to photos library</string>
+	<string>Save videos to Photo Library</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Speak and watch your words transcribed onto the text view</string>
 	<key>UILaunchStoryboardName</key>
@@ -39,8 +39,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 </dict>
 </plist>

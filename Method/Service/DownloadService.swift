@@ -48,7 +48,6 @@ struct DownloadService {
         allVidOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.video.rawValue)
         allVidOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         
-        
         let allVids = PHAsset.fetchAssets(with: allVidOptions)
         for index in 0..<allVids.count {
             //fetch Asset here

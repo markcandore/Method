@@ -136,6 +136,8 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         // Change notifications may be made on a background queue.
         // Re-dispatch to the main queue to update the UI.
         DispatchQueue.main.sync {
+            print("photo library changes")
+           
             /*
             // Check for changes to the displayed album itself
             // (its existence and metadata, not its member assets).
@@ -333,7 +335,7 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         
         //profileButton.setTitle(User.current.username, for: .normal)
         //profileButton.setTitleColor(UIColor.white, for: .normal)
-        let profileImage = UIImage(named: "DefaultProfile")
+        let profileImage = UIImage(named: "DefaultProfileButton")
         profileButton.setImage(profileImage, for: .normal)
         //profileButton.layer.cornerRadius = 5
         //profileButton.layer.borderWidth = 1
@@ -892,7 +894,6 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
             recording.date = Date() as NSDate
             recording.transcript = transcriptText
             recording.score = self.articulationScore
-            CoreDataHelper.saveRecording()
             
             let albumName = "Method"
             
@@ -905,7 +906,8 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                     }
                 }
             }
-         
+            CoreDataHelper.saveRecording()
+           
         //self.reloadList()
            // RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, score: self.articulationScore ,preview: image)
     
@@ -1089,9 +1091,15 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
     
     @IBAction func profileButtonTapped(_ sender: UIButton) {
         
+        let transition = CATransition()
+        transition.duration = 0.2
+        transition.type = kCATransitionPush
+        transition.subtype = kCATransitionFromLeft
+        view.window!.layer.add(transition, forKey: kCATransition)
+        
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         let profilePage = storyboard.instantiateViewController(withIdentifier: Constants.Storyboards.profileViewController) as? ProfileViewController
-        self.present(profilePage!, animated: true, completion: nil)
+        self.present(profilePage!, animated: false, completion: nil)
     }
     
     @IBAction func unwind(segue:UIStoryboardSegue) { }
@@ -1101,6 +1109,7 @@ extension RecordingViewController: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return recordingPreviews.count
+        
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -1149,16 +1158,27 @@ extension RecordingViewController: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            print("Delete")
-            CoreDataHelper.delete(recording: recordings[indexPath.row])
-            recordings.remove(at: indexPath.row)
-            //avPlayerItems.remove(at: indexPath.row)
+            //print("Delete")
+           
             PHPhotoLibrary.shared().performChanges({
-         
-            })
-            
-            //RecordService.delete(record: recordings[indexPath.row])
-            //recordingPreviews.remove(at: indexPath.row)
+                
+                let asset = self.phAssets[indexPath.row]
+                
+                let delAsset: NSMutableArray! = NSMutableArray()
+                delAsset.add(asset)
+                PHAssetChangeRequest.deleteAssets(delAsset)
+                
+                
+                
+            }){ deleted, error in
+                if deleted {
+                    print("deleted")
+                    CoreDataHelper.delete(recording: self.recordings[indexPath.row])
+                    self.recordings.remove(at: indexPath.row)
+                    self.recordingPreviews.remove(at: indexPath.row)
+                    self.listTableView.reloadData()
+                }
+            }
         }
     }
     

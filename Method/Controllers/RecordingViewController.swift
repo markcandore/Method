@@ -20,6 +20,7 @@ import FirebaseDatabase
 import FirebaseAuth
 import SwiftyJSON
 import Photos
+
 class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SFSpeechRecognizerDelegate, AVAudioRecorderDelegate, PHPhotoLibraryChangeObserver{
 
     
@@ -293,6 +294,10 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         }
          */
     }
+    func tipsAction(sender: UIButton!) {
+        let tip = Tips()
+        transcriptTextView.text = tip.tip
+    }
     
     // MARK: RecordingViewController
     override func viewDidLoad() {
@@ -313,6 +318,16 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         configureTableView()
         reloadList()
         configureGestures()
+        let frame = CGRect(x: 0, y: 80, width: 50, height: 50)
+        let tips = UIButton(frame: frame)
+        
+        tips.backgroundColor = .clear
+        tips.setTitle("Tips", for: .normal)
+        tips.setTitleColor(UIColor.black, for: .normal)
+        tips.addTarget(self, action: #selector(tipsAction), for: .touchUpInside)
+        
+        self.view.addSubview(tips)
+        
         
         //Video Preview Layer
         previewLayer = PreviewView(frame: view.frame, videoGravity: videoGravity)

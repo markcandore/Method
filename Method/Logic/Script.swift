@@ -14,7 +14,6 @@ struct Script {
     init(json: JSON) {
         let count = json.count
      
-       // let random = arc4random_uniform(UInt32(count)) + 1
         let random = arc4random_uniform(UInt32(count)) 
         let line = json[Int(random)].stringValue
         self.sentence = ""

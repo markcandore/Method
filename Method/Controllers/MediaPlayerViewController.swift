@@ -60,7 +60,7 @@ class MediaPlayerViewController: UIViewController , AVPlayerViewControllerDelega
     }
     
     func transcript(){
-        let height = self.view.frame.height/2.0 + self.view.frame.height/4.0
+        let height = self.view.frame.height/2.0 + self.view.frame.height/4.0 + self.view.frame.height/8.0
         let frame = CGRect(x: 0, y: height, width: self.view.frame.width, height: self.view.frame.height/4.0)
         let scriptView = UITextView(frame: frame )
        

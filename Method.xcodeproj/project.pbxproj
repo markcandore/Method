@@ -37,7 +37,6 @@
 		5FA262411F20038700A1B7F8 /* Storyboard+Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262401F20038700A1B7F8 /* Storyboard+Utility.swift */; };
 		5FA262431F20039300A1B7F8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262421F20039300A1B7F8 /* Constants.swift */; };
 		5FA262451F20118B00A1B7F8 /* RecordingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */; };
-		5FC7EA971F3E1CE4009F9AEF /* NewLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5FC7EA961F3E1CE4009F9AEF /* NewLogin.storyboard */; };
 		5FFC1FD11F3390910094253E /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD01F3390910094253E /* Script.swift */; };
 		5FFC1FD31F33954B0094253E /* movie-quotes.json in Resources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD21F33954B0094253E /* movie-quotes.json */; };
 		5FFC1FD61F33BDFC0094253E /* AudioSessionCommandHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD51F33BDFC0094253E /* AudioSessionCommandHelper.swift */; };
@@ -81,7 +80,6 @@
 		5FA262401F20038700A1B7F8 /* Storyboard+Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Storyboard+Utility.swift"; path = "Extensions/Storyboard+Utility.swift"; sourceTree = "<group>"; };
 		5FA262421F20039300A1B7F8 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Supporting/Constants.swift; sourceTree = "<group>"; };
 		5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingViewController.swift; path = Controllers/RecordingViewController.swift; sourceTree = "<group>"; };
-		5FC7EA961F3E1CE4009F9AEF /* NewLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NewLogin.storyboard; sourceTree = "<group>"; };
 		5FFC1FD01F3390910094253E /* Script.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Script.swift; path = Logic/Script.swift; sourceTree = "<group>"; };
 		5FFC1FD21F33954B0094253E /* movie-quotes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "movie-quotes.json"; sourceTree = "<group>"; };
 		5FFC1FD51F33BDFC0094253E /* AudioSessionCommandHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AudioSessionCommandHelper.swift; path = Helpers/AudioSessionCommandHelper.swift; sourceTree = "<group>"; };
@@ -201,7 +199,6 @@
 				5FA262201F1FF39800A1B7F8 /* LaunchScreen.storyboard */,
 				5FA262211F1FF39800A1B7F8 /* Main.storyboard */,
 				5FA262281F1FF42200A1B7F8 /* Login.storyboard */,
-				5FC7EA961F3E1CE4009F9AEF /* NewLogin.storyboard */,
 			);
 			name = Storyboards;
 			sourceTree = "<group>";
@@ -332,7 +329,6 @@
 			files = (
 				5FA262221F1FF39800A1B7F8 /* LaunchScreen.storyboard in Resources */,
 				5F6BBE7C1F1FD2C400A157E2 /* Assets.xcassets in Resources */,
-				5FC7EA971F3E1CE4009F9AEF /* NewLogin.storyboard in Resources */,
 				5FA262181F1FF1F000A1B7F8 /* GoogleService-Info.plist in Resources */,
 				5FFC1FD31F33954B0094253E /* movie-quotes.json in Resources */,
 				5FA262291F1FF42200A1B7F8 /* Login.storyboard in Resources */,

@@ -17,6 +17,7 @@ import AVFoundation
 import AVKit
 import FirebaseStorage
 import FirebaseDatabase
+import FirebaseAuth
 import SwiftyJSON
 import Photos
 class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SFSpeechRecognizerDelegate, AVAudioRecorderDelegate, PHPhotoLibraryChangeObserver{
@@ -91,22 +92,18 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
     
     //var videoOutputFilePath: String!
     //var audioOutputFilePath: String!
-    var outputFileName: String!
+    var uniqueID: String!
     var recordings = [Recording]()
+    var recordingPreviews = [UIImage?](){
+        didSet{
+            listTableView.reloadData()
+        }
+    }
     
     var fetchResult : PHFetchResult<PHAsset>!
     let avplayer = AVPlayer()
     var phAssets = [PHAsset]()
-    /*
-    var avPlayerItems = [AVPlayerItem](){
-        didSet{
-            print("reloading")
-            self.listTableView.reloadData()
-        }
-    }
- */
-    let videoManager = PHCachingImageManager()
-    var recordingPreviews = [UIImage?]()
+    var videoManager: PHCachingImageManager?
     
     var isQuoteToggled = false
     
@@ -115,7 +112,6 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         listTableView.tableFooterView = UIView()
         listTableView.separatorStyle = .none
         listTableView.isHidden = true
-        
         
     }
     
@@ -195,8 +191,21 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
     
     func reloadList(){
         
-        PHPhotoLibrary.shared().register(self)
         recordings = CoreDataHelper.retrieveRecordings()
+        listTableView.reloadData()
+        /*
+        var previews = [UIImage]()
+        for recording in self.recordings{
+            guard let url = recording.url else {
+                return
+            }
+            previews.append(ImageCaptureHelper.videoPreviewUiimage(vidURL: URL(fileURLWithPath: url)) )
+        }
+        
+        self.recordingPreviews = previews
+        */
+        /*
+        PHPhotoLibrary.shared().register(self)
         
         PHPhotoLibrary.shared().performChanges({
             
@@ -251,9 +260,9 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                     
                 }
             }
-            
+         
         })
-    
+    */
         /*
         UserService.retrieveRecords(for: User.current) { (recordings) in
             self.recordings = recordings
@@ -289,6 +298,10 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        videoManager = PHCachingImageManager()
+        
+        //listButton.isHidden = true
+        //profileButton.isHidden = true
         /*
         displayView.frame = CGRect(x: 77, y: 536, width: 230, height: 48)
         self.view.addSubview(displayView)
@@ -333,10 +346,12 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         recordButton.isEnabled = false
         recordButton.setImage(UIImage(named: "RecordButton0"), for: .normal)
         
+        listButton.setImage(UIImage(named: "List"), for: .normal)
+        profileButton.setTitle("logout", for: .normal)
         //profileButton.setTitle(User.current.username, for: .normal)
-        //profileButton.setTitleColor(UIColor.white, for: .normal)
-        let profileImage = UIImage(named: "DefaultProfileButton")
-        profileButton.setImage(profileImage, for: .normal)
+        profileButton.setTitleColor(UIColor.white, for: .normal)
+        //let profileImage = UIImage(named: "DefaultProfileButton")
+        //profileButton.setImage(profileImage, for: .normal)
         //profileButton.layer.cornerRadius = 5
         //profileButton.layer.borderWidth = 1
         countingTimerLabel.text = "\(recordingTime)s"
@@ -763,8 +778,8 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                 
                 self.recordButton.isEnabled = true
                 
-                let time = self.recordingTime
-                self.presentAlert(time: time)
+                self.presentAlert()
+            
             }
         }
         
@@ -775,7 +790,7 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
             self.recognitionRequest?.append(buffer)
         }
 
-        let audioOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("m4a")!)
+        let audioOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.uniqueID as NSString).appendingPathExtension("m4a")!)
         
         let recordSettings:[String : Any] = [
             AVFormatIDKey:             kAudioFormatAppleLossless,
@@ -814,9 +829,13 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                 movieFileOutputConnection?.videoOrientation = self.getVideoOrientation()
                 
                 // Start recording to a temporary file.
-                let videoOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("mov")!)
+                let videoOutputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.uniqueID as NSString).appendingPathExtension("mov")!)
                 movieFileOutput.startRecording(toOutputFileURL: URL(fileURLWithPath: videoOutputFilePath), recordingDelegate: self)
-               
+                
+//                let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//                let localVideoURL = documentDirectoryURL.appendingPathComponent(self.uniqueID).appendingPathExtension("mov")
+//               
+//                movieFileOutput.startRecording(toOutputFileURL: localVideoURL, recordingDelegate: self)
             } else{
                 movieFileOutput.stopRecording()
             }
@@ -840,7 +859,7 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         return title
     }
     
-    func presentAlert(time: TimeInterval){
+    func presentAlert(){
         
         //let movieTitle = self.getTitle(sentence: self.scriptTextView.text)
         
@@ -848,10 +867,10 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         let alert = UIAlertController(title: "Recording Finished", message: "Your articulation score is\n \(articulationScore)% \n\n Transcript: \n\(self.transcriptTextView.text!)", preferredStyle: UIAlertControllerStyle.alert)
         
         
-        alert.addTextField { (textField : UITextField!) -> Void in
-            //textField.placeholder =  "\(movieTitle)" ?? "Enter recording title"
-            textField.placeholder =  "Enter recording title"
-        }
+//        alert.addTextField { (textField : UITextField!) -> Void in
+//            //textField.placeholder =  "\(movieTitle)" ?? "Enter recording title"
+//            textField.placeholder =  "Enter recording title"
+//        }
       
         alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {[unowned self] action in
 
@@ -861,20 +880,47 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                 return
             }
             */
-            let videoPath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.outputFileName as NSString).appendingPathExtension("mov")!)
+            let videoPath = (NSTemporaryDirectory() as NSString).appendingPathComponent((self.uniqueID as NSString).appendingPathExtension("mov")!)
+            
             /*
             guard let videoData = FileManager.default.contents(atPath: videoPath) else{
                 return
             }
-             */
-            let url = URL(fileURLWithPath: videoPath)
+            */
+            
+            if FileManager.default.fileExists(atPath: videoPath){
+                print("file added to temp ")
+            } else{
+                print("file not added to temp")
+            }
+            
+            let videoUrl = URL(fileURLWithPath: videoPath)
+            
+            let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+            let videoDocPath = docPath.appendingPathComponent((self.uniqueID as NSString).appendingPathExtension("mov")!)
+
+            let localVideoURL = URL(fileURLWithPath: videoDocPath)
+            
+            
+            //let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            //let localVideoURL = documentDirectoryURL.appendingPathComponent(self.uniqueID).appendingPathExtension("mov")
+           
+            do {
+                print("try add file locally")
+                //try videoData.write(to: localVideoURL)
+            
+                try FileManager.default.copyItem(at: videoUrl, to: localVideoURL)
+            
+                print("local temp clear")
+                FileManager.default.clearTmpDirectory()
+            } catch{
+                print("not copied/written")
+                return
+            }
             
             let transcriptText = self.transcriptTextView.text
-            //let format = DateFormatter()
-            //format.dateFormat = "MMM d, YYYY h:mm a"
-            //format.dateFormat = "MM/dd/yyyy h:mm a"
-
            // let recordingNum = self.recordings.count + 1
+            
             let recordingNum = self.phAssets.count + 1
             if self.isQuoteToggled == true{
                 let movieTitle = self.getTitle(sentence: self.scriptTextView.text)
@@ -884,21 +930,23 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
             }
             
             //self.currentFilename = "Recording \(recordingNum)"
-            
+            /*
             if alert.textFields?[0].text != "" {
                 self.currentFilename = alert.textFields?[0].text
             }
-        
+             */
+            
             let recording = CoreDataHelper.newRecording()
             recording.title = self.currentFilename
             recording.date = Date() as NSDate
             recording.transcript = transcriptText
             recording.score = self.articulationScore
+            recording.url = videoDocPath
+            CoreDataHelper.saveRecording()
             
             let albumName = "Method"
-            
             RecordService.getAlbumWithName(name: albumName){ (album) in
-                RecordService.addVideo(toUrl: url, toAlbum: album!){(status) in
+                RecordService.addVideo(toUrl: localVideoURL, toAlbum: album!){(status) in
                     if status.self == true{
                         print("video added to library")
                     } else{
@@ -906,15 +954,30 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                     }
                 }
             }
-            CoreDataHelper.saveRecording()
-           
-        //self.reloadList()
+            
+            if self.recordings.count > 10{
+                do{
+                    print("oldest file removed")
+                    //try FileManager.default.removeItem(at: URL(fileURLWithPath: self.recordings[first].url!))
+                    //CoreDataHelper.delete(recording: self.recordings[first])
+                    print(self.recordings[0].title!)
+                    try FileManager.default.removeItem(at: URL(fileURLWithPath: self.recordings[0].url!))
+                    CoreDataHelper.delete(recording: self.recordings[0])
+                    
+                } catch{
+                    return
+                }
+            }
+            
+            self.reloadList()
            // RecordService.create(audioData: audioData, videoData: videoData, transcriptText: transcriptText!, title: self.currentFilename, fileID: self.outputFileName, duration: time, score: self.articulationScore ,preview: image)
     
         }))
         
+        
         alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: { action in
             print("local temp clear")
+            
             FileManager.default.clearTmpDirectory()
         }))
         
@@ -983,9 +1046,12 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
     
     func end(){
         stopTimers()
-        stopAudio()
+        
         stopVideoRecording()
-    
+        stopAudio()
+        
+        //let time = self.recordingTime
+        //self.presentAlert()
         recordButton.isEnabled = false
         reset()
     }
@@ -1016,6 +1082,19 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                 print("Table view cell tapped")
                 
                 let indexPath = listTableView.indexPathForSelectedRow!
+                let recording = recordings[indexPath.row]
+                let url = recording.url
+                
+                if url == nil{
+                    print("Nil")
+                } else{
+                    print("URL: \(url!)")
+                }
+                
+                let mediaPlayerViewController = segue.destination as! MediaPlayerViewController
+                mediaPlayerViewController.url = URL(fileURLWithPath: url!)
+                mediaPlayerViewController.transcriptText = recording.transcript
+                /*
                 let asset = phAssets[indexPath.row]
                 
                 let videoOptions = PHVideoRequestOptions()
@@ -1028,7 +1107,7 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                         print("Not a valid video media type")
                         return
                 }
-                self.videoManager.requestPlayerItem(forVideo: asset, options: videoOptions, resultHandler: {(avPlayerItem: AVPlayerItem?, info: [AnyHashable : Any]?) -> Void in
+                self.videoManager?.requestPlayerItem(forVideo: asset, options: videoOptions, resultHandler: {(avPlayerItem: AVPlayerItem?, info: [AnyHashable : Any]?) -> Void in
                     
                     guard let item = avPlayerItem else{
                         return
@@ -1045,6 +1124,7 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                     self.avplayer.replaceCurrentItem(with: item)
                     mediaPlayerViewController.videoPlayer = self.avplayer
                 })
+ */
             }
         }
     }
@@ -1059,18 +1139,22 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
             end()
             listButton.isEnabled = true
             isRecording = false
+            /*
             for g in scriptTextView.gestureRecognizers!{
                 g.isEnabled = true
             }
+ */
         }
         else {
-            outputFileName = UUID().uuidString
+            uniqueID = UUID().uuidString
             try! startAudioRecording()
             startVideoRecording()
             
+            /*
             for g in scriptTextView.gestureRecognizers!{
                 g.isEnabled = false
             }
+             */
             recordButton.setImage(UIImage(named: "RecordButtonPlayed"), for: .normal)
             listButton.isEnabled = false
             runCountdownTimer()
@@ -1090,7 +1174,30 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
     }
     
     @IBAction func profileButtonTapped(_ sender: UIButton) {
+        let alert = UIAlertController(title: "Logout?", message: "", preferredStyle: UIAlertControllerStyle.alert)
         
+        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
+            do{
+                let firebaseAuth = Auth.auth()
+                
+                try firebaseAuth.signOut()
+                print("signout")
+                self.dismiss(animated: true, completion: nil)
+                let initialViewController = UIStoryboard.initialViewController(for: .login)
+                let window = UIApplication.shared.keyWindow
+                window?.rootViewController = initialViewController
+            } catch let signOutError as NSError {
+                print ("Error signing out: %@", signOutError)
+            }
+            
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: { action in
+            
+        }))
+        
+        self.present(alert, animated: true, completion: nil)
+                /*
         let transition = CATransition()
         transition.duration = 0.2
         transition.type = kCATransitionPush
@@ -1100,6 +1207,7 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         let profilePage = storyboard.instantiateViewController(withIdentifier: Constants.Storyboards.profileViewController) as? ProfileViewController
         self.present(profilePage!, animated: false, completion: nil)
+ */
     }
     
     @IBAction func unwind(segue:UIStoryboardSegue) { }
@@ -1108,7 +1216,8 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
 extension RecordingViewController: UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return recordingPreviews.count
+        //return recordingPreviews.count
+        return recordings.count
         
     }
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -1149,13 +1258,14 @@ extension RecordingViewController: UITableViewDataSource{
         
         cell.scoreLabel.textColor = color
         
-        cell.viewPreview.image = recordingPreviews[row]
+        //cell.viewPreview.image = recordingPreviews[row]
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
         
         return cell
     }
     
+    /*
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             //print("Delete")
@@ -1181,7 +1291,7 @@ extension RecordingViewController: UITableViewDataSource{
             }
         }
     }
-    
+    */
 }
 
 extension RecordingViewController: AVCaptureFileOutputRecordingDelegate{
@@ -1210,6 +1320,15 @@ extension FileManager {
             print(error)
         }
     }
+    
+    func removeFile(recording: Recording){
+        do{
+            try FileManager.default.removeItem(atPath: recording.url!)
+        } catch{
+            print(error)
+        }
+    }
+    
     /*
     func removeFile(record: Recording){
         do{

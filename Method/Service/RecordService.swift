@@ -50,12 +50,12 @@ struct RecordService {
             let albumChangeRequest = PHAssetCollectionChangeRequest(for: album)
             let enumeration: NSArray = [assetPlaceholder!]
             albumChangeRequest?.addAssets(enumeration)
-            print("video added")
+            print("video added to photo library")
             
         }) { saved, error in
             if saved {
-                print("local temp clear")
-                FileManager.default.clearTmpDirectory()
+                //print("local temp clear")
+                //FileManager.default.clearTmpDirectory()
                 /*
                  let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
                  let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)

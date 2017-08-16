@@ -38,6 +38,7 @@
 		5FA262431F20039300A1B7F8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262421F20039300A1B7F8 /* Constants.swift */; };
 		5FA262451F20118B00A1B7F8 /* RecordingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */; };
 		5FC4680F1F3F716600A46081 /* Tips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC4680E1F3F716600A46081 /* Tips.swift */; };
+		5FC468111F43D45300A46081 /* TextSpeaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC468101F43D45300A46081 /* TextSpeaker.swift */; };
 		5FFC1FD11F3390910094253E /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD01F3390910094253E /* Script.swift */; };
 		5FFC1FD31F33954B0094253E /* movie-quotes.json in Resources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD21F33954B0094253E /* movie-quotes.json */; };
 		5FFC1FD61F33BDFC0094253E /* AudioSessionCommandHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFC1FD51F33BDFC0094253E /* AudioSessionCommandHelper.swift */; };
@@ -82,6 +83,7 @@
 		5FA262421F20039300A1B7F8 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Supporting/Constants.swift; sourceTree = "<group>"; };
 		5FA262441F20118B00A1B7F8 /* RecordingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingViewController.swift; path = Controllers/RecordingViewController.swift; sourceTree = "<group>"; };
 		5FC4680E1F3F716600A46081 /* Tips.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tips.swift; sourceTree = "<group>"; };
+		5FC468101F43D45300A46081 /* TextSpeaker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextSpeaker.swift; sourceTree = "<group>"; };
 		5FFC1FD01F3390910094253E /* Script.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Script.swift; path = Logic/Script.swift; sourceTree = "<group>"; };
 		5FFC1FD21F33954B0094253E /* movie-quotes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "movie-quotes.json"; sourceTree = "<group>"; };
 		5FFC1FD51F33BDFC0094253E /* AudioSessionCommandHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AudioSessionCommandHelper.swift; path = Helpers/AudioSessionCommandHelper.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				5FA1A3911F31369800BCB32B /* Note.swift */,
 				5FFC1FD01F3390910094253E /* Script.swift */,
 				5FFC1FD91F346AAA0094253E /* Pitch.swift */,
+				5FC468101F43D45300A46081 /* TextSpeaker.swift */,
 			);
 			name = Logic;
 			sourceTree = "<group>";
@@ -404,6 +407,7 @@
 				5F0101931F26B6AA00C45F9C /* Recording.swift in Sources */,
 				5FA1A38A1F311D6500BCB32B /* Scoring.swift in Sources */,
 				5FA1A39E1F31A2DC00BCB32B /* ImageCaptureHelper.swift in Sources */,
+				5FC468111F43D45300A46081 /* TextSpeaker.swift in Sources */,
 				5FA2623B1F1FFE2600A1B7F8 /* CreateUsernameViewController.swift in Sources */,
 				5F01018D1F22C99C00C45F9C /* MediaPlayerViewController.swift in Sources */,
 				5FA1A38C1F311D7200BCB32B /* Tuner.swift in Sources */,

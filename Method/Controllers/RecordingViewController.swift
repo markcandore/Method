@@ -295,8 +295,13 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
          */
     }
     func tipsAction(sender: UIButton!) {
-        let tip = Tips()
-        transcriptTextView.text = tip.tip
+        print("tips pressed")
+        AudioSessionCommandHelper.setAudioSessionCategoryPlayback()
+        //let tip = Tips()
+        //transcriptTextView.text = tip.tip
+        
+        let speaker = TextSpeaker()
+        speaker.speak()
     }
     
     // MARK: RecordingViewController
@@ -1109,37 +1114,7 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
                 let mediaPlayerViewController = segue.destination as! MediaPlayerViewController
                 mediaPlayerViewController.url = URL(fileURLWithPath: url!)
                 mediaPlayerViewController.transcriptText = recording.transcript
-                /*
-                let asset = phAssets[indexPath.row]
                 
-                let videoOptions = PHVideoRequestOptions()
-                videoOptions.deliveryMode = .automatic
-                videoOptions.version = .current
-                videoOptions.isNetworkAccessAllowed = true
-               
-                guard (asset.mediaType == PHAssetMediaType.video)
-                    else {
-                        print("Not a valid video media type")
-                        return
-                }
-                self.videoManager?.requestPlayerItem(forVideo: asset, options: videoOptions, resultHandler: {(avPlayerItem: AVPlayerItem?, info: [AnyHashable : Any]?) -> Void in
-                    
-                    guard let item = avPlayerItem else{
-                        return
-                    }
-                    if item.asset.isPlayable == true{
-                        print("playable")
-                    } else{
-                        print("is not playable")
-                    }
-                    
-                    let mediaPlayerViewController = segue.destination as! MediaPlayerViewController
-                    
-                    mediaPlayerViewController.item = item
-                    self.avplayer.replaceCurrentItem(with: item)
-                    mediaPlayerViewController.videoPlayer = self.avplayer
-                })
- */
             }
         }
     }

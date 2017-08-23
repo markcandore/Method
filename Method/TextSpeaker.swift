@@ -17,7 +17,19 @@ class TextSpeaker{
         let tip = Tips()
         utterance = AVSpeechUtterance(string: tip.tip)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        
+    
+        var voiceToUse : AVSpeechSynthesisVoice?
+        for voice in AVSpeechSynthesisVoice.speechVoices() {
+            print(voice.name)
+            print(voice.language)
+            print(voice.identifier)
+            if voice.name == "Aaron"{
+                print("switched")
+                voiceToUse = voice
+                utterance.voice = voiceToUse
+                //utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
+            }
+        }
         utterance.rate = 0.5
         
         synthesizer = AVSpeechSynthesizer()

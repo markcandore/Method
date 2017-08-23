@@ -1081,7 +1081,11 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
     }
     
     @objc fileprivate func scriptGesture(write: UITapGestureRecognizer) {
-        scriptTextView.text = getScript()
+        let text = getScript()
+        scriptTextView.text = text
+        let speaker = TextSpeaker()
+        speaker.speakText(words: text)
+        //scriptTextView.text = getScript()
     }
     
     func getScript() -> String{
@@ -1093,7 +1097,7 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
         let script = Script(json: json)
         print(script.getTitle())
         isQuoteToggled = true
-        return script.sentence
+        return script.getQuote()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -1164,29 +1168,31 @@ class RecordingViewController: UIViewController, UIGestureRecognizerDelegate ,SF
     }
     
     @IBAction func profileButtonTapped(_ sender: UIButton) {
-        let alert = UIAlertController(title: "Logout?", message: "", preferredStyle: UIAlertControllerStyle.alert)
         
-        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
-            do{
-                let firebaseAuth = Auth.auth()
-                
-                try firebaseAuth.signOut()
-                print("signout")
-                self.dismiss(animated: true, completion: nil)
-                let initialViewController = UIStoryboard.initialViewController(for: .login)
-                let window = UIApplication.shared.keyWindow
-                window?.rootViewController = initialViewController
-            } catch let signOutError as NSError {
-                print ("Error signing out: %@", signOutError)
-            }
-            
-        }))
         
-        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: { action in
-            
-        }))
-        
-        self.present(alert, animated: true, completion: nil)
+//        let alert = UIAlertController(title: "Logout?", message: "", preferredStyle: UIAlertControllerStyle.alert)
+//        
+//        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.default, handler: { action in
+//            do{
+//                let firebaseAuth = Auth.auth()
+//                
+//                try firebaseAuth.signOut()
+//                print("signout")
+//                self.dismiss(animated: true, completion: nil)
+//                let initialViewController = UIStoryboard.initialViewController(for: .login)
+//                let window = UIApplication.shared.keyWindow
+//                window?.rootViewController = initialViewController
+//            } catch let signOutError as NSError {
+//                print ("Error signing out: %@", signOutError)
+//            }
+//            
+//        }))
+//        
+//        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: { action in
+//            
+//        }))
+//        
+//        self.present(alert, animated: true, completion: nil)
                 /*
         let transition = CATransition()
         transition.duration = 0.2
@@ -1215,7 +1221,6 @@ extension RecordingViewController: UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("works")
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "recordingTableViewCell", for: indexPath) as! RecordingTableViewCell
         let row = indexPath.row

@@ -25,8 +25,9 @@ struct Script {
     }
     
     func getQuote() -> String{
-        
-        return ""
+        let components = sentence.components(separatedBy: "\"")
+        let quote = components.dropFirst().first
+        return quote!
     }
     
     func getTitle() -> String{
